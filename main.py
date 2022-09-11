@@ -17,16 +17,20 @@ from turtle import bgcolor
 from xml import dom
 
 import os
-import yaml
-from docx import Document
+# import yaml
+# from docx import Document
 import random
 
+import yaml
+
+'''
 def GetDictionary(yamlFile):
     """
     从yamlFile中读取替换字典
     """
     with open(yamlFile, 'r', encoding='utf8') as y:
         return yaml.safe_load(y.read())
+
 
 def ReplaceInRuns(paragraph, replaceDict: dict, paragraphType):
     """
@@ -70,6 +74,7 @@ def ReplaceInRuns(paragraph, replaceDict: dict, paragraphType):
             for run in paragraph.runs[1:]:
                 run.text = ""
 
+
 def ReplaceIn(docxFile, workdir, replaceDict: dict):
     """
     将docxFile按replaceDict进行全局替换
@@ -78,7 +83,7 @@ def ReplaceIn(docxFile, workdir, replaceDict: dict):
         print('无法加载doc文件： ', docxFile, '\n请转换成docx类型！')
         return
 
-    document = Document(docxFile)
+    # document = Document(docxFile)
 
     # 页眉
     for section in document.sections:
@@ -102,39 +107,44 @@ def ReplaceIn(docxFile, workdir, replaceDict: dict):
         os.makedirs(res_dir)
     document.save(res_path)
 
-def ReplaceAll(path: str, workdir:str, replaceDict: dict):
+
+def ReplaceAll(path: str, workdir: str, replaceDict: dict):
     """
     将path路径下所有word文件按replaceDict进行全局替换
     """
     directories = os.listdir(path)
-    folders = [os.path.join(path, i) for i in directories if os.path.isdir(os.path.join(path, i)) and not i.startswith('.')]  # 所有非隐藏文件夹
+    folders = [os.path.join(path, i) for i in directories if
+               os.path.isdir(os.path.join(path, i)) and not i.startswith('.')]  # 所有非隐藏文件夹
     for folder in folders:
         ReplaceAll(os.path.join(path, folder), workdir, replaceDict)
-    files = [os.path.join(path, i) for i in directories if os.path.isfile(os.path.join(path, i)) and os.path.splitext(i)[-1] in ['.doc', '.docx']]  # 所有word文件
+    files = [os.path.join(path, i) for i in directories if
+             os.path.isfile(os.path.join(path, i)) and os.path.splitext(i)[-1] in ['.doc', '.docx']]  # 所有word文件
     for file in files:
         print(file)
         ReplaceIn(file, workdir, replaceDict)
+'''
+
 
 # 第一层界面
 def mainWindow():
     window = tk.Tk()
-    
+
     range2code = {
-        '通用生产':'SC',
-        '通用生产和销售':'SCXS',
-        '组装生产（无三废）':'ZZ',
-        '组装生产（无三废）和销售':'ZZXS',
-        '家具生产':'JJSC',
-        '通用销售':'XS',
-        '软件':'RJ',
-        '施工':'SG',
-        '通用服务':'FW',
-        '物流服务':'WL',
-        '检测服务':'JC'
+        '通用生产': 'SC',
+        '通用生产和销售': 'SCXS',
+        '组装生产（无三废）': 'ZZ',
+        '组装生产（无三废）和销售': 'ZZXS',
+        '家具生产': 'JJSC',
+        '通用销售': 'XS',
+        '软件': 'RJ',
+        '施工': 'SG',
+        '通用服务': 'FW',
+        '物流服务': 'WL',
+        '检测服务': 'JC'
     }
     # 给窗口的可视化起名字
     window.title('认证文件管理系统')
-    
+
     # 设定窗口的大小(长 * 宽)
     window.geometry('500x300')  # 这里的乘是小x
     window.resizable(0, 0)
@@ -143,9 +153,12 @@ def mainWindow():
     """认证范围选择"""
     domain_L = Label(window, text='认证范围：')
     domain = ttk.Combobox(window)
-    domain['value'] = ('通用生产', '通用生产和销售', '组装生产（无三废）', '组装生产（无三废）和销售', '家具生产', '通用销售', '软件', '施工', '通用服务', '物流服务', '检测服务')
+    domain['value'] = (
+        '通用生产', '通用生产和销售', '组装生产（无三废）', '组装生产（无三废）和销售', '家具生产', '通用销售', '软件',
+        '施工',
+        '通用服务', '物流服务', '检测服务')
     domain.current(0)
-        
+
     # 下拉框颜色
     combostyle = ttk.Style()
     combostyle.theme_create('combostyle', parent='alt',
@@ -166,7 +179,7 @@ def mainWindow():
     depart_L = Label(window, text='涉及部门')
 
     departselected = []
-    departV1 = tk.IntVar(master=window)  
+    departV1 = tk.IntVar(master=window)
     departV2 = tk.IntVar(master=window)
     departV3 = tk.IntVar(master=window)
     departV4 = tk.IntVar(master=window)
@@ -188,21 +201,21 @@ def mainWindow():
         if departV5.get() == 1:
             departselected.append(5)
         if departV6.get() == 1:
-            departselected.append(6) 
-        l.config(text=str(departselected)) 
+            departselected.append(6)
+        l.config(text=str(departselected))
 
-    departC1 = tk.Checkbutton(window, text='行政部门',variable=departV1, onvalue=1, offvalue=0, command=depart_select)
-    departC2 = tk.Checkbutton(window, text='采购部门',variable=departV2, onvalue=1, offvalue=0, command=depart_select)
-    departC3 = tk.Checkbutton(window, text='生产部门',variable=departV3, onvalue=1, offvalue=0, command=depart_select)
-    departC4 = tk.Checkbutton(window, text='质检部门',variable=departV4, onvalue=1, offvalue=0, command=depart_select)
-    departC5 = tk.Checkbutton(window, text='销售部门',variable=departV5, onvalue=1, offvalue=0, command=depart_select)
-    departC6 = tk.Checkbutton(window, text='财务部门',variable=departV6, onvalue=1, offvalue=0, command=depart_select)
+    departC1 = tk.Checkbutton(window, text='行政部门', variable=departV1, onvalue=1, offvalue=0, command=depart_select)
+    departC2 = tk.Checkbutton(window, text='采购部门', variable=departV2, onvalue=1, offvalue=0, command=depart_select)
+    departC3 = tk.Checkbutton(window, text='生产部门', variable=departV3, onvalue=1, offvalue=0, command=depart_select)
+    departC4 = tk.Checkbutton(window, text='质检部门', variable=departV4, onvalue=1, offvalue=0, command=depart_select)
+    departC5 = tk.Checkbutton(window, text='销售部门', variable=departV5, onvalue=1, offvalue=0, command=depart_select)
+    departC6 = tk.Checkbutton(window, text='财务部门', variable=departV6, onvalue=1, offvalue=0, command=depart_select)
 
     '''认证项目选择'''
     project_L = Label(window, text='认证项目')
 
     projectselected = []
-    projectV1 = tk.IntVar(master=window)  
+    projectV1 = tk.IntVar(master=window)
     projectV2 = tk.IntVar(master=window)
     projectV3 = tk.IntVar(master=window)
 
@@ -216,24 +229,27 @@ def mainWindow():
         if projectV3.get() == 1:
             projectselected.append('S')
 
-    projectC1 = tk.Checkbutton(window, text='质量管理体系',variable=projectV1, onvalue=1, offvalue=0, command=project_select)
-    projectC2 = tk.Checkbutton(window, text='环境管理体系',variable=projectV2, onvalue=1, offvalue=0, command=project_select)
-    projectC3 = tk.Checkbutton(window, text='职业健康安全管理体系',variable=projectV3, onvalue=1, offvalue=0, command=project_select)
+    projectC1 = tk.Checkbutton(window, text='质量管理体系', variable=projectV1, onvalue=1, offvalue=0,
+                               command=project_select)
+    projectC2 = tk.Checkbutton(window, text='环境管理体系', variable=projectV2, onvalue=1, offvalue=0,
+                               command=project_select)
+    projectC3 = tk.Checkbutton(window, text='职业健康安全管理体系', variable=projectV3, onvalue=1, offvalue=0,
+                               command=project_select)
 
     '''设计开发选择'''
     design_L = Label(window, text='设计开发')
 
-    designV = tk.IntVar(master=window)  
+    designV = tk.IntVar(master=window)
 
     def design_select():
-        l.config(text=str(designV.get())) 
+        l.config(text=str(designV.get()))
 
     designC1 = tk.Radiobutton(window, text="有", variable=designV, value=1, command=design_select)
     designC2 = tk.Radiobutton(window, text="无", variable=designV, value=0, command=design_select)
 
     def pageJump():
         global projectselected, departselected
-        template_id = '' # 模板代码
+        template_id = ''  # 模板代码
         template_id += range2code[domain.get()]
         template_id += '-'
         sort_depart_selected = sorted(departselected)
@@ -244,7 +260,7 @@ def mainWindow():
         if 'E' in projectselected:
             template_id += 'E'
         if 'S' in projectselected:
-            template_id += 'S'  
+            template_id += 'S'
         template_id += '-'
         template_id += 'Y' if designV.get() == 1 else 'N'
         print(template_id)
@@ -253,26 +269,27 @@ def mainWindow():
         # Q界面
         if 'Q' in projectselected and len(projectselected) == 1:
             InforWindow_1(info_dic)
-            return 
-        # E/QE 界面
-        if 'E' in projectselected and len(projectselected) == 1 or 'S' not in projectselected and len(projectselected) == 2:
+            return
+            # E/QE 界面
+        if 'E' in projectselected and len(projectselected) == 1 or 'S' not in projectselected and len(
+                projectselected) == 2:
             InforWindow_2(info_dic)
             return
         # S/QS/ES/QES界面
-        if 'S' in projectselected and len(projectselected) == 1 or 'E' not in projectselected and len(projectselected) == 2 \
-            or 'Q' not in projectselected and len(projectselected) == 2 or len(projectselected) == 3:
+        if 'S' in projectselected and len(projectselected) == 1 or 'E' not in projectselected and len(
+                projectselected) == 2 \
+                or 'Q' not in projectselected and len(projectselected) == 2 or len(projectselected) == 3:
             InforWindow_3(info_dic)
             return
 
     '''跳转按钮'''
     btn_login = tk.Button(window, text='确认信息无误，进入信息采集阶段。', command=lambda: [pageJump()])
 
-
     '''place布局'''
     domain_L.place(relx=0.22, rely=0.05)
     domain.place(relx=0.36, rely=0.05)
 
-    Label(window, text=str('~-'*30)).place(relx=0.05, rely=0.125) # 分隔符
+    Label(window, text=str('~-' * 30)).place(relx=0.05, rely=0.125)  # 分隔符
 
     depart_L.place(relx=0.42, rely=0.20)
     departC1.place(relx=0.15, rely=0.27)
@@ -282,32 +299,33 @@ def mainWindow():
     departC5.place(relx=0.4, rely=0.34)
     departC6.place(relx=0.65, rely=0.34)
 
-    Label(window, text=str('~-'*30)).place(relx=0.05, rely=0.415) # 分隔符
+    Label(window, text=str('~-' * 30)).place(relx=0.05, rely=0.415)  # 分隔符
 
     project_L.place(relx=0.42, rely=0.49)
     projectC1.place(relx=0.09, rely=0.58)
     projectC2.place(relx=0.33, rely=0.58)
     projectC3.place(relx=0.57, rely=0.58)
 
-    Label(window, text=str('~-'*30)).place(relx=0.05, rely=0.655) # 分隔符
+    Label(window, text=str('~-' * 30)).place(relx=0.05, rely=0.655)  # 分隔符
 
     design_L.place(relx=0.42, rely=0.73)
     designC1.place(relx=0.35, rely=0.82)
     designC2.place(relx=0.5, rely=0.82)
 
-    btn_login.place(relx=0.30, rely=0.9) 
+    btn_login.place(relx=0.30, rely=0.9)
 
     window.mainloop()
+
 
 # 第二层界面
 def InforWindow_1(info_dic):
     '''Q界面'''
     window = tk.Tk()
-    
+
     # 给窗口的可视化起名字
     window.title('认证文件管理系统')
     window.config(background='Lavender')
-    
+
     # 设定窗口的大小(长 * 宽)
     window.geometry('770x550')  # 这里的乘是小x
     window.resizable(0, 0)
@@ -341,7 +359,7 @@ def InforWindow_1(info_dic):
     fanwei_L = Label(window, text='认证范围：', bg='Lavender')
     fanwei = Text(window, height=1, width=97, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
-    waibaoV = tk.IntVar()  
+    waibaoV = tk.IntVar()
 
     def waibaobool():
         if waibaoV.get() == 0:
@@ -349,8 +367,10 @@ def InforWindow_1(info_dic):
         else:
             wbguocheng.config(state=NORMAL)
 
-    waibaoC1 = tk.Radiobutton(window, text="公司有外包过程", variable=waibaoV, value=1, command=waibaobool, bg='Lavender')
-    waibaoC2 = tk.Radiobutton(window, text="公司无外包过程", variable=waibaoV, value=0, command=waibaobool, bg='Lavender')
+    waibaoC1 = tk.Radiobutton(window, text="公司有外包过程", variable=waibaoV, value=1, command=waibaobool,
+                              bg='Lavender')
+    waibaoC2 = tk.Radiobutton(window, text="公司无外包过程", variable=waibaoV, value=0, command=waibaobool,
+                              bg='Lavender')
     wbguocheng_L = Label(window, text='外包过程表述：', bg='Lavender')
     wbguocheng = Text(window, height=2, width=74, relief=RAISED, highlightcolor='black', highlightthickness=1)
     wbguocheng.insert('0.0', '本公司外包过程为XX')
@@ -417,49 +437,49 @@ def InforWindow_1(info_dic):
     shengchanliucheng3.insert('0.0', '若无该流程则跳过该项')
 
     def textGen():
-        info_dic['企业名称'] = name.get(0.0, 20.0).strip()
-        info_dic['企业代码'] = code.get(0.0, 20.0).strip()
-        info_dic['版本'] = ver.get(0.0, 20.0).strip()
-        info_dic['版次'] = '\'' + times.get(0.0, 20.0).strip() + '\''
-        info_dic['管理者代表'] = m.get(0.0, 20.0).strip()
-        info_dic['最高管理者'] = mx.get(0.0, 20.0).strip()
-        info_dic['手册发布实施日期'] = t.get(0.0, 20.0).strip()
-        info_dic['公司简介'] = jianjie.get(0.0, 20.0).strip()
-        info_dic['认证范围'] = fanwei.get(0.0, 20.0).strip()
+        info_dic['__企业名称__'] = name.get(0.0, 20.0).strip()
+        info_dic['__企业代码__'] = code.get(0.0, 20.0).strip()
+        info_dic['__版本__'] = ver.get(0.0, 20.0).strip()
+        info_dic['__版次__'] = '\'' + times.get(0.0, 20.0).strip() + '\''
+        info_dic['__管理者代表__'] = m.get(0.0, 20.0).strip()
+        info_dic['__最高管理者__'] = mx.get(0.0, 20.0).strip()
+        info_dic['__手册发布实施日期__'] = t.get(0.0, 20.0).strip()
+        info_dic['__公司简介__'] = jianjie.get(0.0, 20.0).strip()
+        info_dic['__认证范围__'] = fanwei.get(0.0, 20.0).strip()
         if waibaoV.get() == 1:
-            info_dic['有无外包过程'] = '有'
-            info_dic['外包过程表述'] = wbguocheng.get(0.0, 20.0).strip()
+            info_dic['__有无外包过程__'] = '有'
+            info_dic['__外包过程表述__'] = wbguocheng.get(0.0, 20.0).strip()
         else:
-            info_dic['有无外包过程'] = '无'
-            info_dic['外包过程表述'] = ''
-        info_dic['特殊过程'] = tsguocheng.get(0.0, 20.0).strip()
-        info_dic['质检部门'] = zhijian.get(0.0, 20.0).strip()
-        info_dic['质检负责人'] = zjfuze.get(0.0, 20.0).strip()
-        info_dic['质检部门代码'] = zjbmcode.get(0.0, 20.0).strip()
-        info_dic['销售部门'] = xiaoshou.get(0.0, 20.0).strip()
-        info_dic['销售负责人'] = xsfuze.get(0.0, 20.0).strip()
-        info_dic['销售部门代码'] = xsbmcode.get(0.0, 20.0).strip()
-        info_dic['生产部门'] = shengchan.get(0.0, 20.0).strip()
-        info_dic['生产负责人'] = scfuze.get(0.0, 20.0).strip()
-        info_dic['生产部门代码'] = scbmcode.get(0.0, 20.0).strip()
-        info_dic['行政部门'] = xingzheng.get(0.0, 20.0).strip()
-        info_dic['行政负责人'] = xzfuze.get(0.0, 20.0).strip()
-        info_dic['行政部门代码'] = xzbmcode.get(0.0, 20.0).strip()
-        info_dic['采购部门'] = caigou.get(0.0, 20.0).strip()
-        info_dic['采购负责人'] = cgfuze.get(0.0, 20.0).strip()
-        info_dic['采购部门代码'] = cgbmcode.get(0.0, 20.0).strip()
-        info_dic['生产工艺流程1'] = shengchanliucheng1.get(0.0, 20.0).strip()
-        info_dic['生产工艺流程2'] = shengchanliucheng2.get(0.0, 20.0).strip()
-        info_dic['生产工艺流程3'] = shengchanliucheng3.get(0.0, 20.0).strip()
+            info_dic['__有无外包过程__'] = '无'
+            info_dic['__外包过程表述__'] = ''
+        info_dic['__特殊过程__'] = tsguocheng.get(0.0, 20.0).strip()
+        info_dic['__质检部门__'] = zhijian.get(0.0, 20.0).strip()
+        info_dic['__质检负责人__'] = zjfuze.get(0.0, 20.0).strip()
+        info_dic['__质检部门代码__'] = zjbmcode.get(0.0, 20.0).strip()
+        info_dic['__销售部门__'] = xiaoshou.get(0.0, 20.0).strip()
+        info_dic['__销售负责人__'] = xsfuze.get(0.0, 20.0).strip()
+        info_dic['__销售部门代码__'] = xsbmcode.get(0.0, 20.0).strip()
+        info_dic['__生产部门__'] = shengchan.get(0.0, 20.0).strip()
+        info_dic['__生产负责人__'] = scfuze.get(0.0, 20.0).strip()
+        info_dic['__生产部门代码__'] = scbmcode.get(0.0, 20.0).strip()
+        info_dic['__行政部门__'] = xingzheng.get(0.0, 20.0).strip()
+        info_dic['__行政负责人__'] = xzfuze.get(0.0, 20.0).strip()
+        info_dic['__行政部门代码__'] = xzbmcode.get(0.0, 20.0).strip()
+        info_dic['__采购部门__'] = caigou.get(0.0, 20.0).strip()
+        info_dic['__采购负责人__'] = cgfuze.get(0.0, 20.0).strip()
+        info_dic['__采购部门代码__'] = cgbmcode.get(0.0, 20.0).strip()
+        info_dic['__生产工艺流程1__'] = shengchanliucheng1.get(0.0, 20.0).strip()
+        info_dic['__生产工艺流程2__'] = shengchanliucheng2.get(0.0, 20.0).strip()
+        info_dic['__生产工艺流程3__'] = shengchanliucheng3.get(0.0, 20.0).strip()
         print(info_dic)
         window.destroy()
         informCollectWindow(info_dic)
 
-    btn_gen = tk.Button(window, text='确认信息无误，进入下一采集阶段。', command=lambda:[textGen()])
+    btn_gen = tk.Button(window, text='确认信息无误，进入下一采集阶段。', command=lambda: [textGen()])
 
     '''place布局'''
-    name_L.place(x=5, y=5) # 14 / token
-    name.place(x=75, y=7) # 5.6 / 1
+    name_L.place(x=5, y=5)  # 14 / token
+    name.place(x=75, y=7)  # 5.6 / 1
 
     code_L.place(x=245, y=5)
     code.place(x=315, y=7)
@@ -537,18 +557,19 @@ def InforWindow_1(info_dic):
     shangchanliuchng3_L.place(x=5, y=445)
     shengchanliucheng3.place(x=115, y=447)
 
-    btn_gen.place(relx=0.35, rely=0.9) 
+    btn_gen.place(relx=0.35, rely=0.9)
 
     window.mainloop()
+
 
 def InforWindow_2(info_dic):
     '''E/QE界面'''
     window = tk.Tk()
-    
+
     # 给窗口的可视化起名字
     window.title('认证文件管理系统')
     window.config(background='Lavender')
-    
+
     # 设定窗口的大小(长 * 宽)
     window.geometry('770x580')  # 这里的乘是小x
     window.resizable(0, 0)
@@ -582,7 +603,7 @@ def InforWindow_2(info_dic):
     fanwei_L = Label(window, text='认证范围：', bg='Lavender')
     fanwei = Text(window, height=1, width=97, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
-    waibaoV = tk.IntVar()  
+    waibaoV = tk.IntVar()
 
     def waibaobool():
         if waibaoV.get() == 0:
@@ -590,8 +611,10 @@ def InforWindow_2(info_dic):
         else:
             wbguocheng.config(state=NORMAL)
 
-    waibaoC1 = tk.Radiobutton(window, text="公司有外包过程", variable=waibaoV, value=1, command=waibaobool, bg='Lavender')
-    waibaoC2 = tk.Radiobutton(window, text="公司无外包过程", variable=waibaoV, value=0, command=waibaobool, bg='Lavender')
+    waibaoC1 = tk.Radiobutton(window, text="公司有外包过程", variable=waibaoV, value=1, command=waibaobool,
+                              bg='Lavender')
+    waibaoC2 = tk.Radiobutton(window, text="公司无外包过程", variable=waibaoV, value=0, command=waibaobool,
+                              bg='Lavender')
     wbguocheng_L = Label(window, text='外包过程表述：', bg='Lavender')
     wbguocheng = Text(window, height=2, width=74, relief=RAISED, highlightcolor='black', highlightthickness=1)
     wbguocheng.insert('0.0', '本公司外包过程为XX')
@@ -667,52 +690,52 @@ def InforWindow_2(info_dic):
     shengchanliucheng3.insert('0.0', '若无该流程则跳过该项')
 
     def textGen():
-        info_dic['企业名称'] = name.get(0.0, 20.0).strip()
-        info_dic['企业代码'] = code.get(0.0, 20.0).strip()
-        info_dic['版本'] = ver.get(0.0, 20.0).strip()
-        info_dic['版次'] = '\'' + times.get(0.0, 20.0).strip() + '\''
-        info_dic['管理者代表'] = m.get(0.0, 20.0).strip()
-        info_dic['最高管理者'] = mx.get(0.0, 20.0).strip()
-        info_dic['手册发布实施日期'] = t.get(0.0, 20.0).strip()
-        info_dic['公司简介'] = jianjie.get(0.0, 20.0).strip()
-        info_dic['认证范围'] = fanwei.get(0.0, 20.0).strip()
+        info_dic['__企业名称__'] = name.get(0.0, 20.0).strip()
+        info_dic['__企业代码__'] = code.get(0.0, 20.0).strip()
+        info_dic['__版本__'] = ver.get(0.0, 20.0).strip()
+        info_dic['__版次__'] = '\'' + times.get(0.0, 20.0).strip() + '\''
+        info_dic['__管理者代表__'] = m.get(0.0, 20.0).strip()
+        info_dic['__最高管理者__'] = mx.get(0.0, 20.0).strip()
+        info_dic['__手册发布实施日期__'] = t.get(0.0, 20.0).strip()
+        info_dic['__公司简介__'] = jianjie.get(0.0, 20.0).strip()
+        info_dic['__认证范围__'] = fanwei.get(0.0, 20.0).strip()
         if waibaoV.get() == 1:
-            info_dic['有无外包过程'] = '有'
-            info_dic['外包过程表述'] = wbguocheng.get(0.0, 20.0).strip()
+            info_dic['__有无外包过程__'] = '有'
+            info_dic['__外包过程表述__'] = wbguocheng.get(0.0, 20.0).strip()
         else:
-            info_dic['有无外包过程'] = '无'
-            info_dic['外包过程表述'] = ''
-        info_dic['特殊过程'] = tsguocheng.get(0.0, 20.0).strip()
-        info_dic['质检部门'] = zhijian.get(0.0, 20.0).strip()
-        info_dic['质检负责人'] = zjfuze.get(0.0, 20.0).strip()
-        info_dic['质检部门代码'] = zjbmcode.get(0.0, 20.0).strip()
-        info_dic['销售部门'] = xiaoshou.get(0.0, 20.0).strip()
-        info_dic['销售负责人'] = xsfuze.get(0.0, 20.0).strip()
-        info_dic['销售部门代码'] = xsbmcode.get(0.0, 20.0).strip()
-        info_dic['生产部门'] = shengchan.get(0.0, 20.0).strip()
-        info_dic['生产负责人'] = scfuze.get(0.0, 20.0).strip()
-        info_dic['生产部门代码'] = scbmcode.get(0.0, 20.0).strip()
-        info_dic['行政部门'] = xingzheng.get(0.0, 20.0).strip()
-        info_dic['行政负责人'] = xzfuze.get(0.0, 20.0).strip()
-        info_dic['行政部门代码'] = xzbmcode.get(0.0, 20.0).strip()
-        info_dic['财务部门'] = caiwu.get(0.0, 20.0).strip()
-        info_dic['财务负责人'] = cwfuze.get(0.0, 20.0).strip()
-        info_dic['财务部门代码'] = cwbmcode.get(0.0, 20.0).strip()
-        info_dic['采购部门'] = caigou.get(0.0, 20.0).strip()
-        info_dic['采购负责人'] = cgfuze.get(0.0, 20.0).strip()
-        info_dic['采购部门代码'] = cgbmcode.get(0.0, 20.0).strip()
-        info_dic['生产工艺流程1'] = shengchanliucheng1.get(0.0, 20.0).strip()
-        info_dic['生产工艺流程2'] = shengchanliucheng2.get(0.0, 20.0).strip()
-        info_dic['生产工艺流程3'] = shengchanliucheng3.get(0.0, 20.0).strip()
+            info_dic['__有无外包过程__'] = '无'
+            info_dic['__外包过程表述__'] = ''
+        info_dic['__特殊过程__'] = tsguocheng.get(0.0, 20.0).strip()
+        info_dic['__质检部门__'] = zhijian.get(0.0, 20.0).strip()
+        info_dic['__质检负责人__'] = zjfuze.get(0.0, 20.0).strip()
+        info_dic['__质检部门代码__'] = zjbmcode.get(0.0, 20.0).strip()
+        info_dic['__销售部门__'] = xiaoshou.get(0.0, 20.0).strip()
+        info_dic['__销售负责人__'] = xsfuze.get(0.0, 20.0).strip()
+        info_dic['__销售部门代码__'] = xsbmcode.get(0.0, 20.0).strip()
+        info_dic['__生产部门__'] = shengchan.get(0.0, 20.0).strip()
+        info_dic['__生产负责人__'] = scfuze.get(0.0, 20.0).strip()
+        info_dic['__生产部门代码__'] = scbmcode.get(0.0, 20.0).strip()
+        info_dic['__行政部门__'] = xingzheng.get(0.0, 20.0).strip()
+        info_dic['__行政负责人__'] = xzfuze.get(0.0, 20.0).strip()
+        info_dic['__行政部门代码__'] = xzbmcode.get(0.0, 20.0).strip()
+        info_dic['__财务部门__'] = caiwu.get(0.0, 20.0).strip()
+        info_dic['__财务负责人__'] = cwfuze.get(0.0, 20.0).strip()
+        info_dic['__财务部门代码__'] = cwbmcode.get(0.0, 20.0).strip()
+        info_dic['__采购部门__'] = caigou.get(0.0, 20.0).strip()
+        info_dic['__采购负责人__'] = cgfuze.get(0.0, 20.0).strip()
+        info_dic['__采购部门代码__'] = cgbmcode.get(0.0, 20.0).strip()
+        info_dic['__生产工艺流程1__'] = shengchanliucheng1.get(0.0, 20.0).strip()
+        info_dic['__生产工艺流程2__'] = shengchanliucheng2.get(0.0, 20.0).strip()
+        info_dic['__生产工艺流程3__'] = shengchanliucheng3.get(0.0, 20.0).strip()
         print(info_dic)
         window.destroy()
         informCollectWindow(info_dic)
 
-    btn_gen = tk.Button(window, text='确认信息无误，进入下一采集阶段。', command=lambda:[textGen()])
+    btn_gen = tk.Button(window, text='确认信息无误，进入下一采集阶段。', command=lambda: [textGen()])
 
     '''place布局'''
-    name_L.place(x=5, y=5) # 14 / token
-    name.place(x=75, y=7) # 5.6 / 1
+    name_L.place(x=5, y=5)  # 14 / token
+    name.place(x=75, y=7)  # 5.6 / 1
 
     code_L.place(x=245, y=5)
     code.place(x=315, y=7)
@@ -797,18 +820,19 @@ def InforWindow_2(info_dic):
     shangchanliuchng3_L.place(x=5, y=475)
     shengchanliucheng3.place(x=115, y=477)
 
-    btn_gen.place(relx=0.35, rely=0.9) 
+    btn_gen.place(relx=0.35, rely=0.9)
 
     window.mainloop()
+
 
 def InforWindow_3(info_dic):
     '''S/QS/ES/QES界面'''
     window = tk.Tk()
-    
+
     # 给窗口的可视化起名字
     window.title('认证文件管理系统')
     window.config(background='Lavender')
-    
+
     # 设定窗口的大小(长 * 宽)
     window.geometry('770x590')  # 这里的乘是小x
     window.resizable(0, 0)
@@ -842,7 +866,7 @@ def InforWindow_3(info_dic):
     fanwei_L = Label(window, text='认证范围：', bg='Lavender')
     fanwei = Text(window, height=1, width=97, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
-    waibaoV = tk.IntVar()  
+    waibaoV = tk.IntVar()
 
     def waibaobool():
         if waibaoV.get() == 0:
@@ -850,8 +874,10 @@ def InforWindow_3(info_dic):
         else:
             wbguocheng.config(state=NORMAL)
 
-    waibaoC1 = tk.Radiobutton(window, text="公司有外包过程", variable=waibaoV, value=1, command=waibaobool, bg='Lavender')
-    waibaoC2 = tk.Radiobutton(window, text="公司无外包过程", variable=waibaoV, value=0, command=waibaobool, bg='Lavender')
+    waibaoC1 = tk.Radiobutton(window, text="公司有外包过程", variable=waibaoV, value=1, command=waibaobool,
+                              bg='Lavender')
+    waibaoC2 = tk.Radiobutton(window, text="公司无外包过程", variable=waibaoV, value=0, command=waibaobool,
+                              bg='Lavender')
     wbguocheng_L = Label(window, text='外包过程表述：', bg='Lavender')
     wbguocheng = Text(window, height=2, width=74, relief=RAISED, highlightcolor='black', highlightthickness=1)
     wbguocheng.insert('0.0', '本公司外包过程为XX')
@@ -930,53 +956,53 @@ def InforWindow_3(info_dic):
     shengchanliucheng3.insert('0.0', '若无该流程则跳过该项')
 
     def textGen():
-        info_dic['企业名称'] = name.get(0.0, 20.0).strip()
-        info_dic['企业代码'] = code.get(0.0, 20.0).strip()
-        info_dic['版本'] = ver.get(0.0, 20.0).strip()
-        info_dic['版次'] = '\'' + times.get(0.0, 20.0).strip() + '\''
-        info_dic['管理者代表'] = m.get(0.0, 20.0).strip()
-        info_dic['最高管理者'] = mx.get(0.0, 20.0).strip()
-        info_dic['手册发布实施日期'] = t.get(0.0, 20.0).strip()
-        info_dic['公司简介'] = jianjie.get(0.0, 20.0).strip()
-        info_dic['认证范围'] = fanwei.get(0.0, 20.0).strip()
+        info_dic['__企业名称__'] = name.get(0.0, 20.0).strip()
+        info_dic['__企业代码__'] = code.get(0.0, 20.0).strip()
+        info_dic['__版本__'] = ver.get(0.0, 20.0).strip()
+        info_dic['__版次__'] = '\'' + times.get(0.0, 20.0).strip() + '\''
+        info_dic['__管理者代表__'] = m.get(0.0, 20.0).strip()
+        info_dic['__最高管理者__'] = mx.get(0.0, 20.0).strip()
+        info_dic['__手册发布实施日期__'] = t.get(0.0, 20.0).strip()
+        info_dic['__公司简介__'] = jianjie.get(0.0, 20.0).strip()
+        info_dic['__认证范围__'] = fanwei.get(0.0, 20.0).strip()
         if waibaoV.get() == 1:
-            info_dic['有无外包过程'] = '有'
-            info_dic['外包过程表述'] = wbguocheng.get(0.0, 20.0).strip()
+            info_dic['__有无外包过程__'] = '有'
+            info_dic['__外包过程表述__'] = wbguocheng.get(0.0, 20.0).strip()
         else:
-            info_dic['有无外包过程'] = '无'
-            info_dic['外包过程表述'] = ''
-        info_dic['特殊过程'] = tsguocheng.get(0.0, 20.0).strip()
-        info_dic['质检部门'] = zhijian.get(0.0, 20.0).strip()
-        info_dic['质检负责人'] = zjfuze.get(0.0, 20.0).strip()
-        info_dic['质检部门代码'] = zjbmcode.get(0.0, 20.0).strip()
-        info_dic['销售部门'] = xiaoshou.get(0.0, 20.0).strip()
-        info_dic['销售负责人'] = xsfuze.get(0.0, 20.0).strip()
-        info_dic['销售部门代码'] = xsbmcode.get(0.0, 20.0).strip()
-        info_dic['生产部门'] = shengchan.get(0.0, 20.0).strip()
-        info_dic['生产负责人'] = scfuze.get(0.0, 20.0).strip()
-        info_dic['生产部门代码'] = scbmcode.get(0.0, 20.0).strip()
-        info_dic['行政部门'] = xingzheng.get(0.0, 20.0).strip()
-        info_dic['行政负责人'] = xzfuze.get(0.0, 20.0).strip()
-        info_dic['行政部门代码'] = xzbmcode.get(0.0, 20.0).strip()
-        info_dic['采购部门'] = caigou.get(0.0, 20.0).strip()
-        info_dic['采购负责人'] = cgfuze.get(0.0, 20.0).strip()
-        info_dic['采购部门代码'] = cgbmcode.get(0.0, 20.0).strip()
-        info_dic['财务部门'] = caiwu.get(0.0, 20.0).strip()
-        info_dic['财务负责人'] = cwfuze.get(0.0, 20.0).strip()
-        info_dic['财务部门代码'] = cwbmcode.get(0.0, 20.0).strip()
-        info_dic['安全负责人'] = anquanfuze.get(0.0, 20.0).strip()
-        info_dic['生产工艺流程1'] = shengchanliucheng1.get(0.0, 20.0).strip()
-        info_dic['生产工艺流程2'] = shengchanliucheng2.get(0.0, 20.0).strip()
-        info_dic['生产工艺流程3'] = shengchanliucheng3.get(0.0, 20.0).strip()
+            info_dic['__有无外包过程__'] = '无'
+            info_dic['__外包过程表述__'] = ''
+        info_dic['__特殊过程__'] = tsguocheng.get(0.0, 20.0).strip()
+        info_dic['__质检部门__'] = zhijian.get(0.0, 20.0).strip()
+        info_dic['__质检负责人__'] = zjfuze.get(0.0, 20.0).strip()
+        info_dic['__质检部门代码__'] = zjbmcode.get(0.0, 20.0).strip()
+        info_dic['__销售部门__'] = xiaoshou.get(0.0, 20.0).strip()
+        info_dic['__销售负责人__'] = xsfuze.get(0.0, 20.0).strip()
+        info_dic['__销售部门代码__'] = xsbmcode.get(0.0, 20.0).strip()
+        info_dic['__生产部门__'] = shengchan.get(0.0, 20.0).strip()
+        info_dic['__生产负责人__'] = scfuze.get(0.0, 20.0).strip()
+        info_dic['__生产部门代码__'] = scbmcode.get(0.0, 20.0).strip()
+        info_dic['__行政部门__'] = xingzheng.get(0.0, 20.0).strip()
+        info_dic['__行政负责人__'] = xzfuze.get(0.0, 20.0).strip()
+        info_dic['__行政部门代码__'] = xzbmcode.get(0.0, 20.0).strip()
+        info_dic['__采购部门__'] = caigou.get(0.0, 20.0).strip()
+        info_dic['__采购负责人__'] = cgfuze.get(0.0, 20.0).strip()
+        info_dic['__采购部门代码__'] = cgbmcode.get(0.0, 20.0).strip()
+        info_dic['__财务部门__'] = caiwu.get(0.0, 20.0).strip()
+        info_dic['__财务负责人__'] = cwfuze.get(0.0, 20.0).strip()
+        info_dic['__财务部门代码__'] = cwbmcode.get(0.0, 20.0).strip()
+        info_dic['__安全负责人__'] = anquanfuze.get(0.0, 20.0).strip()
+        info_dic['__生产工艺流程1__'] = shengchanliucheng1.get(0.0, 20.0).strip()
+        info_dic['__生产工艺流程2__'] = shengchanliucheng2.get(0.0, 20.0).strip()
+        info_dic['__生产工艺流程3__'] = shengchanliucheng3.get(0.0, 20.0).strip()
         print(info_dic)
         window.destroy()
         informCollectWindow(info_dic)
 
-    btn_gen = tk.Button(window, text='确认信息无误，进入下一采集阶段。', command=lambda:[textGen()])
+    btn_gen = tk.Button(window, text='确认信息无误，进入下一采集阶段。', command=lambda: [textGen()])
 
     '''place布局'''
-    name_L.place(x=5, y=5) # 14 / token
-    name.place(x=75, y=7) # 5.6 / 1
+    name_L.place(x=5, y=5)  # 14 / token
+    name.place(x=75, y=7)  # 5.6 / 1
 
     code_L.place(x=245, y=5)
     code.place(x=315, y=7)
@@ -1064,14 +1090,15 @@ def InforWindow_3(info_dic):
     shangchanliuchng3_L.place(x=5, y=505)
     shengchanliucheng3.place(x=115, y=507)
 
-    btn_gen.place(relx=0.35, rely=0.92) 
+    btn_gen.place(relx=0.35, rely=0.92)
 
     window.mainloop()
+
 
 # 第三层界面
 def informCollectWindow(info_dic):
     window = tk.Tk()
-    
+
     # 给窗口的可视化起名字
     window.title('认证文件管理系统')
     window.config(background='Lavender')
@@ -1087,44 +1114,64 @@ def informCollectWindow(info_dic):
     ybjlrq.insert(0.0, '2022.1.4')
 
     peixun1 = Label(window, text='是否有1月培训：', bg='Lavender')
-    peixun1V = tk.IntVar()  
+    peixun1V = tk.IntVar()
     peixun1C1 = tk.Radiobutton(window, text="是", variable=peixun1V, value=1, bg='Lavender')
     peixun1C2 = tk.Radiobutton(window, text="否", variable=peixun1V, value=0, bg='Lavender')
 
     peixun2 = Label(window, text='是否有2月培训：', bg='Lavender')
-    peixun2V = tk.IntVar()  
+    peixun2V = tk.IntVar()
     peixun2C1 = tk.Radiobutton(window, text="是", variable=peixun2V, value=1, bg='Lavender')
     peixun2C2 = tk.Radiobutton(window, text="否", variable=peixun2V, value=0, bg='Lavender')
 
     peixun3 = Label(window, text='是否有3月培训：', bg='Lavender')
-    peixun3V = tk.IntVar()  
+    peixun3V = tk.IntVar()
     peixun3C1 = tk.Radiobutton(window, text="是", variable=peixun3V, value=1, bg='Lavender')
     peixun3C2 = tk.Radiobutton(window, text="否", variable=peixun3V, value=0, bg='Lavender')
 
     peixun6 = Label(window, text='是否有6月培训：', bg='Lavender')
-    peixun6V = tk.IntVar()  
+    peixun6V = tk.IntVar()
     peixun6C1 = tk.Radiobutton(window, text="是", variable=peixun6V, value=1, bg='Lavender')
     peixun6C2 = tk.Radiobutton(window, text="否", variable=peixun6V, value=0, bg='Lavender')
 
     peixun8 = Label(window, text='是否有8月培训：', bg='Lavender')
-    peixun8V = tk.IntVar()  
+    peixun8V = tk.IntVar()
     peixun8C1 = tk.Radiobutton(window, text="是", variable=peixun8V, value=1, bg='Lavender')
     peixun8C2 = tk.Radiobutton(window, text="否", variable=peixun8V, value=0, bg='Lavender')
 
     peixun10 = Label(window, text='是否有10月培训：', bg='Lavender')
-    peixun10V = tk.IntVar()  
+    peixun10V = tk.IntVar()
     peixun10C1 = tk.Radiobutton(window, text="是", variable=peixun10V, value=1, bg='Lavender')
     peixun10C2 = tk.Radiobutton(window, text="否", variable=peixun10V, value=0, bg='Lavender')
 
     peixun11 = Label(window, text='是否有11月培训：', bg='Lavender')
-    peixun11V = tk.IntVar()  
+    peixun11V = tk.IntVar()
     peixun11C1 = tk.Radiobutton(window, text="是", variable=peixun11V, value=1, bg='Lavender')
     peixun11C2 = tk.Radiobutton(window, text="否", variable=peixun11V, value=0, bg='Lavender')
 
     peixun12 = Label(window, text='是否有12月培训：', bg='Lavender')
-    peixun12V = tk.IntVar()  
+    peixun12V = tk.IntVar()
     peixun12C1 = tk.Radiobutton(window, text="是", variable=peixun12V, value=1, bg='Lavender')
     peixun12C2 = tk.Radiobutton(window, text="否", variable=peixun12V, value=0, bg='Lavender')
+
+    peixun4 = Label(window, text='是否有4月培训：', bg='Lavender')
+    peixun4V = tk.IntVar()
+    peixun4C1 = tk.Radiobutton(window, text="是", variable=peixun4V, value=1, bg='Lavender')
+    peixun4C2 = tk.Radiobutton(window, text="否", variable=peixun4V, value=0, bg='Lavender')
+
+    peixun5 = Label(window, text='是否有5月培训：', bg='Lavender')
+    peixun5V = tk.IntVar()
+    peixun5C1 = tk.Radiobutton(window, text="是", variable=peixun5V, value=1, bg='Lavender')
+    peixun5C2 = tk.Radiobutton(window, text="否", variable=peixun5V, value=0, bg='Lavender')
+
+    peixun7 = Label(window, text='是否有7月培训：', bg='Lavender')
+    peixun7V = tk.IntVar()
+    peixun7C1 = tk.Radiobutton(window, text="是", variable=peixun7V, value=1, bg='Lavender')
+    peixun7C2 = tk.Radiobutton(window, text="否", variable=peixun7V, value=0, bg='Lavender')
+
+    peixun9 = Label(window, text='是否有9月培训：', bg='Lavender')
+    peixun9V = tk.IntVar()
+    peixun9C1 = tk.Radiobutton(window, text="是", variable=peixun8V, value=1, bg='Lavender')
+    peixun9C2 = tk.Radiobutton(window, text="否", variable=peixun8V, value=0, bg='Lavender')
 
     nsypxrq_L = Label(window, text='内审员培训日期:', bg='Lavender')
     nsypxrq = Text(window, width=22, heigh=1)
@@ -1142,17 +1189,17 @@ def informCollectWindow(info_dic):
     nszgwcrq = Text(window, width=22, heigh=1)
 
     q713 = Label(window, text='是否为Q7.1.3条款不符合：', bg='Lavender')
-    q713V = tk.IntVar()  
+    q713V = tk.IntVar()
     q713C1 = tk.Radiobutton(window, text="是", variable=q713V, value=1, bg='Lavender')
     q713C2 = tk.Radiobutton(window, text="否", variable=q713V, value=0, bg='Lavender')
 
     q851 = Label(window, text='是否为Q8.5.1条款不符合：', bg='Lavender')
-    q851V = tk.IntVar()  
+    q851V = tk.IntVar()
     q851C1 = tk.Radiobutton(window, text="是", variable=q851V, value=1, bg='Lavender')
     q851C2 = tk.Radiobutton(window, text="否", variable=q851V, value=0, bg='Lavender')
 
     q62 = Label(window, text='是否为Q6.2条款不符合：', bg='Lavender')
-    q62V = tk.IntVar()  
+    q62V = tk.IntVar()
     q62C1 = tk.Radiobutton(window, text="是", variable=q62V, value=1, bg='Lavender')
     q62C2 = tk.Radiobutton(window, text="否", variable=q62V, value=0, bg='Lavender')
 
@@ -1166,17 +1213,17 @@ def informCollectWindow(info_dic):
     gpbgrq = Text(window, width=22, heigh=1)
 
     jqscjc = Label(window, text='是否为加强生产检查改进项：', bg='Lavender')
-    jqscjcV = tk.IntVar()  
+    jqscjcV = tk.IntVar()
     jqscjcC1 = tk.Radiobutton(window, text="是", variable=jqscjcV, value=1, bg='Lavender')
     jqscjcC2 = tk.Radiobutton(window, text="否", variable=jqscjcV, value=0, bg='Lavender')
 
     jqysjs = Label(window, text='是否为提高意识技术改进项：', bg='Lavender')
-    jqysjsV = tk.IntVar()  
+    jqysjsV = tk.IntVar()
     jqysjsC1 = tk.Radiobutton(window, text="是", variable=jqysjsV, value=1, bg='Lavender')
     jqysjsC2 = tk.Radiobutton(window, text="否", variable=jqysjsV, value=0, bg='Lavender')
 
     jqzp = Label(window, text='是否为加强招聘改进项：', bg='Lavender')
-    jqzpV = tk.IntVar()  
+    jqzpV = tk.IntVar()
     jqzpC1 = tk.Radiobutton(window, text="是", variable=jqzpV, value=1, bg='Lavender')
     jqzpC2 = tk.Radiobutton(window, text="否", variable=jqzpV, value=0, bg='Lavender')
 
@@ -1189,27 +1236,24 @@ def informCollectWindow(info_dic):
     syndgpgjrq_L = Label(window, text='上一年度管评改进项完成日期:', bg='Lavender')
     syndgpgjrq = Text(window, width=22, heigh=1)
 
-    gprq_L = Label(window, text='管评日期:', bg='Lavender')
-    gprq = Text(window, width=22, heigh=1)
-
     syndjqscjc = Label(window, text='上一年度是否为加强生产检查改进项：', bg='Lavender')
-    syndjqscjcV = tk.IntVar()  
+    syndjqscjcV = tk.IntVar()
     syndjqscjcC1 = tk.Radiobutton(window, text="是", variable=syndjqscjcV, value=1, bg='Lavender')
     syndjqscjcC2 = tk.Radiobutton(window, text="否", variable=syndjqscjcV, value=0, bg='Lavender')
 
     syndjqysjs = Label(window, text='上一年度是否为提高意识技术改进项：', bg='Lavender')
-    syndjqysjsV = tk.IntVar()  
+    syndjqysjsV = tk.IntVar()
     syndjqysjsC1 = tk.Radiobutton(window, text="是", variable=syndjqysjsV, value=1, bg='Lavender')
     syndjqysjsC2 = tk.Radiobutton(window, text="否", variable=syndjqysjsV, value=0, bg='Lavender')
 
     syndjqzp = Label(window, text='上一年度是否为加强招聘改进项：', bg='Lavender')
-    syndjqzpV = tk.IntVar()  
+    syndjqzpV = tk.IntVar()
     syndjqzpC1 = tk.Radiobutton(window, text="是", variable=syndjqzpV, value=1, bg='Lavender')
     syndjqzpC2 = tk.Radiobutton(window, text="否", variable=syndjqzpV, value=0, bg='Lavender')
 
     xxht_text = Text(window, width=120, heigh=4)
     xxhtwin_L = Label(window, text='销售合同信息：', bg='Lavender')
-    btn_xxht = tk.Button(window, text='修改合同信息。', command=lambda:xxhtWindow())
+    btn_xxht = tk.Button(window, text='修改合同信息。', command=lambda: xxhtWindow())
     xxht_info = [xxht_text.get(0.0, 40.0)]
 
     myddcrq_L = Label(window, text='满意度调查日期:', bg='Lavender')
@@ -1247,12 +1291,12 @@ def informCollectWindow(info_dic):
 
     gf_text = Text(window, width=120, heigh=4)
     gfwin_L = Label(window, text='已有供方信息：', bg='Lavender')
-    btn_gf = tk.Button(window, text='修改供方信息。', command=lambda:gfWindow())
+    btn_gf = tk.Button(window, text='修改供方信息。', command=lambda: gfWindow())
     gf_info = [gf_text.get(0.0, 40.0)]
 
     cgcp_text = Text(window, width=120, heigh=4)
     cgcpwin_L = Label(window, text='采购产品信息：', bg='Lavender')
-    btn_cgcp = tk.Button(window, text='修改采购信息。', command=lambda:cgcpWindow())
+    btn_cgcp = tk.Button(window, text='修改采购信息。', command=lambda: cgcpWindow())
     cgcp_info = [gf_text.get(0.0, 40.0)]
 
     # def doc_gen():
@@ -1278,7 +1322,85 @@ def informCollectWindow(info_dic):
             #
             window.destroy()
 
-    btn_gen = tk.Button(window, text='信息确认完成，进入下一阶段。', command=next_stage)
+    # 封装第三层页面radio_button处理结果逻辑
+    def addRadioRes(bool_str, radio_res):
+        if radio_res.get() == 1:
+            info_dic['__{}__'.format(bool_str)] = '是'
+        else:
+            info_dic['__{}__'.format(bool_str)] = '否'
+
+    def add_item_to_info_dict(common_str, key_list, text_str):
+        """
+        处理第三个页面中的三个多行文本框
+        """
+        row_list = text_str.split('\n')
+        if len(row_list) == 0:
+            return
+        item_list = [row.split(',') for row in row_list]
+        for row in range(len(row_list)):
+            for item in range(len(item_list[0])):
+                key_str = '__{}{}{}__'.format(common_str, row, key_list[item])
+                if item_list[row][item] == '':
+                    info_dic[key_str] = '无'
+                else:
+                    info_dic[key_str] = item_list[row][item]
+
+    # 第三层界面处理结果生成字典
+    def textGen():
+        info_dic['__记录年份__'] = jlnf.get(0.0, 20.0).strip()
+        info_dic['__一般记录日期__'] = ybjlrq.get(0.0, 20.0).strip()
+        addRadioRes('是否有1月培训', peixun1V)
+        addRadioRes('是否有2月培训', peixun2V)
+        addRadioRes('是否有3月培训', peixun3V)
+        addRadioRes('是否有4月培训', peixun4V)
+        addRadioRes('是否有5月培训', peixun5V)
+        addRadioRes('是否有6月培训', peixun6V)
+        addRadioRes('是否有7月培训', peixun7V)
+        addRadioRes('是否有8月培训', peixun8V)
+        addRadioRes('是否有9月培训', peixun9V)
+        addRadioRes('是否有10月培训', peixun10V)
+        addRadioRes('是否有11月培训', peixun11V)
+        addRadioRes('是否有12月培训', peixun12V)
+        info_dic['__内审员培训日期__'] = nsypxrq.get(0.0, 20.0).strip()
+        info_dic['__内审计划制定日期__'] = nsjhzdrq.get(0.0, 20.0).strip()
+        info_dic['__内审开始日期__'] = nsksrq.get(0.0, 20.0).strip()
+        info_dic['__内审结束日期__'] = nsjsrq.get(0.0, 20.0).strip()
+        info_dic['__内审整改完成日期__'] = nszgwcrq.get(0.0, 20.0).strip()
+        addRadioRes('是否为Q7.1.3条款不符合', q713V)
+        addRadioRes('是否为Q8.5.1条款不符合', q851V)
+        addRadioRes('是否为Q6.2条款不符合', q62V)
+        info_dic['__管评计划制定日期__'] = gpjhzdrq.get(0.0, 20.0).strip()
+        info_dic['__管评日期__'] = gprq.get(0.0, 20.0).strip()
+        info_dic['__管评报告日期__'] = gpbgrq.get(0.0, 20.0).strip()
+        addRadioRes('__是否为加强生产检查改进项__', jqscjcV)
+        addRadioRes('__是否为提高意识技术改进项__', jqysjsV)
+        addRadioRes('__是否为加强招聘改进项__', jqzpV)
+        info_dic['__管评改进项完成日期__'] = gpgjwcsj.get(0.0, 20.0).strip()
+        info_dic['__上一年度管理评价日期__'] = syndgprq.get(0.0, 20.0).strip()
+        info_dic['__上一年度管评改进项完成日期__'] = syndgpgjrq.get(0.0, 20.0).strip()
+        addRadioRes('__上一年度是否为加强生产检查改进项__', syndjqscjcV)
+        addRadioRes('__上一年度是否为提高意识技术改进项__', syndjqysjsV)
+        addRadioRes('__上一年度是否为加强招聘改进项__', syndjqzpV)
+        add_item_to_info_dict('销售合同', ['产品', '客户', '签订日期', '编号', '评审时间'],
+                              xxht_text.get(0.0, 40.0).strip())
+        info_dic['__满意度调查日期__'] = myddcrq.get(0.0, 20.0).strip()
+        info_dic['__满意度调查数量__'] = myddcsl.get(0.0, 20.0).strip()
+        info_dic['__平均满意度__'] = myddcpj.get(0.0, 20.0).strip()
+        info_dic['__销售合同1满意度__'] = myddc1.get(0.0, 20.0).strip()
+        info_dic['__销售合同2满意度__'] = myddc2.get(0.0, 20.0).strip()
+        info_dic['__销售合同3满意度__'] = myddc3.get(0.0, 20.0).strip()
+        info_dic['__销售合同4满意度__'] = myddc4.get(0.0, 20.0).strip()
+        info_dic['__销售合同5满意度__'] = myddc5.get(0.0, 20.0).strip()
+        info_dic['__销售合同6满意度__'] = myddc6.get(0.0, 20.0).strip()
+        info_dic['__销售合同7满意度__'] = myddc7.get(0.0, 20.0).strip()
+        info_dic['__销售合同8满意度__'] = myddc8.get(0.0, 20.0).strip()
+        add_item_to_info_dict('供方', ['名称', '地址', '所有产品'], gf_text.get(0.0, 40.0).strip())
+        add_item_to_info_dict('采购',
+                              ['产品', '产品规格型号', '产品供方', '产品数量方', '产品时间', '产品到货时间'],
+                              gf_text.get(0.0, 40.0).strip())
+        next_stage()
+
+    btn_gen = tk.Button(window, text='信息确认完成，进入下一阶段。', command=textGen)
 
     def xxhtWindow():
         info_window = tk.Tk()
@@ -1292,7 +1414,7 @@ def informCollectWindow(info_dic):
             for row, lin_list in enumerate(elem_list, start=1):
                 for col, elem in enumerate(lin_list):
                     elem.grid(row=row, column=col)
-        
+
         def xxhtDel(i):
             for j in range(i, len(elem_list) - 1):
                 elem_list[j][0].config(text='销售合同{}产品：'.format(j + 1))
@@ -1352,10 +1474,10 @@ def informCollectWindow(info_dic):
             line_list.append(xxhtps_L)
             line_list.append(xxhtps)
 
-            btn_del = Button(info_window, text='删除该合同信息', command=lambda:xxhtDel(xxht_i - 1))
+            btn_del = Button(info_window, text='删除该合同信息', command=lambda: xxhtDel(xxht_i - 1))
             line_list.append(btn_del)
 
-            elem_list.append(line_list) 
+            elem_list.append(line_list)
 
             rendering()
 
@@ -1363,7 +1485,7 @@ def informCollectWindow(info_dic):
             infos = ''
             for row, lin_list in enumerate(elem_list):
                 for col, elem in enumerate(lin_list):
-                    if col%2 ==0:
+                    if col % 2 == 0:
                         continue
                     infos += elem.get(0.0, 2.0).strip()
                     infos += ','
@@ -1372,21 +1494,22 @@ def informCollectWindow(info_dic):
             xxht_info[0] = infos
             xxht_text.insert(0.0, infos)
             info_window.destroy()
-        
+
         infos = xxht_info[0].split('\n')
         for i, info in enumerate(infos, start=1):
             if info == '':
                 continue
             xxhtAdd(info_window, i, info.split(','))
-        
-        btn_gen = tk.Button(info_window, text='新增合同信息。', command=lambda:xxhtAdd(info_window, len(elem_list) + 1, []))
-        btn_done = tk.Button(info_window, text='信息确认完成。', command=lambda:xxhtDone())
+
+        btn_gen = tk.Button(info_window, text='新增合同信息。',
+                            command=lambda: xxhtAdd(info_window, len(elem_list) + 1, []))
+        btn_done = tk.Button(info_window, text='信息确认完成。', command=lambda: xxhtDone())
 
         btn_gen.grid(row=0, column=0, columnspan=5)
         btn_done.grid(row=0, column=6, columnspan=5)
 
         info_window.mainloop()
-    
+
     def gfWindow():
         info_window = tk.Tk()
         info_window.title('供方信息添加')
@@ -1399,7 +1522,7 @@ def informCollectWindow(info_dic):
             for row, lin_list in enumerate(elem_list, start=1):
                 for col, elem in enumerate(lin_list):
                     elem.grid(row=row, column=col)
-        
+
         def gfDel(i):
             for j in range(i, len(elem_list) - 1):
                 elem_list[j][0].config(text='供方{}名称：'.format(j + 1))
@@ -1439,10 +1562,10 @@ def informCollectWindow(info_dic):
             line_list.append(gfqd_L)
             line_list.append(gfqd)
 
-            btn_del = Button(info_window, text='删除该供方信息', command=lambda:gfDel(gf_i - 1))
+            btn_del = Button(info_window, text='删除该供方信息', command=lambda: gfDel(gf_i - 1))
             line_list.append(btn_del)
 
-            elem_list.append(line_list) 
+            elem_list.append(line_list)
 
             rendering()
 
@@ -1450,7 +1573,7 @@ def informCollectWindow(info_dic):
             infos = ''
             for row, lin_list in enumerate(elem_list):
                 for col, elem in enumerate(lin_list):
-                    if col%2 ==0:
+                    if col % 2 == 0:
                         continue
                     infos += elem.get(0.0, 2.0).strip()
                     infos += ','
@@ -1459,15 +1582,16 @@ def informCollectWindow(info_dic):
             gf_info[0] = infos
             gf_text.insert(0.0, infos)
             info_window.destroy()
-        
+
         infos = gf_info[0].split('\n')
         for i, info in enumerate(infos, start=1):
             if info == '':
                 continue
             gfAdd(info_window, i, info.split(','))
-        
-        btn_gen = tk.Button(info_window, text='新增供方信息。', command=lambda:gfAdd(info_window, len(elem_list) + 1, []))
-        btn_done = tk.Button(info_window, text='信息确认完成。', command=lambda:gfDone())
+
+        btn_gen = tk.Button(info_window, text='新增供方信息。',
+                            command=lambda: gfAdd(info_window, len(elem_list) + 1, []))
+        btn_done = tk.Button(info_window, text='信息确认完成。', command=lambda: gfDone())
 
         btn_gen.grid(row=0, column=0, columnspan=5)
         btn_done.grid(row=0, column=6, columnspan=5)
@@ -1486,7 +1610,7 @@ def informCollectWindow(info_dic):
             for row, lin_list in enumerate(elem_list, start=1):
                 for col, elem in enumerate(lin_list):
                     elem.grid(row=row, column=col)
-        
+
         def init(infos):
             for i, info in enumerate(infos, start=1):
                 if info == '':
@@ -1565,14 +1689,14 @@ def informCollectWindow(info_dic):
             line_list.append(cgcpdhsl_L)
             line_list.append(cgcpdhsl)
 
-            btn_del = Button(info_window, text='删除该采购信息', command=lambda:[cgcpDel(cgcp_i - 1)])
-            # cgcpcp_L.destroy(), cgcpcp.destroy(), cgcpkh_L.destroy(), 
+            btn_del = Button(info_window, text='删除该采购信息', command=lambda: [cgcpDel(cgcp_i - 1)])
+            # cgcpcp_L.destroy(), cgcpcp.destroy(), cgcpkh_L.destroy(),
             # cgcpkh.destroy(), cgcpqd_L.destroy(), cgcpqd.destroy(),
             # cgcpsl_L.destroy(), cgcpsl.destroy(), cgcpsj_L.destroy(),
             # cgcpsj.destroy(), cgcpdhsl_L.destroy(), cgcpdhsl.destroy(),
             line_list.append(btn_del)
 
-            elem_list.append(line_list) 
+            elem_list.append(line_list)
 
             rendering()
 
@@ -1580,7 +1704,7 @@ def informCollectWindow(info_dic):
             infos = ''
             for row, lin_list in enumerate(elem_list):
                 for col, elem in enumerate(lin_list):
-                    if col%2 ==0:
+                    if col % 2 == 0:
                         continue
                     infos += elem.get(0.0, 2.0).strip()
                     infos += ','
@@ -1589,36 +1713,18 @@ def informCollectWindow(info_dic):
             cgcp_info[0] = infos
             cgcp_text.insert(0.0, infos)
             info_window.destroy()
-        
+
         infos = cgcp_info[0].split('\n')
         init(infos)
-        
-        btn_gen = tk.Button(info_window, text='新增采购信息。', command=lambda:cgcpAdd(info_window, len(elem_list) + 1, []))
-        btn_done = tk.Button(info_window, text='信息确认完成。', command=lambda:cgcpDone())
+
+        btn_gen = tk.Button(info_window, text='新增采购信息。',
+                            command=lambda: cgcpAdd(info_window, len(elem_list) + 1, []))
+        btn_done = tk.Button(info_window, text='信息确认完成。', command=lambda: cgcpDone())
 
         btn_gen.grid(row=0, column=0, columnspan=5)
         btn_done.grid(row=0, column=6, columnspan=5)
 
         info_window.mainloop()
-    peixun4 = Label(window, text='是否有4月培训：', bg='Lavender')
-    peixun4V = tk.IntVar()  
-    peixun4C1 = tk.Radiobutton(window, text="是", variable=peixun12V, value=1, bg='Lavender')
-    peixun4C2 = tk.Radiobutton(window, text="否", variable=peixun12V, value=0, bg='Lavender')
-
-    peixun5 = Label(window, text='是否有5月培训：', bg='Lavender')
-    peixun5V = tk.IntVar()  
-    peixun5C1 = tk.Radiobutton(window, text="是", variable=peixun12V, value=1, bg='Lavender')
-    peixun5C2 = tk.Radiobutton(window, text="否", variable=peixun12V, value=0, bg='Lavender')
-
-    peixun7 = Label(window, text='是否有7月培训：', bg='Lavender')
-    peixun7V = tk.IntVar()  
-    peixun7C1 = tk.Radiobutton(window, text="是", variable=peixun12V, value=1, bg='Lavender')
-    peixun7C2 = tk.Radiobutton(window, text="否", variable=peixun12V, value=0, bg='Lavender')
-
-    peixun9 = Label(window, text='是否有9月培训：', bg='Lavender')
-    peixun9V = tk.IntVar()  
-    peixun9C1 = tk.Radiobutton(window, text="是", variable=peixun12V, value=1, bg='Lavender')
-    peixun9C2 = tk.Radiobutton(window, text="否", variable=peixun12V, value=0, bg='Lavender')
 
     jlnf_L.grid(row=0, column=0)
     jlnf.grid(row=0, column=1, columnspan=2)
@@ -1706,7 +1812,7 @@ def informCollectWindow(info_dic):
 
     gprq_L.grid(row=8, column=3)
     gprq.grid(row=8, column=4, columnspan=2)
-    
+
     gpbgrq_L.grid(row=8, column=6)
     gpbgrq.grid(row=8, column=7, columnspan=2)
 
@@ -1727,7 +1833,7 @@ def informCollectWindow(info_dic):
 
     syndgprq_L.grid(row=10, column=3)
     syndgprq.grid(row=10, column=4, columnspan=2)
-    
+
     syndgpgjrq_L.grid(row=10, column=6)
     syndgpgjrq.grid(row=10, column=7, columnspan=2)
 
@@ -1792,25 +1898,27 @@ def informCollectWindow(info_dic):
 
     window.mainloop()
 
+
 # 第四层界面
 class window4_1():
-    # 适用于认证范围为SC/ZZ/JJSC且认证项目为QS/QES
-    def __init__(self, info_dic):   
+    # 适用于认证范围为SC/ZZ/JJSC且认证项目为QS/QES'
+    def __init__(self, info_dic):
         super().__init__()
         window = tk.Tk()
-    
+
         # 给窗口的可视化起名字
         window.title('认证文件管理系统')
         window.config(background='Lavender')
 
         window.geometry('1280x650')  # 这里的乘是小x
-            
+
         container = tk.Frame(window, background='Lavender')
-        container.pack(side="top", fill="both", expand = True)
+        container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
+        self.info_dic = info_dic
 
         for F in (cpgxPage, cpczPage, cpxxPage, qtxxPage):
             frame = F(container, self)
@@ -1822,14 +1930,108 @@ class window4_1():
 
     def show_frame(self, cont):
         frame = self.frames[cont]
-        frame.tkraise() # 切换，提升当前 tk.Frame z轴顺序（使可见）！！此语句是本程序的点睛之处
-    
+        frame.tkraise()  # 切换，提升当前 tk.Frame z轴顺序（使可见）！！此语句是本程序的点睛之处
+
+    # def put_var_list_into_map(self, edit_text, key):
+    #     if isinstance(key, list):
+
+    def add_cp_info_to_dict(self, text_str, index, common_str):
+        """
+        处理形式如 产品x操作工/工序x的文本框
+        """
+        row_list = text_str.split('\n')
+        if len(row_list) == 0:
+            return
+        for row in range(len(row_list)):
+            key_str = '__产品{}{}{}__'.format(index, common_str, row)
+            self.info_dic[key_str] = row_list[row]
+
+    def add_cpxx_to_dict(self, text_str, index):
+        """
+        处理产品信息部分的文本框
+        """
+        key_list = ['产品', '产品型号', '产品数量', '产品日期', '产品客户']
+        row_list = text_str.split('\n')
+        if len(row_list) == 0:
+            return
+        item_list = [row.split(',') for row in row_list]
+
+        for row in range(len(row_list)):
+            for item in range(len(item_list[0])):
+                key_str = '__生产产品{}的{}号{}__'.format(index, row, key_list[item])
+                val = item_list[row][item]
+                if item == 0 and val == '':
+                    val = '无'
+                self.info_dic[key_str] = val
+
+    '''
+    第四个页面中处理的相关函数
+    '''
+
+    def add_item_to_dict(self, edit_text, key_str):
+        self.info_dic['__{}__'.format(key_str)] = edit_text.get(0.0, 20.0).strip()
+
+    def add_radio_res_to_dict(self, radio_val, key_str, edit_text, edit_str):
+        if radio_val.get() == 0:
+            self.info_dic['__{}__'.format(key_str)] = '无'
+            self.info_dic['__{}__'.format(edit_str)] = ''
+        else:
+            self.info_dic['__{}__'.format(key_str)] = '有'
+            self.info_dic['__{}__'.format(edit_str)] = edit_text.get(0.0, 20.0).strip()
+
     def getinfo(self):
-        frame = self.frames[cpgxPage]
-        print(frame.cpgx1_text.get(0.0, 2.0).strip())
+        # 将修改五个产品的工序的信息添加到字典里
+        self.add_cp_info_to_dict(self.frames[cpgxPage].cpgx1_text.get(0.0, 20.0).strip(), 1, "工序")
+        self.add_cp_info_to_dict(self.frames[cpgxPage].cpgx2_text.get(0.0, 20.0).strip(), 2, "工序")
+        self.add_cp_info_to_dict(self.frames[cpgxPage].cpgx3_text.get(0.0, 20.0).strip(), 3, "工序")
+        self.add_cp_info_to_dict(self.frames[cpgxPage].cpgx4_text.get(0.0, 20.0).strip(), 4, "工序")
+        self.add_cp_info_to_dict(self.frames[cpgxPage].cpgx5_text.get(0.0, 20.0).strip(), 5, "工序")
+
+        # 将修改五个产品的操作工的信息添加到字典里
+        self.add_cp_info_to_dict(self.frames[cpczPage].cpgx1_text.get(0.0, 20.0).strip(), 1, "操作工")
+        self.add_cp_info_to_dict(self.frames[cpczPage].cpgx2_text.get(0.0, 20.0).strip(), 2, "操作工")
+        self.add_cp_info_to_dict(self.frames[cpczPage].cpgx3_text.get(0.0, 20.0).strip(), 3, "操作工")
+        self.add_cp_info_to_dict(self.frames[cpczPage].cpgx4_text.get(0.0, 20.0).strip(), 4, "操作工")
+        self.add_cp_info_to_dict(self.frames[cpczPage].cpgx5_text.get(0.0, 20.0).strip(), 5, "操作工")
+
+        # 将修改五个产品的操作信息的信息添加到字典里
+        self.add_cpxx_to_dict(self.frames[cpxxPage].cpgx1_text.get(0.0, 20.0).strip(), 1)
+        self.add_cpxx_to_dict(self.frames[cpxxPage].cpgx2_text.get(0.0, 20.0).strip(), 2)
+        self.add_cpxx_to_dict(self.frames[cpxxPage].cpgx3_text.get(0.0, 20.0).strip(), 3)
+        self.add_cpxx_to_dict(self.frames[cpxxPage].cpgx4_text.get(0.0, 20.0).strip(), 4)
+        self.add_cpxx_to_dict(self.frames[cpxxPage].cpgx5_text.get(0.0, 20.0).strip(), 5)
+
+        # 第四个界面信息收集
+        f_qtxx = self.frames[qtxxPage]
+        self.add_item_to_dict(f_qtxx.jyy1, '检验员1')
+        self.add_item_to_dict(f_qtxx.scbry1, '生产部人员1')
+        self.add_item_to_dict(f_qtxx.scbry2, '生产部人员2')
+        self.add_item_to_dict(f_qtxx.scbry3, '生产部人员3')
+        self.add_radio_res_to_dict(f_qtxx.tsgcjbV, '特殊过程搅拌', f_qtxx.tsgcjb, '特殊过程搅拌搅拌工')
+        self.add_radio_res_to_dict(f_qtxx.tsgcbmjshV, '特殊过程薄膜金属化', f_qtxx.tsgcbmjsh,
+                                   '特殊过程薄膜金属化操作工')
+        self.add_radio_res_to_dict(f_qtxx.tsgchjV, '特殊过程焊接', f_qtxx.tsgchj, '特殊过程焊接操作工')
+        self.add_radio_res_to_dict(f_qtxx.tsgchhV, '特殊过程混合', f_qtxx.tsgchh, '特殊过程混合操作工')
+        self.add_radio_res_to_dict(f_qtxx.tsgcjcV, '特殊过程挤出', f_qtxx.tsgcjc, '特殊过程挤出操作工')
+        self.add_item_to_dict(f_qtxx.sjaqjyspxr1, '三级安全教育受培训人1')
+        self.add_item_to_dict(f_qtxx.sjaqjyspxr2, '三级安全教育受培训人2')
+        self.add_item_to_dict(f_qtxx.sjaqjyspxr3, '三级安全教育受培训人3')
+        self.add_item_to_dict(f_qtxx.sjaqjyrq1, '三级安全教育第一天日期')
+        self.add_item_to_dict(f_qtxx.sjaqjyrq2, '三级安全教育第二天日期')
+        self.add_item_to_dict(f_qtxx.sjaqjyrq3, '三级安全教育第三天日期')
+        self.add_item_to_dict(f_qtxx.sjaqjybzpxr3, '三级安全教育班组培训人')
+        if f_qtxx.kyjV.get() == 0:
+            self.info_dic['__是否有空压机__'] = '否'
+        else:
+            self.info_dic['__是否有空压机__'] = '是'
+
+        print(self.info_dic)
+        gen_yaml(self.info_dic)
+
 
 class cpgxPage(tk.Frame):
     '''主页'''
+
     def __init__(self, parent, root):
         super().__init__(parent)
         self.config(bg='Lavender')
@@ -1841,7 +2043,7 @@ class cpgxPage(tk.Frame):
 
         self.cpgx1_text = Text(self, width=120, heigh=4, state=DISABLED)
         self.cpgx1win_L = Label(self, text='产品1工序：', bg='Lavender')
-        self.btn_cpgx1 = tk.Button(self, text='修改产品1工序。', command=lambda:cpgx1self())
+        self.btn_cpgx1 = tk.Button(self, text='修改产品1工序。', command=lambda: cpgx1self())  # 解析
         self.cpgx1_info = [self.cpgx1_text.get(0.0, 40.0)]
 
         def cpgx1self():
@@ -1856,7 +2058,7 @@ class cpgxPage(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx1Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品1工序{}：'.format(j + 1))
@@ -1876,10 +2078,10 @@ class cpgxPage(tk.Frame):
                 line_list.append(cpgx1cp_L)
                 line_list.append(cpgx1cp)
 
-                btn_del = Button(info_self, text='删除该工序', command=lambda:cpgx1Del(cpgx1_i - 1))
+                btn_del = Button(info_self, text='删除该工序', command=lambda: cpgx1Del(cpgx1_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -1887,7 +2089,7 @@ class cpgxPage(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
@@ -1899,24 +2101,25 @@ class cpgxPage(tk.Frame):
                 self.cpgx1_text.insert(0.0, infos)
                 self.cpgx1_text.config(state=DISABLED)
                 info_self.destroy()
-            
+
             infos = self.cpgx1_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx1Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增工序信息。', command=lambda:cpgx1Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx1Done())
+
+            btn_gen = tk.Button(info_self, text='新增工序信息。',
+                                command=lambda: cpgx1Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx1Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
 
             info_self.mainloop()
-        
+
         cpgx2_text = Text(self, width=120, heigh=4)
         cpgx2win_L = Label(self, text='产品2工序：', bg='Lavender')
-        btn_cpgx2 = tk.Button(self, text='修改产品2工序。', command=lambda:cpgx2self())
+        btn_cpgx2 = tk.Button(self, text='修改产品2工序。', command=lambda: cpgx2self())
         cpgx2_info = [cpgx2_text.get(0.0, 40.0)]
 
         def cpgx2self():
@@ -1931,7 +2134,7 @@ class cpgxPage(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx2Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品2工序{}：'.format(j + 1))
@@ -1951,10 +2154,10 @@ class cpgxPage(tk.Frame):
                 line_list.append(cpgx2cp_L)
                 line_list.append(cpgx2cp)
 
-                btn_del = Button(info_self, text='删除该工序', command=lambda:cpgx2Del(cpgx2_i - 1))
+                btn_del = Button(info_self, text='删除该工序', command=lambda: cpgx2Del(cpgx2_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -1962,7 +2165,7 @@ class cpgxPage(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
@@ -1971,24 +2174,25 @@ class cpgxPage(tk.Frame):
                 cpgx2_info[0] = infos
                 cpgx2_text.insert(0.0, infos)
                 info_self.destroy()
-            
+
             infos = cpgx2_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx2Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增工序信息。', command=lambda:cpgx2Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx2Done())
+
+            btn_gen = tk.Button(info_self, text='新增工序信息。',
+                                command=lambda: cpgx2Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx2Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
 
             info_self.mainloop()
-    
+
         cpgx3_text = Text(self, width=120, heigh=4)
         cpgx3win_L = Label(self, text='产品3工序：', bg='Lavender')
-        btn_cpgx3 = tk.Button(self, text='修改产品3工序。', command=lambda:cpgx3self())
+        btn_cpgx3 = tk.Button(self, text='修改产品3工序。', command=lambda: cpgx3self())
         cpgx3_info = [cpgx3_text.get(0.0, 40.0)]
 
         def cpgx3self():
@@ -2003,7 +2207,7 @@ class cpgxPage(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx3Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品3工序{}：'.format(j + 1))
@@ -2023,10 +2227,10 @@ class cpgxPage(tk.Frame):
                 line_list.append(cpgx3cp_L)
                 line_list.append(cpgx3cp)
 
-                btn_del = Button(info_self, text='删除该工序', command=lambda:cpgx3Del(cpgx3_i - 1))
+                btn_del = Button(info_self, text='删除该工序', command=lambda: cpgx3Del(cpgx3_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -2034,7 +2238,7 @@ class cpgxPage(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
@@ -2043,15 +2247,16 @@ class cpgxPage(tk.Frame):
                 cpgx3_info[0] = infos
                 cpgx3_text.insert(0.0, infos)
                 info_self.destroy()
-            
+
             infos = cpgx3_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx3Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增工序信息。', command=lambda:cpgx3Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx3Done())
+
+            btn_gen = tk.Button(info_self, text='新增工序信息。',
+                                command=lambda: cpgx3Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx3Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
@@ -2060,7 +2265,7 @@ class cpgxPage(tk.Frame):
 
         cpgx4_text = Text(self, width=120, heigh=4)
         cpgx4win_L = Label(self, text='产品4工序：', bg='Lavender')
-        btn_cpgx4 = tk.Button(self, text='修改产品4工序。', command=lambda:cpgx4self())
+        btn_cpgx4 = tk.Button(self, text='修改产品4工序。', command=lambda: cpgx4self())
         cpgx4_info = [cpgx4_text.get(0.0, 40.0)]
 
         def cpgx4self():
@@ -2075,7 +2280,7 @@ class cpgxPage(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx4Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品4工序{}：'.format(j + 1))
@@ -2095,10 +2300,10 @@ class cpgxPage(tk.Frame):
                 line_list.append(cpgx4cp_L)
                 line_list.append(cpgx4cp)
 
-                btn_del = Button(info_self, text='删除该工序', command=lambda:cpgx4Del(cpgx4_i - 1))
+                btn_del = Button(info_self, text='删除该工序', command=lambda: cpgx4Del(cpgx4_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -2106,7 +2311,7 @@ class cpgxPage(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
@@ -2115,15 +2320,16 @@ class cpgxPage(tk.Frame):
                 cpgx4_info[0] = infos
                 cpgx4_text.insert(0.0, infos)
                 info_self.destroy()
-            
+
             infos = cpgx4_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx4Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增工序信息。', command=lambda:cpgx4Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx4Done())
+
+            btn_gen = tk.Button(info_self, text='新增工序信息。',
+                                command=lambda: cpgx4Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx4Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
@@ -2132,7 +2338,7 @@ class cpgxPage(tk.Frame):
 
         cpgx5_text = Text(self, width=120, heigh=4)
         cpgx5win_L = Label(self, text='产品5工序：', bg='Lavender')
-        btn_cpgx5 = tk.Button(self, text='修改产品5工序。', command=lambda:cpgx5self())
+        btn_cpgx5 = tk.Button(self, text='修改产品5工序。', command=lambda: cpgx5self())
         cpgx5_info = [cpgx5_text.get(0.0, 40.0)]
 
         def cpgx5self():
@@ -2147,7 +2353,7 @@ class cpgxPage(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx5Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品5工序{}：'.format(j + 1))
@@ -2167,10 +2373,10 @@ class cpgxPage(tk.Frame):
                 line_list.append(cpgx5cp_L)
                 line_list.append(cpgx5cp)
 
-                btn_del = Button(info_self, text='删除该工序', command=lambda:cpgx5Del(cpgx5_i - 1))
+                btn_del = Button(info_self, text='删除该工序', command=lambda: cpgx5Del(cpgx5_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -2178,7 +2384,7 @@ class cpgxPage(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
@@ -2187,15 +2393,16 @@ class cpgxPage(tk.Frame):
                 cpgx5_info[0] = infos
                 cpgx5_text.insert(0.0, infos)
                 info_self.destroy()
-            
+
             infos = cpgx5_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx5Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增工序信息。', command=lambda:cpgx5Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx5Done())
+
+            btn_gen = tk.Button(info_self, text='新增工序信息。',
+                                command=lambda: cpgx5Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx5Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
@@ -2228,8 +2435,10 @@ class cpgxPage(tk.Frame):
         btn_cpgx5.grid(row=19, column=0, rowspan=2)
         cpgx5_text.grid(row=17, column=1, rowspan=4, pady=5, columnspan=4)
 
+
 class cpczPage(tk.Frame):
     '''主页'''
+
     def __init__(self, parent, root):
         super().__init__(parent)
         self.config(bg='Lavender')
@@ -2241,7 +2450,7 @@ class cpczPage(tk.Frame):
 
         self.cpgx1_text = Text(self, width=120, heigh=4, state=DISABLED)
         self.cpgx1win_L = Label(self, text='产品1操作工：', bg='Lavender')
-        self.btn_cpgx1 = tk.Button(self, text='修改产品1操作工。', command=lambda:cpgx1self())
+        self.btn_cpgx1 = tk.Button(self, text='修改产品1操作工。', command=lambda: cpgx1self())
         self.cpgx1_info = [self.cpgx1_text.get(0.0, 40.0)]
 
         def cpgx1self():
@@ -2256,7 +2465,7 @@ class cpczPage(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx1Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品1操作工{}：'.format(j + 1))
@@ -2276,10 +2485,10 @@ class cpczPage(tk.Frame):
                 line_list.append(cpgx1cp_L)
                 line_list.append(cpgx1cp)
 
-                btn_del = Button(info_self, text='删除该操作工', command=lambda:cpgx1Del(cpgx1_i - 1))
+                btn_del = Button(info_self, text='删除该操作工', command=lambda: cpgx1Del(cpgx1_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -2287,7 +2496,7 @@ class cpczPage(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
@@ -2299,24 +2508,25 @@ class cpczPage(tk.Frame):
                 self.cpgx1_text.insert(0.0, infos)
                 self.cpgx1_text.config(state=DISABLED)
                 info_self.destroy()
-            
+
             infos = self.cpgx1_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx1Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增操作工信息。', command=lambda:cpgx1Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx1Done())
+
+            btn_gen = tk.Button(info_self, text='新增操作工信息。',
+                                command=lambda: cpgx1Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx1Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
 
             info_self.mainloop()
-        
+
         cpgx2_text = Text(self, width=120, heigh=4)
         cpgx2win_L = Label(self, text='产品2操作工：', bg='Lavender')
-        btn_cpgx2 = tk.Button(self, text='修改产品2操作工。', command=lambda:cpgx2self())
+        btn_cpgx2 = tk.Button(self, text='修改产品2操作工。', command=lambda: cpgx2self())
         cpgx2_info = [cpgx2_text.get(0.0, 40.0)]
 
         def cpgx2self():
@@ -2331,7 +2541,7 @@ class cpczPage(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx2Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品2操作工{}：'.format(j + 1))
@@ -2351,10 +2561,10 @@ class cpczPage(tk.Frame):
                 line_list.append(cpgx2cp_L)
                 line_list.append(cpgx2cp)
 
-                btn_del = Button(info_self, text='删除该操作工', command=lambda:cpgx2Del(cpgx2_i - 1))
+                btn_del = Button(info_self, text='删除该操作工', command=lambda: cpgx2Del(cpgx2_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -2362,7 +2572,7 @@ class cpczPage(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
@@ -2371,24 +2581,25 @@ class cpczPage(tk.Frame):
                 cpgx2_info[0] = infos
                 cpgx2_text.insert(0.0, infos)
                 info_self.destroy()
-            
+
             infos = cpgx2_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx2Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增操作工信息。', command=lambda:cpgx2Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx2Done())
+
+            btn_gen = tk.Button(info_self, text='新增操作工信息。',
+                                command=lambda: cpgx2Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx2Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
 
             info_self.mainloop()
-    
+
         cpgx3_text = Text(self, width=120, heigh=4)
         cpgx3win_L = Label(self, text='产品3操作工：', bg='Lavender')
-        btn_cpgx3 = tk.Button(self, text='修改产品3操作工。', command=lambda:cpgx3self())
+        btn_cpgx3 = tk.Button(self, text='修改产品3操作工。', command=lambda: cpgx3self())
         cpgx3_info = [cpgx3_text.get(0.0, 40.0)]
 
         def cpgx3self():
@@ -2403,7 +2614,7 @@ class cpczPage(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx3Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品3操作工{}：'.format(j + 1))
@@ -2423,10 +2634,10 @@ class cpczPage(tk.Frame):
                 line_list.append(cpgx3cp_L)
                 line_list.append(cpgx3cp)
 
-                btn_del = Button(info_self, text='删除该操作工', command=lambda:cpgx3Del(cpgx3_i - 1))
+                btn_del = Button(info_self, text='删除该操作工', command=lambda: cpgx3Del(cpgx3_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -2434,7 +2645,7 @@ class cpczPage(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
@@ -2443,15 +2654,16 @@ class cpczPage(tk.Frame):
                 cpgx3_info[0] = infos
                 cpgx3_text.insert(0.0, infos)
                 info_self.destroy()
-            
+
             infos = cpgx3_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx3Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增操作工信息。', command=lambda:cpgx3Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx3Done())
+
+            btn_gen = tk.Button(info_self, text='新增操作工信息。',
+                                command=lambda: cpgx3Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx3Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
@@ -2460,7 +2672,7 @@ class cpczPage(tk.Frame):
 
         cpgx4_text = Text(self, width=120, heigh=4)
         cpgx4win_L = Label(self, text='产品4操作工：', bg='Lavender')
-        btn_cpgx4 = tk.Button(self, text='修改产品4操作工。', command=lambda:cpgx4self())
+        btn_cpgx4 = tk.Button(self, text='修改产品4操作工。', command=lambda: cpgx4self())
         cpgx4_info = [cpgx4_text.get(0.0, 40.0)]
 
         def cpgx4self():
@@ -2475,7 +2687,7 @@ class cpczPage(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx4Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品4操作工{}：'.format(j + 1))
@@ -2495,10 +2707,10 @@ class cpczPage(tk.Frame):
                 line_list.append(cpgx4cp_L)
                 line_list.append(cpgx4cp)
 
-                btn_del = Button(info_self, text='删除该操作工', command=lambda:cpgx4Del(cpgx4_i - 1))
+                btn_del = Button(info_self, text='删除该操作工', command=lambda: cpgx4Del(cpgx4_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -2506,7 +2718,7 @@ class cpczPage(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
@@ -2515,15 +2727,16 @@ class cpczPage(tk.Frame):
                 cpgx4_info[0] = infos
                 cpgx4_text.insert(0.0, infos)
                 info_self.destroy()
-            
+
             infos = cpgx4_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx4Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增操作工信息。', command=lambda:cpgx4Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx4Done())
+
+            btn_gen = tk.Button(info_self, text='新增操作工信息。',
+                                command=lambda: cpgx4Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx4Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
@@ -2532,7 +2745,7 @@ class cpczPage(tk.Frame):
 
         cpgx5_text = Text(self, width=120, heigh=4)
         cpgx5win_L = Label(self, text='产品5操作工：', bg='Lavender')
-        btn_cpgx5 = tk.Button(self, text='修改产品5操作工。', command=lambda:cpgx5self())
+        btn_cpgx5 = tk.Button(self, text='修改产品5操作工。', command=lambda: cpgx5self())
         cpgx5_info = [cpgx5_text.get(0.0, 40.0)]
 
         def cpgx5self():
@@ -2547,7 +2760,7 @@ class cpczPage(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx5Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品5操作工{}：'.format(j + 1))
@@ -2567,10 +2780,10 @@ class cpczPage(tk.Frame):
                 line_list.append(cpgx5cp_L)
                 line_list.append(cpgx5cp)
 
-                btn_del = Button(info_self, text='删除该操作工', command=lambda:cpgx5Del(cpgx5_i - 1))
+                btn_del = Button(info_self, text='删除该操作工', command=lambda: cpgx5Del(cpgx5_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -2578,7 +2791,7 @@ class cpczPage(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
@@ -2587,15 +2800,16 @@ class cpczPage(tk.Frame):
                 cpgx5_info[0] = infos
                 cpgx5_text.insert(0.0, infos)
                 info_self.destroy()
-            
+
             infos = cpgx5_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx5Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增操作工信息。', command=lambda:cpgx5Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx5Done())
+
+            btn_gen = tk.Button(info_self, text='新增操作工信息。',
+                                command=lambda: cpgx5Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx5Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
@@ -2628,8 +2842,10 @@ class cpczPage(tk.Frame):
         btn_cpgx5.grid(row=19, column=0, rowspan=2)
         cpgx5_text.grid(row=17, column=1, rowspan=4, pady=5, columnspan=4)
 
+
 class cpxxPage(tk.Frame):
     '''主页'''
+
     def __init__(self, parent, root):
         super().__init__(parent)
         self.config(bg='Lavender')
@@ -2641,7 +2857,7 @@ class cpxxPage(tk.Frame):
 
         self.cpgx1_text = Text(self, width=120, heigh=4, state=DISABLED)
         self.cpgx1win_L = Label(self, text='产品1信息：', bg='Lavender')
-        self.btn_cpgx1 = tk.Button(self, text='修改产品1信息。', command=lambda:cpgx1self())
+        self.btn_cpgx1 = tk.Button(self, text='修改产品1信息。', command=lambda: cpgx1self())
         self.cpgx1_info = [self.cpgx1_text.get(0.0, 40.0)]
 
         def cpgx1self():
@@ -2656,7 +2872,7 @@ class cpxxPage(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx1Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品1的{}号产品：'.format(j + 1))
@@ -2716,10 +2932,10 @@ class cpxxPage(tk.Frame):
                 line_list.append(cpgx1kh_L)
                 line_list.append(cpgx1kh)
 
-                btn_del = Button(info_self, text='删除该产品', command=lambda:cpgx1Del(cpgx1_i - 1))
+                btn_del = Button(info_self, text='删除该产品', command=lambda: cpgx1Del(cpgx1_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -2727,7 +2943,7 @@ class cpxxPage(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
@@ -2739,24 +2955,25 @@ class cpxxPage(tk.Frame):
                 self.cpgx1_text.insert(0.0, infos)
                 self.cpgx1_text.config(state=DISABLED)
                 info_self.destroy()
-            
+
             infos = self.cpgx1_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx1Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增产品信息。', command=lambda:cpgx1Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx1Done())
+
+            btn_gen = tk.Button(info_self, text='新增产品信息。',
+                                command=lambda: cpgx1Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx1Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
 
             info_self.mainloop()
-        
+
         cpgx2_text = Text(self, width=120, heigh=4)
         cpgx2win_L = Label(self, text='产品2信息：', bg='Lavender')
-        btn_cpgx2 = tk.Button(self, text='修改产品2信息。', command=lambda:cpgx2self())
+        btn_cpgx2 = tk.Button(self, text='修改产品2信息。', command=lambda: cpgx2self())
 
         def cpgx2self():
             info_self = tk.Tk()
@@ -2770,7 +2987,7 @@ class cpxxPage(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx1Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品2的{}号产品：'.format(j + 1))
@@ -2830,10 +3047,10 @@ class cpxxPage(tk.Frame):
                 line_list.append(cpgx1kh_L)
                 line_list.append(cpgx1kh)
 
-                btn_del = Button(info_self, text='删除该产品', command=lambda:cpgx1Del(cpgx1_i - 1))
+                btn_del = Button(info_self, text='删除该产品', command=lambda: cpgx1Del(cpgx1_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -2841,7 +3058,7 @@ class cpxxPage(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
@@ -2853,24 +3070,25 @@ class cpxxPage(tk.Frame):
                 self.cpgx1_text.insert(0.0, infos)
                 self.cpgx1_text.config(state=DISABLED)
                 info_self.destroy()
-            
+
             infos = self.cpgx1_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx1Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增产品信息。', command=lambda:cpgx1Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx1Done())
+
+            btn_gen = tk.Button(info_self, text='新增产品信息。',
+                                command=lambda: cpgx1Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx1Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
 
             info_self.mainloop()
-    
+
         cpgx3_text = Text(self, width=120, heigh=4)
         cpgx3win_L = Label(self, text='产品3信息：', bg='Lavender')
-        btn_cpgx3 = tk.Button(self, text='修改产品3信息。', command=lambda:cpgx3self())
+        btn_cpgx3 = tk.Button(self, text='修改产品3信息。', command=lambda: cpgx3self())
         cpgx3_info = [cpgx3_text.get(0.0, 40.0)]
 
         def cpgx3self():
@@ -2885,7 +3103,7 @@ class cpxxPage(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx1Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品3的{}号产品：'.format(j + 1))
@@ -2945,10 +3163,10 @@ class cpxxPage(tk.Frame):
                 line_list.append(cpgx1kh_L)
                 line_list.append(cpgx1kh)
 
-                btn_del = Button(info_self, text='删除该产品', command=lambda:cpgx1Del(cpgx1_i - 1))
+                btn_del = Button(info_self, text='删除该产品', command=lambda: cpgx1Del(cpgx1_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -2956,7 +3174,7 @@ class cpxxPage(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
@@ -2968,15 +3186,16 @@ class cpxxPage(tk.Frame):
                 self.cpgx1_text.insert(0.0, infos)
                 self.cpgx1_text.config(state=DISABLED)
                 info_self.destroy()
-            
+
             infos = self.cpgx1_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx1Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增产品信息。', command=lambda:cpgx1Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx1Done())
+
+            btn_gen = tk.Button(info_self, text='新增产品信息。',
+                                command=lambda: cpgx1Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx1Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
@@ -2985,7 +3204,7 @@ class cpxxPage(tk.Frame):
 
         cpgx4_text = Text(self, width=120, heigh=4)
         cpgx4win_L = Label(self, text='产品4信息：', bg='Lavender')
-        btn_cpgx4 = tk.Button(self, text='修改产品4信息。', command=lambda:cpgx4self())
+        btn_cpgx4 = tk.Button(self, text='修改产品4信息。', command=lambda: cpgx4self())
         cpgx4_info = [cpgx4_text.get(0.0, 40.0)]
 
         def cpgx4self():
@@ -3000,7 +3219,7 @@ class cpxxPage(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx1Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品4的{}号产品：'.format(j + 1))
@@ -3060,10 +3279,10 @@ class cpxxPage(tk.Frame):
                 line_list.append(cpgx1kh_L)
                 line_list.append(cpgx1kh)
 
-                btn_del = Button(info_self, text='删除该产品', command=lambda:cpgx1Del(cpgx1_i - 1))
+                btn_del = Button(info_self, text='删除该产品', command=lambda: cpgx1Del(cpgx1_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -3071,7 +3290,7 @@ class cpxxPage(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
@@ -3083,15 +3302,16 @@ class cpxxPage(tk.Frame):
                 self.cpgx1_text.insert(0.0, infos)
                 self.cpgx1_text.config(state=DISABLED)
                 info_self.destroy()
-            
+
             infos = self.cpgx1_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx1Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增产品信息。', command=lambda:cpgx1Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx1Done())
+
+            btn_gen = tk.Button(info_self, text='新增产品信息。',
+                                command=lambda: cpgx1Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx1Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
@@ -3100,7 +3320,7 @@ class cpxxPage(tk.Frame):
 
         cpgx5_text = Text(self, width=120, heigh=4)
         cpgx5win_L = Label(self, text='产品5信息：', bg='Lavender')
-        btn_cpgx5 = tk.Button(self, text='修改产品5信息。', command=lambda:cpgx5self())
+        btn_cpgx5 = tk.Button(self, text='修改产品5信息。', command=lambda: cpgx5self())
         cpgx5_info = [cpgx5_text.get(0.0, 40.0)]
 
         def cpgx5self():
@@ -3115,7 +3335,7 @@ class cpxxPage(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx1Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品5的{}号产品：'.format(j + 1))
@@ -3175,10 +3395,10 @@ class cpxxPage(tk.Frame):
                 line_list.append(cpgx1kh_L)
                 line_list.append(cpgx1kh)
 
-                btn_del = Button(info_self, text='删除该产品', command=lambda:cpgx1Del(cpgx1_i - 1))
+                btn_del = Button(info_self, text='删除该产品', command=lambda: cpgx1Del(cpgx1_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -3186,7 +3406,7 @@ class cpxxPage(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
@@ -3198,15 +3418,16 @@ class cpxxPage(tk.Frame):
                 self.cpgx1_text.insert(0.0, infos)
                 self.cpgx1_text.config(state=DISABLED)
                 info_self.destroy()
-            
+
             infos = self.cpgx1_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx1Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增产品信息。', command=lambda:cpgx1Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx1Done())
+
+            btn_gen = tk.Button(info_self, text='新增产品信息。',
+                                command=lambda: cpgx1Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx1Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
@@ -3239,10 +3460,12 @@ class cpxxPage(tk.Frame):
         btn_cpgx5.grid(row=19, column=0, rowspan=2)
         cpgx5_text.grid(row=17, column=1, rowspan=4, pady=5, columnspan=4)
 
+
 class qtxxPage(tk.Frame):
     '''主页'''
+
     def __init__(self, parent, root):
-        super().__init__(parent)   
+        super().__init__(parent)
         super().__init__(parent)
         self.config(bg='Lavender')
         btncpgx = tk.Button(self, text='修改产品工序', command=lambda: root.show_frame(cpgxPage))
@@ -3250,7 +3473,7 @@ class qtxxPage(tk.Frame):
         btncpcz = tk.Button(self, text='修改产品操作工', command=lambda: root.show_frame(cpczPage))
         btnqtxx = tk.Button(self, text='修改其他信息', command=lambda: root.show_frame(qtxxPage))
         btngen = tk.Button(self, text='信息无误开始生成文档！', command=lambda: root.getinfo())
-        
+
         jyy1_L = Label(self, text='检验员1：', bg='Lavender')
         jyy1 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
@@ -3264,6 +3487,7 @@ class qtxxPage(tk.Frame):
         scbry3 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
         tsgcjbV = tk.IntVar(master=self)
+
         def tsgcjbbool():
             if tsgcjbV.get() == 0:
                 tsgcjb.config(state=DISABLED)
@@ -3277,19 +3501,23 @@ class qtxxPage(tk.Frame):
         tsgcjbbool()
 
         tsgcbmjshV = tk.IntVar(master=self)
+
         def tsgcbmjshbool():
             if tsgcbmjshV.get() == 0:
                 tsgcbmjsh.config(state=DISABLED)
             else:
                 tsgcbmjsh.config(state=NORMAL)
 
-        tsgcbmjshC1 = tk.Radiobutton(self, text="有薄膜金属化过程", variable=tsgcbmjshV, value=1, command=tsgcbmjshbool, bg='Lavender')
-        tsgcbmjshC2 = tk.Radiobutton(self, text="无薄膜金属化过程", variable=tsgcbmjshV, value=0, command=tsgcbmjshbool, bg='Lavender')
+        tsgcbmjshC1 = tk.Radiobutton(self, text="有薄膜金属化过程", variable=tsgcbmjshV, value=1, command=tsgcbmjshbool,
+                                     bg='Lavender')
+        tsgcbmjshC2 = tk.Radiobutton(self, text="无薄膜金属化过程", variable=tsgcbmjshV, value=0, command=tsgcbmjshbool,
+                                     bg='Lavender')
         tsgcbmjsh_L = Label(self, text='特殊过程薄膜金属化操作工：', bg='Lavender')
         tsgcbmjsh = Text(self, height=1, width=40, relief=RAISED, highlightcolor='black', highlightthickness=1)
         tsgcbmjshbool()
 
         tsgchjV = tk.IntVar(master=self)
+
         def tsgchjbool():
             if tsgchjV.get() == 0:
                 tsgchj.config(state=DISABLED)
@@ -3303,6 +3531,7 @@ class qtxxPage(tk.Frame):
         tsgchjbool()
 
         tsgchhV = tk.IntVar(master=self)
+
         def tsgchhbool():
             if tsgchhV.get() == 0:
                 tsgchh.config(state=DISABLED)
@@ -3315,8 +3544,8 @@ class qtxxPage(tk.Frame):
         tsgchh = Text(self, height=1, width=40, relief=RAISED, highlightcolor='black', highlightthickness=1)
         tsgchhbool()
 
-
         tsgcjcV = tk.IntVar(master=self)
+
         def tsgcjcbool():
             if tsgcjcV.get() == 0:
                 tsgcjc.config(state=DISABLED)
@@ -3410,24 +3639,26 @@ class qtxxPage(tk.Frame):
         kyjC1.grid(row=10, column=2)
         kyjC2.grid(row=10, column=3)
 
+
 class window4_2():
     # 适用于认证范围为SC/ZZ/JJSC且认证项目为Q/QE
-    def __init__(self, info_dic):   
+    def __init__(self, info_dic):
         super().__init__()
         window = tk.Tk()
-    
+
         # 给窗口的可视化起名字
         window.title('认证文件管理系统')
         window.config(background='Lavender')
 
         window.geometry('1280x650')  # 这里的乘是小x
-            
+
         container = tk.Frame(window, background='Lavender')
-        container.pack(side="top", fill="both", expand = True)
+        container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
+        self.info_dic = info_dic
         for F in (cpgxPage_2, cpczPage_2, cpxxPage_2, qtxxPage_2):
             frame = F(container, self)
             self.frames[F] = frame
@@ -3438,14 +3669,98 @@ class window4_2():
 
     def show_frame(self, cont):
         frame = self.frames[cont]
-        frame.tkraise() # 切换，提升当前 tk.Frame z轴顺序（使可见）！！此语句是本程序的点睛之处
-    
+        frame.tkraise()  # 切换，提升当前 tk.Frame z轴顺序（使可见）！！此语句是本程序的点睛之处
+
+    def add_cp_info_to_dict(self, text_str, index, common_str):
+        """
+        处理形式如 产品x操作工/工序x的文本框
+        """
+        row_list = text_str.split('\n')
+        if len(row_list) == 0:
+            return
+        for row in range(len(row_list)):
+            key_str = '__产品{}{}{}__'.format(index, common_str, row)
+            self.info_dic[key_str] = row_list[row]
+
+    def add_cpxx_to_dict(self, text_str, index):
+        """
+        处理产品信息部分的文本框
+        """
+        key_list = ['产品', '产品型号', '产品数量', '产品日期', '产品客户']
+        row_list = text_str.split('\n')
+        if len(row_list) == 0:
+            return
+        item_list = [row.split(',') for row in row_list]
+
+        for row in range(len(row_list)):
+            for item in range(len(item_list[0])):
+                key_str = '__生产产品{}的{}号{}__'.format(index, row, key_list[item])
+                val = item_list[row][item]
+                if item == 0 and val == '':
+                    val = '无'
+                self.info_dic[key_str] = val
+
+    '''
+    第四个页面中处理的相关函数
+    '''
+
+    def add_item_to_dict(self, edit_text, key_str):
+        self.info_dic['__{}__'.format(key_str)] = edit_text.get(0.0, 20.0).strip()
+
+    def add_radio_res_to_dict(self, radio_val, key_str, edit_text, edit_str):
+        if radio_val.get() == 0:
+            self.info_dic['__{}__'.format(key_str)] = '无'
+            self.info_dic['__{}__'.format(edit_str)] = ''
+        else:
+            self.info_dic['__{}__'.format(key_str)] = '有'
+            self.info_dic['__{}__'.format(edit_str)] = edit_text.get(0.0, 20.0).strip()
+
     def getinfo(self):
-        frame = self.frames[cpgxPage]
-        print(frame.cpgx1_text.get(0.0, 2.0).strip())
+        # 将修改五个产品的工序的信息添加到字典里
+        self.add_cp_info_to_dict(self.frames[cpgxPage_2].cpgx1_text.get(0.0, 20.0).strip(), 1, "工序")
+        self.add_cp_info_to_dict(self.frames[cpgxPage_2].cpgx2_text.get(0.0, 20.0).strip(), 2, "工序")
+        self.add_cp_info_to_dict(self.frames[cpgxPage_2].cpgx3_text.get(0.0, 20.0).strip(), 3, "工序")
+        self.add_cp_info_to_dict(self.frames[cpgxPage_2].cpgx4_text.get(0.0, 20.0).strip(), 4, "工序")
+        self.add_cp_info_to_dict(self.frames[cpgxPage_2].cpgx5_text.get(0.0, 20.0).strip(), 5, "工序")
+
+        # 将修改五个产品的操作工的信息添加到字典里
+        self.add_cp_info_to_dict(self.frames[cpczPage_2].cpgx1_text.get(0.0, 20.0).strip(), 1, "操作工")
+        self.add_cp_info_to_dict(self.frames[cpczPage_2].cpgx2_text.get(0.0, 20.0).strip(), 2, "操作工")
+        self.add_cp_info_to_dict(self.frames[cpczPage_2].cpgx3_text.get(0.0, 20.0).strip(), 3, "操作工")
+        self.add_cp_info_to_dict(self.frames[cpczPage_2].cpgx4_text.get(0.0, 20.0).strip(), 4, "操作工")
+        self.add_cp_info_to_dict(self.frames[cpczPage_2].cpgx5_text.get(0.0, 20.0).strip(), 5, "操作工")
+
+        # 将修改五个产品的操作信息的信息添加到字典里
+        self.add_cpxx_to_dict(self.frames[cpxxPage_2].cpgx1_text.get(0.0, 20.0).strip(), 1)
+        self.add_cpxx_to_dict(self.frames[cpxxPage_2].cpgx2_text.get(0.0, 20.0).strip(), 2)
+        self.add_cpxx_to_dict(self.frames[cpxxPage_2].cpgx3_text.get(0.0, 20.0).strip(), 3)
+        self.add_cpxx_to_dict(self.frames[cpxxPage_2].cpgx4_text.get(0.0, 20.0).strip(), 4)
+        self.add_cpxx_to_dict(self.frames[cpxxPage_2].cpgx5_text.get(0.0, 20.0).strip(), 5)
+
+        # 第四个界面信息收集
+        f_qtxx = self.frames[qtxxPage]
+        self.add_item_to_dict(f_qtxx.jyy1, '检验员1')
+        self.add_item_to_dict(f_qtxx.scbry1, '生产部人员1')
+        self.add_item_to_dict(f_qtxx.scbry2, '生产部人员2')
+        self.add_item_to_dict(f_qtxx.scbry3, '生产部人员3')
+        self.add_radio_res_to_dict(f_qtxx.tsgcjbV, '特殊过程搅拌', f_qtxx.tsgcjb, '特殊过程搅拌搅拌工')
+        self.add_radio_res_to_dict(f_qtxx.tsgcbmjshV, '特殊过程薄膜金属化', f_qtxx.tsgcbmjsh,
+                                   '特殊过程薄膜金属化操作工')
+        self.add_radio_res_to_dict(f_qtxx.tsgchjV, '特殊过程焊接', f_qtxx.tsgchj, '特殊过程焊接操作工')
+        self.add_radio_res_to_dict(f_qtxx.tsgchhV, '特殊过程混合', f_qtxx.tsgchh, '特殊过程混合操作工')
+        self.add_radio_res_to_dict(f_qtxx.tsgcjcV, '特殊过程挤出', f_qtxx.tsgcjc, '特殊过程挤出操作工')
+        if f_qtxx.kyjV.get() == 0:
+            self.info_dic['__是否有空压机__'] = '否'
+        else:
+            self.info_dic['__是否有空压机__'] = '是'
+
+        print(self.info_dic)
+        gen_yaml(self.info_dic)
+
 
 class cpgxPage_2(tk.Frame):
     '''主页'''
+
     def __init__(self, parent, root):
         super().__init__(parent)
         self.config(bg='Lavender')
@@ -3457,7 +3772,7 @@ class cpgxPage_2(tk.Frame):
 
         self.cpgx1_text = Text(self, width=120, heigh=4, state=DISABLED)
         self.cpgx1win_L = Label(self, text='产品1工序：', bg='Lavender')
-        self.btn_cpgx1 = tk.Button(self, text='修改产品1工序。', command=lambda:cpgx1self())
+        self.btn_cpgx1 = tk.Button(self, text='修改产品1工序。', command=lambda: cpgx1self())
         self.cpgx1_info = [self.cpgx1_text.get(0.0, 40.0)]
 
         def cpgx1self():
@@ -3472,7 +3787,7 @@ class cpgxPage_2(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx1Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品1工序{}：'.format(j + 1))
@@ -3492,10 +3807,10 @@ class cpgxPage_2(tk.Frame):
                 line_list.append(cpgx1cp_L)
                 line_list.append(cpgx1cp)
 
-                btn_del = Button(info_self, text='删除该工序', command=lambda:cpgx1Del(cpgx1_i - 1))
+                btn_del = Button(info_self, text='删除该工序', command=lambda: cpgx1Del(cpgx1_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -3503,7 +3818,7 @@ class cpgxPage_2(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
@@ -3515,25 +3830,26 @@ class cpgxPage_2(tk.Frame):
                 self.cpgx1_text.insert(0.0, infos)
                 self.cpgx1_text.config(state=DISABLED)
                 info_self.destroy()
-            
+
             infos = self.cpgx1_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx1Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增工序信息。', command=lambda:cpgx1Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx1Done())
+
+            btn_gen = tk.Button(info_self, text='新增工序信息。',
+                                command=lambda: cpgx1Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx1Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
 
             info_self.mainloop()
-        
-        cpgx2_text = Text(self, width=120, heigh=4)
-        cpgx2win_L = Label(self, text='产品2工序：', bg='Lavender')
-        btn_cpgx2 = tk.Button(self, text='修改产品2工序。', command=lambda:cpgx2self())
-        cpgx2_info = [cpgx2_text.get(0.0, 40.0)]
+
+        self.cpgx2_text = Text(self, width=120, heigh=4)
+        self.cpgx2win_L = Label(self, text='产品2工序：', bg='Lavender')
+        self.btn_cpgx2 = tk.Button(self, text='修改产品2工序。', command=lambda: cpgx2self())
+        cpgx2_info = [self.cpgx2_text.get(0.0, 40.0)]
 
         def cpgx2self():
             info_self = tk.Tk()
@@ -3547,7 +3863,7 @@ class cpgxPage_2(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx2Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品2工序{}：'.format(j + 1))
@@ -3567,10 +3883,10 @@ class cpgxPage_2(tk.Frame):
                 line_list.append(cpgx2cp_L)
                 line_list.append(cpgx2cp)
 
-                btn_del = Button(info_self, text='删除该工序', command=lambda:cpgx2Del(cpgx2_i - 1))
+                btn_del = Button(info_self, text='删除该工序', command=lambda: cpgx2Del(cpgx2_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -3578,34 +3894,35 @@ class cpgxPage_2(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
                     infos = infos[:-1]
                     infos += '\n'
                 cpgx2_info[0] = infos
-                cpgx2_text.insert(0.0, infos)
+                self.cpgx2_text.insert(0.0, infos)
                 info_self.destroy()
-            
+
             infos = cpgx2_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx2Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增工序信息。', command=lambda:cpgx2Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx2Done())
+
+            btn_gen = tk.Button(info_self, text='新增工序信息。',
+                                command=lambda: cpgx2Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx2Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
 
             info_self.mainloop()
-    
-        cpgx3_text = Text(self, width=120, heigh=4)
-        cpgx3win_L = Label(self, text='产品3工序：', bg='Lavender')
-        btn_cpgx3 = tk.Button(self, text='修改产品3工序。', command=lambda:cpgx3self())
-        cpgx3_info = [cpgx3_text.get(0.0, 40.0)]
+
+        self.cpgx3_text = Text(self, width=120, heigh=4)
+        self.cpgx3win_L = Label(self, text='产品3工序：', bg='Lavender')
+        self.btn_cpgx3 = tk.Button(self, text='修改产品3工序。', command=lambda: cpgx3self())
+        cpgx3_info = [self.cpgx3_text.get(0.0, 40.0)]
 
         def cpgx3self():
             info_self = tk.Tk()
@@ -3619,7 +3936,7 @@ class cpgxPage_2(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx3Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品3工序{}：'.format(j + 1))
@@ -3639,10 +3956,10 @@ class cpgxPage_2(tk.Frame):
                 line_list.append(cpgx3cp_L)
                 line_list.append(cpgx3cp)
 
-                btn_del = Button(info_self, text='删除该工序', command=lambda:cpgx3Del(cpgx3_i - 1))
+                btn_del = Button(info_self, text='删除该工序', command=lambda: cpgx3Del(cpgx3_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -3650,34 +3967,35 @@ class cpgxPage_2(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
                     infos = infos[:-1]
                     infos += '\n'
                 cpgx3_info[0] = infos
-                cpgx3_text.insert(0.0, infos)
+                self.cpgx3_text.insert(0.0, infos)
                 info_self.destroy()
-            
+
             infos = cpgx3_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx3Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增工序信息。', command=lambda:cpgx3Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx3Done())
+
+            btn_gen = tk.Button(info_self, text='新增工序信息。',
+                                command=lambda: cpgx3Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx3Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
 
             info_self.mainloop()
 
-        cpgx4_text = Text(self, width=120, heigh=4)
-        cpgx4win_L = Label(self, text='产品4工序：', bg='Lavender')
-        btn_cpgx4 = tk.Button(self, text='修改产品4工序。', command=lambda:cpgx4self())
-        cpgx4_info = [cpgx4_text.get(0.0, 40.0)]
+        self.cpgx4_text = Text(self, width=120, heigh=4)
+        self.cpgx4win_L = Label(self, text='产品4工序：', bg='Lavender')
+        self.btn_cpgx4 = tk.Button(self, text='修改产品4工序。', command=lambda: cpgx4self())
+        cpgx4_info = [self.cpgx4_text.get(0.0, 40.0)]
 
         def cpgx4self():
             info_self = tk.Tk()
@@ -3691,7 +4009,7 @@ class cpgxPage_2(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx4Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品4工序{}：'.format(j + 1))
@@ -3711,10 +4029,10 @@ class cpgxPage_2(tk.Frame):
                 line_list.append(cpgx4cp_L)
                 line_list.append(cpgx4cp)
 
-                btn_del = Button(info_self, text='删除该工序', command=lambda:cpgx4Del(cpgx4_i - 1))
+                btn_del = Button(info_self, text='删除该工序', command=lambda: cpgx4Del(cpgx4_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -3722,34 +4040,35 @@ class cpgxPage_2(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
                     infos = infos[:-1]
                     infos += '\n'
                 cpgx4_info[0] = infos
-                cpgx4_text.insert(0.0, infos)
+                self.cpgx4_text.insert(0.0, infos)
                 info_self.destroy()
-            
+
             infos = cpgx4_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx4Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增工序信息。', command=lambda:cpgx4Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx4Done())
+
+            btn_gen = tk.Button(info_self, text='新增工序信息。',
+                                command=lambda: cpgx4Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx4Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
 
             info_self.mainloop()
 
-        cpgx5_text = Text(self, width=120, heigh=4)
-        cpgx5win_L = Label(self, text='产品5工序：', bg='Lavender')
-        btn_cpgx5 = tk.Button(self, text='修改产品5工序。', command=lambda:cpgx5self())
-        cpgx5_info = [cpgx5_text.get(0.0, 40.0)]
+        self.cpgx5_text = Text(self, width=120, heigh=4)
+        self.cpgx5win_L = Label(self, text='产品5工序：', bg='Lavender')
+        self.btn_cpgx5 = tk.Button(self, text='修改产品5工序。', command=lambda: cpgx5self())
+        cpgx5_info = [self.cpgx5_text.get(0.0, 40.0)]
 
         def cpgx5self():
             info_self = tk.Tk()
@@ -3763,7 +4082,7 @@ class cpgxPage_2(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx5Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品5工序{}：'.format(j + 1))
@@ -3783,10 +4102,10 @@ class cpgxPage_2(tk.Frame):
                 line_list.append(cpgx5cp_L)
                 line_list.append(cpgx5cp)
 
-                btn_del = Button(info_self, text='删除该工序', command=lambda:cpgx5Del(cpgx5_i - 1))
+                btn_del = Button(info_self, text='删除该工序', command=lambda: cpgx5Del(cpgx5_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -3794,24 +4113,25 @@ class cpgxPage_2(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
                     infos = infos[:-1]
                     infos += '\n'
                 cpgx5_info[0] = infos
-                cpgx5_text.insert(0.0, infos)
+                self.cpgx5_text.insert(0.0, infos)
                 info_self.destroy()
-            
+
             infos = cpgx5_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx5Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增工序信息。', command=lambda:cpgx5Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx5Done())
+
+            btn_gen = tk.Button(info_self, text='新增工序信息。',
+                                command=lambda: cpgx5Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx5Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
@@ -3828,24 +4148,26 @@ class cpgxPage_2(tk.Frame):
         self.btn_cpgx1.grid(row=3, column=0, rowspan=2)
         self.cpgx1_text.grid(row=1, column=1, rowspan=4, pady=5, columnspan=4)
 
-        cpgx2win_L.grid(row=5, column=0, rowspan=2)
-        btn_cpgx2.grid(row=7, column=0, rowspan=2)
-        cpgx2_text.grid(row=5, column=1, rowspan=4, pady=5, columnspan=4)
+        self.cpgx2win_L.grid(row=5, column=0, rowspan=2)
+        self.btn_cpgx2.grid(row=7, column=0, rowspan=2)
+        self.cpgx2_text.grid(row=5, column=1, rowspan=4, pady=5, columnspan=4)
 
-        cpgx3win_L.grid(row=9, column=0, rowspan=2)
-        btn_cpgx3.grid(row=11, column=0, rowspan=2)
-        cpgx3_text.grid(row=9, column=1, rowspan=4, pady=5, columnspan=4)
+        self.cpgx3win_L.grid(row=9, column=0, rowspan=2)
+        self.btn_cpgx3.grid(row=11, column=0, rowspan=2)
+        self.cpgx3_text.grid(row=9, column=1, rowspan=4, pady=5, columnspan=4)
 
-        cpgx4win_L.grid(row=13, column=0, rowspan=2)
-        btn_cpgx4.grid(row=15, column=0, rowspan=2)
-        cpgx4_text.grid(row=13, column=1, rowspan=4, pady=5, columnspan=4)
+        self.cpgx4win_L.grid(row=13, column=0, rowspan=2)
+        self.btn_cpgx4.grid(row=15, column=0, rowspan=2)
+        self.cpgx4_text.grid(row=13, column=1, rowspan=4, pady=5, columnspan=4)
 
-        cpgx5win_L.grid(row=17, column=0, rowspan=2)
-        btn_cpgx5.grid(row=19, column=0, rowspan=2)
-        cpgx5_text.grid(row=17, column=1, rowspan=4, pady=5, columnspan=4)
+        self.cpgx5win_L.grid(row=17, column=0, rowspan=2)
+        self.btn_cpgx5.grid(row=19, column=0, rowspan=2)
+        self.cpgx5_text.grid(row=17, column=1, rowspan=4, pady=5, columnspan=4)
+
 
 class cpczPage_2(tk.Frame):
     '''主页'''
+
     def __init__(self, parent, root):
         super().__init__(parent)
         self.config(bg='Lavender')
@@ -3857,7 +4179,7 @@ class cpczPage_2(tk.Frame):
 
         self.cpgx1_text = Text(self, width=120, heigh=4, state=DISABLED)
         self.cpgx1win_L = Label(self, text='产品1操作工：', bg='Lavender')
-        self.btn_cpgx1 = tk.Button(self, text='修改产品1操作工。', command=lambda:cpgx1self())
+        self.btn_cpgx1 = tk.Button(self, text='修改产品1操作工。', command=lambda: cpgx1self())
         self.cpgx1_info = [self.cpgx1_text.get(0.0, 40.0)]
 
         def cpgx1self():
@@ -3872,7 +4194,7 @@ class cpczPage_2(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx1Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品1操作工{}：'.format(j + 1))
@@ -3892,10 +4214,10 @@ class cpczPage_2(tk.Frame):
                 line_list.append(cpgx1cp_L)
                 line_list.append(cpgx1cp)
 
-                btn_del = Button(info_self, text='删除该操作工', command=lambda:cpgx1Del(cpgx1_i - 1))
+                btn_del = Button(info_self, text='删除该操作工', command=lambda: cpgx1Del(cpgx1_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -3903,7 +4225,7 @@ class cpczPage_2(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
@@ -3915,24 +4237,25 @@ class cpczPage_2(tk.Frame):
                 self.cpgx1_text.insert(0.0, infos)
                 self.cpgx1_text.config(state=DISABLED)
                 info_self.destroy()
-            
+
             infos = self.cpgx1_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx1Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增操作工信息。', command=lambda:cpgx1Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx1Done())
+
+            btn_gen = tk.Button(info_self, text='新增操作工信息。',
+                                command=lambda: cpgx1Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx1Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
 
             info_self.mainloop()
-        
-        cpgx2_text = Text(self, width=120, heigh=4)
-        cpgx2win_L = Label(self, text='产品2操作工：', bg='Lavender')
-        btn_cpgx2 = tk.Button(self, text='修改产品2操作工。', command=lambda:cpgx2self())
+
+        self.cpgx2_text = Text(self, width=120, heigh=4)
+        self.cpgx2win_L = Label(self, text='产品2操作工：', bg='Lavender')
+        self.btn_cpgx2 = tk.Button(self, text='修改产品2操作工。', command=lambda: cpgx2self())
         cpgx2_info = [cpgx2_text.get(0.0, 40.0)]
 
         def cpgx2self():
@@ -3947,7 +4270,7 @@ class cpczPage_2(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx2Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品2操作工{}：'.format(j + 1))
@@ -3967,10 +4290,10 @@ class cpczPage_2(tk.Frame):
                 line_list.append(cpgx2cp_L)
                 line_list.append(cpgx2cp)
 
-                btn_del = Button(info_self, text='删除该操作工', command=lambda:cpgx2Del(cpgx2_i - 1))
+                btn_del = Button(info_self, text='删除该操作工', command=lambda: cpgx2Del(cpgx2_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -3978,34 +4301,35 @@ class cpczPage_2(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
                     infos = infos[:-1]
                     infos += '\n'
                 cpgx2_info[0] = infos
-                cpgx2_text.insert(0.0, infos)
+                self.cpgx2_text.insert(0.0, infos)
                 info_self.destroy()
-            
+
             infos = cpgx2_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx2Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增操作工信息。', command=lambda:cpgx2Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx2Done())
+
+            btn_gen = tk.Button(info_self, text='新增操作工信息。',
+                                command=lambda: cpgx2Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx2Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
 
             info_self.mainloop()
-    
-        cpgx3_text = Text(self, width=120, heigh=4)
-        cpgx3win_L = Label(self, text='产品3操作工：', bg='Lavender')
-        btn_cpgx3 = tk.Button(self, text='修改产品3操作工。', command=lambda:cpgx3self())
-        cpgx3_info = [cpgx3_text.get(0.0, 40.0)]
+
+        self.cpgx3_text = Text(self, width=120, heigh=4)
+        self.cpgx3win_L = Label(self, text='产品3操作工：', bg='Lavender')
+        self.btn_cpgx3 = tk.Button(self, text='修改产品3操作工。', command=lambda: cpgx3self())
+        cpgx3_info = [self.cpgx3_text.get(0.0, 40.0)]
 
         def cpgx3self():
             info_self = tk.Tk()
@@ -4019,7 +4343,7 @@ class cpczPage_2(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx3Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品3操作工{}：'.format(j + 1))
@@ -4039,10 +4363,10 @@ class cpczPage_2(tk.Frame):
                 line_list.append(cpgx3cp_L)
                 line_list.append(cpgx3cp)
 
-                btn_del = Button(info_self, text='删除该操作工', command=lambda:cpgx3Del(cpgx3_i - 1))
+                btn_del = Button(info_self, text='删除该操作工', command=lambda: cpgx3Del(cpgx3_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -4050,34 +4374,35 @@ class cpczPage_2(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
                     infos = infos[:-1]
                     infos += '\n'
                 cpgx3_info[0] = infos
-                cpgx3_text.insert(0.0, infos)
+                self.cpgx3_text.insert(0.0, infos)
                 info_self.destroy()
-            
+
             infos = cpgx3_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx3Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增操作工信息。', command=lambda:cpgx3Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx3Done())
+
+            btn_gen = tk.Button(info_self, text='新增操作工信息。',
+                                command=lambda: cpgx3Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx3Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
 
             info_self.mainloop()
 
-        cpgx4_text = Text(self, width=120, heigh=4)
-        cpgx4win_L = Label(self, text='产品4操作工：', bg='Lavender')
-        btn_cpgx4 = tk.Button(self, text='修改产品4操作工。', command=lambda:cpgx4self())
-        cpgx4_info = [cpgx4_text.get(0.0, 40.0)]
+        self.cpgx4_text = Text(self, width=120, heigh=4)
+        self.cpgx4win_L = Label(self, text='产品4操作工：', bg='Lavender')
+        self.btn_cpgx4 = tk.Button(self, text='修改产品4操作工。', command=lambda: cpgx4self())
+        cpgx4_info = [self.cpgx4_text.get(0.0, 40.0)]
 
         def cpgx4self():
             info_self = tk.Tk()
@@ -4091,7 +4416,7 @@ class cpczPage_2(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx4Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品4操作工{}：'.format(j + 1))
@@ -4111,10 +4436,10 @@ class cpczPage_2(tk.Frame):
                 line_list.append(cpgx4cp_L)
                 line_list.append(cpgx4cp)
 
-                btn_del = Button(info_self, text='删除该操作工', command=lambda:cpgx4Del(cpgx4_i - 1))
+                btn_del = Button(info_self, text='删除该操作工', command=lambda: cpgx4Del(cpgx4_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -4122,33 +4447,34 @@ class cpczPage_2(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
                     infos = infos[:-1]
                     infos += '\n'
                 cpgx4_info[0] = infos
-                cpgx4_text.insert(0.0, infos)
+                self.cpgx4_text.insert(0.0, infos)
                 info_self.destroy()
-            
+
             infos = cpgx4_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx4Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增操作工信息。', command=lambda:cpgx4Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx4Done())
+
+            btn_gen = tk.Button(info_self, text='新增操作工信息。',
+                                command=lambda: cpgx4Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx4Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
 
             info_self.mainloop()
 
-        cpgx5_text = Text(self, width=120, heigh=4)
-        cpgx5win_L = Label(self, text='产品5操作工：', bg='Lavender')
-        btn_cpgx5 = tk.Button(self, text='修改产品5操作工。', command=lambda:cpgx5self())
+        self.cpgx5_text = Text(self, width=120, heigh=4)
+        self.cpgx5win_L = Label(self, text='产品5操作工：', bg='Lavender')
+        self.btn_cpgx5 = tk.Button(self, text='修改产品5操作工。', command=lambda: cpgx5self())
         cpgx5_info = [cpgx5_text.get(0.0, 40.0)]
 
         def cpgx5self():
@@ -4163,7 +4489,7 @@ class cpczPage_2(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx5Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品5操作工{}：'.format(j + 1))
@@ -4183,10 +4509,10 @@ class cpczPage_2(tk.Frame):
                 line_list.append(cpgx5cp_L)
                 line_list.append(cpgx5cp)
 
-                btn_del = Button(info_self, text='删除该操作工', command=lambda:cpgx5Del(cpgx5_i - 1))
+                btn_del = Button(info_self, text='删除该操作工', command=lambda: cpgx5Del(cpgx5_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -4194,24 +4520,25 @@ class cpczPage_2(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
                     infos = infos[:-1]
                     infos += '\n'
                 cpgx5_info[0] = infos
-                cpgx5_text.insert(0.0, infos)
+                self.cpgx5_text.insert(0.0, infos)
                 info_self.destroy()
-            
+
             infos = cpgx5_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx5Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增操作工信息。', command=lambda:cpgx5Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx5Done())
+
+            btn_gen = tk.Button(info_self, text='新增操作工信息。',
+                                command=lambda: cpgx5Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx5Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
@@ -4228,24 +4555,26 @@ class cpczPage_2(tk.Frame):
         self.btn_cpgx1.grid(row=3, column=0, rowspan=2)
         self.cpgx1_text.grid(row=1, column=1, rowspan=4, pady=5, columnspan=4)
 
-        cpgx2win_L.grid(row=5, column=0, rowspan=2)
-        btn_cpgx2.grid(row=7, column=0, rowspan=2)
-        cpgx2_text.grid(row=5, column=1, rowspan=4, pady=5, columnspan=4)
+        self.cpgx2win_L.grid(row=5, column=0, rowspan=2)
+        self.btn_cpgx2.grid(row=7, column=0, rowspan=2)
+        self.cpgx2_text.grid(row=5, column=1, rowspan=4, pady=5, columnspan=4)
 
-        cpgx3win_L.grid(row=9, column=0, rowspan=2)
-        btn_cpgx3.grid(row=11, column=0, rowspan=2)
-        cpgx3_text.grid(row=9, column=1, rowspan=4, pady=5, columnspan=4)
+        self.cpgx3win_L.grid(row=9, column=0, rowspan=2)
+        self.btn_cpgx3.grid(row=11, column=0, rowspan=2)
+        self.cpgx3_text.grid(row=9, column=1, rowspan=4, pady=5, columnspan=4)
 
-        cpgx4win_L.grid(row=13, column=0, rowspan=2)
-        btn_cpgx4.grid(row=15, column=0, rowspan=2)
-        cpgx4_text.grid(row=13, column=1, rowspan=4, pady=5, columnspan=4)
+        self.cpgx4win_L.grid(row=13, column=0, rowspan=2)
+        self.btn_cpgx4.grid(row=15, column=0, rowspan=2)
+        self.cpgx4_text.grid(row=13, column=1, rowspan=4, pady=5, columnspan=4)
 
-        cpgx5win_L.grid(row=17, column=0, rowspan=2)
-        btn_cpgx5.grid(row=19, column=0, rowspan=2)
-        cpgx5_text.grid(row=17, column=1, rowspan=4, pady=5, columnspan=4)
+        self.cpgx5win_L.grid(row=17, column=0, rowspan=2)
+        self.btn_cpgx5.grid(row=19, column=0, rowspan=2)
+        self.cpgx5_text.grid(row=17, column=1, rowspan=4, pady=5, columnspan=4)
+
 
 class cpxxPage_2(tk.Frame):
     '''主页'''
+
     def __init__(self, parent, root):
         super().__init__(parent)
         self.config(bg='Lavender')
@@ -4257,7 +4586,7 @@ class cpxxPage_2(tk.Frame):
 
         self.cpgx1_text = Text(self, width=120, heigh=4, state=DISABLED)
         self.cpgx1win_L = Label(self, text='产品1信息：', bg='Lavender')
-        self.btn_cpgx1 = tk.Button(self, text='修改产品1信息。', command=lambda:cpgx1self())
+        self.btn_cpgx1 = tk.Button(self, text='修改产品1信息。', command=lambda: cpgx1self())
         self.cpgx1_info = [self.cpgx1_text.get(0.0, 40.0)]
 
         def cpgx1self():
@@ -4272,7 +4601,7 @@ class cpxxPage_2(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx1Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品1的{}号产品：'.format(j + 1))
@@ -4332,10 +4661,10 @@ class cpxxPage_2(tk.Frame):
                 line_list.append(cpgx1kh_L)
                 line_list.append(cpgx1kh)
 
-                btn_del = Button(info_self, text='删除该产品', command=lambda:cpgx1Del(cpgx1_i - 1))
+                btn_del = Button(info_self, text='删除该产品', command=lambda: cpgx1Del(cpgx1_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -4343,7 +4672,7 @@ class cpxxPage_2(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
@@ -4355,24 +4684,25 @@ class cpxxPage_2(tk.Frame):
                 self.cpgx1_text.insert(0.0, infos)
                 self.cpgx1_text.config(state=DISABLED)
                 info_self.destroy()
-            
+
             infos = self.cpgx1_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx1Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增产品信息。', command=lambda:cpgx1Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx1Done())
+
+            btn_gen = tk.Button(info_self, text='新增产品信息。',
+                                command=lambda: cpgx1Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx1Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
 
             info_self.mainloop()
-        
-        cpgx2_text = Text(self, width=120, heigh=4)
-        cpgx2win_L = Label(self, text='产品2信息：', bg='Lavender')
-        btn_cpgx2 = tk.Button(self, text='修改产品2信息。', command=lambda:cpgx2self())
+
+        self.cpgx2_text = Text(self, width=120, heigh=4)
+        self.cpgx2win_L = Label(self, text='产品2信息：', bg='Lavender')
+        self.btn_cpgx2 = tk.Button(self, text='修改产品2信息。', command=lambda: cpgx2self())
 
         def cpgx2self():
             info_self = tk.Tk()
@@ -4386,7 +4716,7 @@ class cpxxPage_2(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx1Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品2的{}号产品：'.format(j + 1))
@@ -4409,7 +4739,7 @@ class cpxxPage_2(tk.Frame):
                 del elem_list[-1]
                 rendering()
 
-            def cpgx1Add(self, cpgx1_i, infos):
+            def cpgx2Add(self, cpgx1_i, infos):
                 line_list = []
                 cpgx1cp_L = Label(self, text='产品2的{}号产品：'.format(cpgx1_i), bg='Lavender')
                 cpgx1cp = Text(self, height=1, width=15, relief=RAISED, highlightcolor='black', highlightthickness=1)
@@ -4446,18 +4776,18 @@ class cpxxPage_2(tk.Frame):
                 line_list.append(cpgx1kh_L)
                 line_list.append(cpgx1kh)
 
-                btn_del = Button(info_self, text='删除该产品', command=lambda:cpgx1Del(cpgx1_i - 1))
+                btn_del = Button(info_self, text='删除该产品', command=lambda: cpgx1Del(cpgx1_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
-            def cpgx1Done():
+            def cpgx2Done():
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
@@ -4469,25 +4799,26 @@ class cpxxPage_2(tk.Frame):
                 self.cpgx1_text.insert(0.0, infos)
                 self.cpgx1_text.config(state=DISABLED)
                 info_self.destroy()
-            
+
             infos = self.cpgx1_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
-                cpgx1Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增产品信息。', command=lambda:cpgx1Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx1Done())
+                cpgx2Add(info_self, i, info.split(','))
+
+            btn_gen = tk.Button(info_self, text='新增产品信息。',
+                                command=lambda: cpgx2Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx2Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
 
             info_self.mainloop()
-    
-        cpgx3_text = Text(self, width=120, heigh=4)
-        cpgx3win_L = Label(self, text='产品3信息：', bg='Lavender')
-        btn_cpgx3 = tk.Button(self, text='修改产品3信息。', command=lambda:cpgx3self())
-        cpgx3_info = [cpgx3_text.get(0.0, 40.0)]
+
+        self.cpgx3_text = Text(self, width=120, heigh=4)
+        self.cpgx3win_L = Label(self, text='产品3信息：', bg='Lavender')
+        self.btn_cpgx3 = tk.Button(self, text='修改产品3信息。', command=lambda: cpgx3self())
+        cpgx3_info = [self.cpgx3_text.get(0.0, 40.0)]
 
         def cpgx3self():
             info_self = tk.Tk()
@@ -4501,7 +4832,7 @@ class cpxxPage_2(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx1Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品3的{}号产品：'.format(j + 1))
@@ -4561,10 +4892,10 @@ class cpxxPage_2(tk.Frame):
                 line_list.append(cpgx1kh_L)
                 line_list.append(cpgx1kh)
 
-                btn_del = Button(info_self, text='删除该产品', command=lambda:cpgx1Del(cpgx1_i - 1))
+                btn_del = Button(info_self, text='删除该产品', command=lambda: cpgx1Del(cpgx1_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -4572,7 +4903,7 @@ class cpxxPage_2(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
@@ -4584,25 +4915,26 @@ class cpxxPage_2(tk.Frame):
                 self.cpgx1_text.insert(0.0, infos)
                 self.cpgx1_text.config(state=DISABLED)
                 info_self.destroy()
-            
+
             infos = self.cpgx1_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx1Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增产品信息。', command=lambda:cpgx1Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx1Done())
+
+            btn_gen = tk.Button(info_self, text='新增产品信息。',
+                                command=lambda: cpgx1Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx1Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
 
             info_self.mainloop()
 
-        cpgx4_text = Text(self, width=120, heigh=4)
-        cpgx4win_L = Label(self, text='产品4信息：', bg='Lavender')
-        btn_cpgx4 = tk.Button(self, text='修改产品4信息。', command=lambda:cpgx4self())
-        cpgx4_info = [cpgx4_text.get(0.0, 40.0)]
+        self.cpgx4_text = Text(self, width=120, heigh=4)
+        self.cpgx4win_L = Label(self, text='产品4信息：', bg='Lavender')
+        self.btn_cpgx4 = tk.Button(self, text='修改产品4信息。', command=lambda: cpgx4self())
+        cpgx4_info = [self.cpgx4_text.get(0.0, 40.0)]
 
         def cpgx4self():
             info_self = tk.Tk()
@@ -4616,7 +4948,7 @@ class cpxxPage_2(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx1Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品4的{}号产品：'.format(j + 1))
@@ -4676,10 +5008,10 @@ class cpxxPage_2(tk.Frame):
                 line_list.append(cpgx1kh_L)
                 line_list.append(cpgx1kh)
 
-                btn_del = Button(info_self, text='删除该产品', command=lambda:cpgx1Del(cpgx1_i - 1))
+                btn_del = Button(info_self, text='删除该产品', command=lambda: cpgx1Del(cpgx1_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -4687,7 +5019,7 @@ class cpxxPage_2(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
@@ -4699,24 +5031,25 @@ class cpxxPage_2(tk.Frame):
                 self.cpgx1_text.insert(0.0, infos)
                 self.cpgx1_text.config(state=DISABLED)
                 info_self.destroy()
-            
+
             infos = self.cpgx1_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx1Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增产品信息。', command=lambda:cpgx1Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx1Done())
+
+            btn_gen = tk.Button(info_self, text='新增产品信息。',
+                                command=lambda: cpgx1Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx1Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
 
             info_self.mainloop()
 
-        cpgx5_text = Text(self, width=120, heigh=4)
-        cpgx5win_L = Label(self, text='产品5信息：', bg='Lavender')
-        btn_cpgx5 = tk.Button(self, text='修改产品5信息。', command=lambda:cpgx5self())
+        self.cpgx5_text = Text(self, width=120, heigh=4)
+        self.cpgx5win_L = Label(self, text='产品5信息：', bg='Lavender')
+        self.btn_cpgx5 = tk.Button(self, text='修改产品5信息。', command=lambda: cpgx5self())
         cpgx5_info = [cpgx5_text.get(0.0, 40.0)]
 
         def cpgx5self():
@@ -4731,7 +5064,7 @@ class cpxxPage_2(tk.Frame):
                 for row, lin_list in enumerate(elem_list, start=1):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
-            
+
             def cpgx1Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品5的{}号产品：'.format(j + 1))
@@ -4791,10 +5124,10 @@ class cpxxPage_2(tk.Frame):
                 line_list.append(cpgx1kh_L)
                 line_list.append(cpgx1kh)
 
-                btn_del = Button(info_self, text='删除该产品', command=lambda:cpgx1Del(cpgx1_i - 1))
+                btn_del = Button(info_self, text='删除该产品', command=lambda: cpgx1Del(cpgx1_i - 1))
                 line_list.append(btn_del)
 
-                elem_list.append(line_list) 
+                elem_list.append(line_list)
 
                 rendering()
 
@@ -4802,7 +5135,7 @@ class cpxxPage_2(tk.Frame):
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
-                        if col%2 ==0:
+                        if col % 2 == 0:
                             continue
                         infos += elem.get(0.0, 2.0).strip()
                         infos += ','
@@ -4814,15 +5147,16 @@ class cpxxPage_2(tk.Frame):
                 self.cpgx1_text.insert(0.0, infos)
                 self.cpgx1_text.config(state=DISABLED)
                 info_self.destroy()
-            
+
             infos = self.cpgx1_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
                 cpgx1Add(info_self, i, info.split(','))
-            
-            btn_gen = tk.Button(info_self, text='新增产品信息。', command=lambda:cpgx1Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda:cpgx1Done())
+
+            btn_gen = tk.Button(info_self, text='新增产品信息。',
+                                command=lambda: cpgx1Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx1Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
@@ -4839,26 +5173,28 @@ class cpxxPage_2(tk.Frame):
         self.btn_cpgx1.grid(row=3, column=0, rowspan=2)
         self.cpgx1_text.grid(row=1, column=1, rowspan=4, pady=5, columnspan=4)
 
-        cpgx2win_L.grid(row=5, column=0, rowspan=2)
-        btn_cpgx2.grid(row=7, column=0, rowspan=2)
-        cpgx2_text.grid(row=5, column=1, rowspan=4, pady=5, columnspan=4)
+        self.cpgx2win_L.grid(row=5, column=0, rowspan=2)
+        self.btn_cpgx2.grid(row=7, column=0, rowspan=2)
+        self.cpgx2_text.grid(row=5, column=1, rowspan=4, pady=5, columnspan=4)
 
-        cpgx3win_L.grid(row=9, column=0, rowspan=2)
-        btn_cpgx3.grid(row=11, column=0, rowspan=2)
-        cpgx3_text.grid(row=9, column=1, rowspan=4, pady=5, columnspan=4)
+        self.cpgx3win_L.grid(row=9, column=0, rowspan=2)
+        self.btn_cpgx3.grid(row=11, column=0, rowspan=2)
+        self.cpgx3_text.grid(row=9, column=1, rowspan=4, pady=5, columnspan=4)
 
-        cpgx4win_L.grid(row=13, column=0, rowspan=2)
-        btn_cpgx4.grid(row=15, column=0, rowspan=2)
-        cpgx4_text.grid(row=13, column=1, rowspan=4, pady=5, columnspan=4)
+        self.cpgx4win_L.grid(row=13, column=0, rowspan=2)
+        self.btn_cpgx4.grid(row=15, column=0, rowspan=2)
+        self.cpgx4_text.grid(row=13, column=1, rowspan=4, pady=5, columnspan=4)
 
-        cpgx5win_L.grid(row=17, column=0, rowspan=2)
-        btn_cpgx5.grid(row=19, column=0, rowspan=2)
-        cpgx5_text.grid(row=17, column=1, rowspan=4, pady=5, columnspan=4)
+        self.cpgx5win_L.grid(row=17, column=0, rowspan=2)
+        self.btn_cpgx5.grid(row=19, column=0, rowspan=2)
+        self.cpgx5_text.grid(row=17, column=1, rowspan=4, pady=5, columnspan=4)
+
 
 class qtxxPage_2(tk.Frame):
     '''主页'''
+
     def __init__(self, parent, root):
-        super().__init__(parent)   
+        super().__init__(parent)
         super().__init__(parent)
         self.config(bg='Lavender')
         btncpgx = tk.Button(self, text='修改产品工序', command=lambda: root.show_frame(cpgxPage_2))
@@ -4866,7 +5202,7 @@ class qtxxPage_2(tk.Frame):
         btncpcz = tk.Button(self, text='修改产品操作工', command=lambda: root.show_frame(cpczPage_2))
         btnqtxx = tk.Button(self, text='修改其他信息', command=lambda: root.show_frame(qtxxPage_2))
         btngen = tk.Button(self, text='信息无误开始生成文档！', command=lambda: root.getinfo())
-        
+
         jyy1_L = Label(self, text='检验员1：', bg='Lavender')
         jyy1 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
@@ -4880,6 +5216,7 @@ class qtxxPage_2(tk.Frame):
         scbry3 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
         tsgcjbV = tk.IntVar(master=self)
+
         def tsgcjbbool():
             if tsgcjbV.get() == 0:
                 tsgcjb.config(state=DISABLED)
@@ -4893,19 +5230,23 @@ class qtxxPage_2(tk.Frame):
         tsgcjbbool()
 
         tsgcbmjshV = tk.IntVar(master=self)
+
         def tsgcbmjshbool():
             if tsgcbmjshV.get() == 0:
                 tsgcbmjsh.config(state=DISABLED)
             else:
                 tsgcbmjsh.config(state=NORMAL)
 
-        tsgcbmjshC1 = tk.Radiobutton(self, text="有薄膜金属化过程", variable=tsgcbmjshV, value=1, command=tsgcbmjshbool, bg='Lavender')
-        tsgcbmjshC2 = tk.Radiobutton(self, text="无薄膜金属化过程", variable=tsgcbmjshV, value=0, command=tsgcbmjshbool, bg='Lavender')
+        tsgcbmjshC1 = tk.Radiobutton(self, text="有薄膜金属化过程", variable=tsgcbmjshV, value=1, command=tsgcbmjshbool,
+                                     bg='Lavender')
+        tsgcbmjshC2 = tk.Radiobutton(self, text="无薄膜金属化过程", variable=tsgcbmjshV, value=0, command=tsgcbmjshbool,
+                                     bg='Lavender')
         tsgcbmjsh_L = Label(self, text='特殊过程薄膜金属化操作工：', bg='Lavender')
         tsgcbmjsh = Text(self, height=1, width=40, relief=RAISED, highlightcolor='black', highlightthickness=1)
         tsgcbmjshbool()
 
         tsgchjV = tk.IntVar(master=self)
+
         def tsgchjbool():
             if tsgchjV.get() == 0:
                 tsgchj.config(state=DISABLED)
@@ -4919,6 +5260,7 @@ class qtxxPage_2(tk.Frame):
         tsgchjbool()
 
         tsgchhV = tk.IntVar(master=self)
+
         def tsgchhbool():
             if tsgchhV.get() == 0:
                 tsgchh.config(state=DISABLED)
@@ -4931,8 +5273,8 @@ class qtxxPage_2(tk.Frame):
         tsgchh = Text(self, height=1, width=40, relief=RAISED, highlightcolor='black', highlightthickness=1)
         tsgchhbool()
 
-
         tsgcjcV = tk.IntVar(master=self)
+
         def tsgcjcbool():
             if tsgcjcV.get() == 0:
                 tsgcjc.config(state=DISABLED)
@@ -4993,20 +5335,22 @@ class qtxxPage_2(tk.Frame):
         kyjC1.grid(row=10, column=2)
         kyjC2.grid(row=10, column=3)
 
+
 class window4_4():
     # 适用于认证范围为SC/ZZ/JJSC且认证项目为S/ES
-    def __init__(self, info_dic):   
+    def __init__(self, info_dic):
         super().__init__()
+        self.info_dic = info_dic
         window = tk.Tk()
-    
+
         # 给窗口的可视化起名字
         window.title('认证文件管理系统')
         window.config(background='Lavender')
 
         window.geometry('1280x650')  # 这里的乘是小x
-            
+
         container = tk.Frame(window, background='Lavender')
-        container.pack(side="top", fill="both", expand = True)
+        container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
@@ -5020,20 +5364,36 @@ class window4_4():
 
     def show_frame(self, cont):
         frame = self.frames[cont]
-        frame.tkraise() # 切换，提升当前 tk.Frame z轴顺序（使可见）！！此语句是本程序的点睛之处
-    
+        frame.tkraise()  # 切换，提升当前 tk.Frame z轴顺序（使可见）！！此语句是本程序的点睛之处
+
+    def add_item_to_dict(self, edit_text, key_str):
+        self.info_dic['__{}__'.format(key_str)] = edit_text.get(0.0, 20.0).strip()
+
     def getinfo(self):
-        frame = self.frames[cpgxPage]
-        print(frame.cpgx1_text.get(0.0, 2.0).strip())
+        f_qtxx = self.frames[qtxxPage]
+        self.add_item_to_dict(f_qtxx.sjaqjyspxr1, '三级安全教育受培训人1')
+        self.add_item_to_dict(f_qtxx.sjaqjyspxr2, '三级安全教育受培训人2')
+        self.add_item_to_dict(f_qtxx.sjaqjyspxr3, '三级安全教育受培训人3')
+        self.add_item_to_dict(f_qtxx.sjaqjyrq1, '三级安全教育第一天日期')
+        self.add_item_to_dict(f_qtxx.sjaqjyrq2, '三级安全教育第二天日期')
+        self.add_item_to_dict(f_qtxx.sjaqjyrq3, '三级安全教育第三天日期')
+        self.add_item_to_dict(f_qtxx.sjaqjybzpxr3, '三级安全教育班组培训人')
+        if f_qtxx.kyjV.get() == 0:
+            self.info_dic['__是否有空压机__'] = '否'
+        else:
+            self.info_dic['__是否有空压机__'] = '是'
+        gen_yaml(self.info_dic)
+
 
 class qtxxPage_4(tk.Frame):
     '''主页'''
+
     def __init__(self, parent, root):
-        super().__init__(parent)   
+        super().__init__(parent)
         super().__init__(parent)
         self.config(bg='Lavender')
         btngen = tk.Button(self, text='信息无误开始生成文档！', command=lambda: root.getinfo())
-        
+
         sjaqjyspxr1_L = Label(self, text='三级安全教育受培训人1：', bg='Lavender')
         sjaqjyspxr1 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
@@ -5075,5 +5435,11 @@ class qtxxPage_4(tk.Frame):
 
         kyjC1.grid(row=10, column=2)
         kyjC2.grid(row=10, column=3)
+
+
+def gen_yaml(info_dic):
+    with open("test.yaml", "w") as f:
+        yaml.safe_dump(data=info_dic, stream=f)
+
 
 mainWindow()
