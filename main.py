@@ -1,5 +1,7 @@
 from asyncore import close_all
+from cgitb import reset
 from cmath import cos
+from curses import keyname
 from lib2to3.pgen2.token import RPAR
 from operator import le
 from re import template
@@ -17,13 +19,42 @@ from turtle import bgcolor
 from xml import dom
 
 import os
-# import yaml
-# from docx import Document
+import yaml
+from docx import Document
 import random
 
-import yaml
+def del_rows(doc_path, kwd='__删除整行__'):
+    if doc_path == None:
+        return 
+    document = Document(doc_path)
+    for t, table in  enumerate(document.tables):  #遍历所有表格，这个模板里有3个表格
+        for r, row in enumerate(table.rows):  #遍历表格的行
+            for c, cell in enumerate(row.cells): #遍历每一行的列
+                text = cell.text
+                if text == kwd:
+                    row._element.getparent().remove(row._element) 
+                    break
+    document.save(doc_path) 
 
-'''
+def del_text(doc_path, kwd='__删除文本__'):
+    if doc_path == None:
+        return 
+    document = Document(doc_path)
+    del_list = []
+    for t, table in  enumerate(document.tables):  #遍历所有表格，这个模板里有3个表格
+        for r, row in enumerate(table.rows):  #遍历表格的行
+            for c, cell in enumerate(row.cells): #遍历每一行的列
+                text = cell.text
+                if text == kwd:
+                    del_list.append((t, r))
+                    break
+    
+    for t, r in set(del_list):
+        row = document.tables[t].rows[r]
+        for cell in row.cells:
+            cell.text = ""
+    document.save(doc_path) 
+
 def GetDictionary(yamlFile):
     """
     从yamlFile中读取替换字典
@@ -57,6 +88,8 @@ def ReplaceInRuns(paragraph, replaceDict: dict, paragraphType):
                     if "随机日期" in old:
                         start, end = new.split('-')
                         new = str(random.randint(int(start), int(end)))
+                    if "__是否有空压机__" in old and new == '否':
+                        return 1
                     run.text = run.text.replace(old, new)
     else:
         if paragraphType == "table":
@@ -68,11 +101,14 @@ def ReplaceInRuns(paragraph, replaceDict: dict, paragraphType):
                     if "随机日期" in old:
                         start, end = new.split('-')
                         new = str(random.randint(int(start), int(end)))
+                    if "__是否有空压机__" in old and new == '否':
+                        return 1
                     text = text.replace(old, new)
             if text != "":
                 paragraph.runs[0].text = text
             for run in paragraph.runs[1:]:
                 run.text = ""
+    return 0
 
 
 def ReplaceIn(docxFile, workdir, replaceDict: dict):
@@ -83,32 +119,41 @@ def ReplaceIn(docxFile, workdir, replaceDict: dict):
         print('无法加载doc文件： ', docxFile, '\n请转换成docx类型！')
         return
 
-    # document = Document(docxFile)
+    document = Document(docxFile)
+
+    res_home = replaceDict['__企业名称__'] + replaceDict['template_id'].split('-')[2] + '上报信息'
+    res_path = os.path.join(workdir, res_home, os.path.relpath(docxFile, os.path.join(workdir, 'templates', replaceDict['template_id'])))
+    res_dir = os.path.dirname(res_path)
+    if not os.path.exists(res_dir):
+        os.makedirs(res_dir)
 
     # 页眉
     for section in document.sections:
         for paragraph in section.header.paragraphs:
-            ReplaceInRuns(paragraph, replaceDict, "header")
+            flag = ReplaceInRuns(paragraph, replaceDict, "header")
+            if flag:
+                return None
 
     # 文本段落
     for paragraph in document.paragraphs:
-        ReplaceInRuns(paragraph, replaceDict, "plain")
+        flag = ReplaceInRuns(paragraph, replaceDict, "plain")
+        if flag:
+            return None
 
     # 表格
     for table in document.tables:
         for row in table.rows:
             for cell in row.cells:
                 for paragraph in cell.paragraphs:
-                    ReplaceInRuns(paragraph, replaceDict, "table")
+                    flag = ReplaceInRuns(paragraph, replaceDict, "table")
+                    if flag:
+                        return None
 
-    res_path = os.path.join(workdir, 'result/', os.path.relpath(docxFile, workdir))
-    res_dir = os.path.dirname(res_path)
-    if not os.path.exists(res_dir):
-        os.makedirs(res_dir)
     document.save(res_path)
+    return res_path
 
 
-def ReplaceAll(path: str, workdir: str, replaceDict: dict):
+def ReplaceAll(path: str, workdir: str, replaceDict: dict, delLineDict: dict, delTextDict: dict):
     """
     将path路径下所有word文件按replaceDict进行全局替换
     """
@@ -116,14 +161,39 @@ def ReplaceAll(path: str, workdir: str, replaceDict: dict):
     folders = [os.path.join(path, i) for i in directories if
                os.path.isdir(os.path.join(path, i)) and not i.startswith('.')]  # 所有非隐藏文件夹
     for folder in folders:
-        ReplaceAll(os.path.join(path, folder), workdir, replaceDict)
+        ReplaceAll(folder, workdir, replaceDict, delLineDict, delTextDict)
     files = [os.path.join(path, i) for i in directories if
              os.path.isfile(os.path.join(path, i)) and os.path.splitext(i)[-1] in ['.doc', '.docx']]  # 所有word文件
     for file in files:
         print(file)
-        ReplaceIn(file, workdir, replaceDict)
-'''
+        respath = ReplaceIn(file, workdir, replaceDict)
+        del_rows(respath)
+        del_text(respath)
 
+
+def ReplaceProcess(info_dict):
+    dictionary = GetDictionary("tagList.yml")
+    deltext = GetDictionary("delText.yml")
+    delline = GetDictionary('delLine.yml')
+    dictionary['template_id'] = info_dict['template_id']
+    work_dir = os.path.abspath('.') # 工作路径
+
+    # 用收集信息更新替换字典
+    for key in dictionary.keys():
+        if key in info_dict:
+            dictionary[key] = info_dict[key]
+        elif key[2:-2] in info_dict:
+            dictionary[key] = info_dict[key[2:-2]]
+        else :
+            dictionary[key] = '否'
+        
+        if key in delline and dictionary[key] == delline[key]:
+            dictionary[key] = '__删除整行__'
+        if key in deltext and dictionary[key] == deltext[key]:
+            dictionary[key] = '__删除文本__'
+
+    ReplaceAll(os.path.join('templates', dictionary['template_id']), work_dir, dictionary, delline, deltext)
+    print('process done!')
 
 # 第一层界面
 def mainWindow():
@@ -185,6 +255,7 @@ def mainWindow():
     departV4 = tk.IntVar(master=window)
     departV5 = tk.IntVar(master=window)
     departV6 = tk.IntVar(master=window)
+    departV7 = tk.IntVar(master=window)
     l = tk.Label(window, bg='yellow', text='empty')
 
     def depart_select():
@@ -202,6 +273,8 @@ def mainWindow():
             departselected.append(5)
         if departV6.get() == 1:
             departselected.append(6)
+        if departV7.get() == 1:
+            departselected.append(7)
         l.config(text=str(departselected))
 
     departC1 = tk.Checkbutton(window, text='行政部门', variable=departV1, onvalue=1, offvalue=0, command=depart_select)
@@ -210,6 +283,7 @@ def mainWindow():
     departC4 = tk.Checkbutton(window, text='质检部门', variable=departV4, onvalue=1, offvalue=0, command=depart_select)
     departC5 = tk.Checkbutton(window, text='销售部门', variable=departV5, onvalue=1, offvalue=0, command=depart_select)
     departC6 = tk.Checkbutton(window, text='财务部门', variable=departV6, onvalue=1, offvalue=0, command=depart_select)
+    departC7 = tk.Checkbutton(window, text='技术部门', variable=departV7, onvalue=1, offvalue=0, command=depart_select)
 
     '''认证项目选择'''
     project_L = Label(window, text='认证项目')
@@ -265,7 +339,7 @@ def mainWindow():
         template_id += 'Y' if designV.get() == 1 else 'N'
         print(template_id)
         info_dic = {}
-        info_dic['template_id'] = template_id
+        info_dic['template_id'] = template_id # yml中原本没有，用来选择模板，且用于生成输出路径名，所以后续会写入替换字典中
         # Q界面
         if 'Q' in projectselected and len(projectselected) == 1:
             InforWindow_1(info_dic)
@@ -291,7 +365,8 @@ def mainWindow():
 
     Label(window, text=str('~-' * 30)).place(relx=0.05, rely=0.125)  # 分隔符
 
-    depart_L.place(relx=0.42, rely=0.20)
+    depart_L.place(relx=0.32, rely=0.20)
+    departC7.place(relx=0.52, rely=0.20)
     departC1.place(relx=0.15, rely=0.27)
     departC2.place(relx=0.4, rely=0.27)
     departC3.place(relx=0.65, rely=0.27)
@@ -451,7 +526,7 @@ def InforWindow_1(info_dic):
             info_dic['__外包过程表述__'] = wbguocheng.get(0.0, 20.0).strip()
         else:
             info_dic['__有无外包过程__'] = '无'
-            info_dic['__外包过程表述__'] = ''
+            info_dic['__外包过程表述__'] = ' '
         info_dic['__特殊过程__'] = tsguocheng.get(0.0, 20.0).strip()
         info_dic['__质检部门__'] = zhijian.get(0.0, 20.0).strip()
         info_dic['__质检负责人__'] = zjfuze.get(0.0, 20.0).strip()
@@ -704,7 +779,7 @@ def InforWindow_2(info_dic):
             info_dic['__外包过程表述__'] = wbguocheng.get(0.0, 20.0).strip()
         else:
             info_dic['__有无外包过程__'] = '无'
-            info_dic['__外包过程表述__'] = ''
+            info_dic['__外包过程表述__'] = ' '
         info_dic['__特殊过程__'] = tsguocheng.get(0.0, 20.0).strip()
         info_dic['__质检部门__'] = zhijian.get(0.0, 20.0).strip()
         info_dic['__质检负责人__'] = zjfuze.get(0.0, 20.0).strip()
@@ -970,7 +1045,7 @@ def InforWindow_3(info_dic):
             info_dic['__外包过程表述__'] = wbguocheng.get(0.0, 20.0).strip()
         else:
             info_dic['__有无外包过程__'] = '无'
-            info_dic['__外包过程表述__'] = ''
+            info_dic['__外包过程表述__'] = ' '
         info_dic['__特殊过程__'] = tsguocheng.get(0.0, 20.0).strip()
         info_dic['__质检部门__'] = zhijian.get(0.0, 20.0).strip()
         info_dic['__质检负责人__'] = zjfuze.get(0.0, 20.0).strip()
@@ -1267,6 +1342,7 @@ def informCollectWindow(info_dic):
 
     myddc1_L = Label(window, text='销售合同1满意度', bg='Lavender')
     myddc1 = Text(window, width=22, heigh=1)
+    myddc1.insert(0.0, '95')
 
     myddc2_L = Label(window, text='销售合同2满意度', bg='Lavender')
     myddc2 = Text(window, width=22, heigh=1)
@@ -1306,7 +1382,7 @@ def informCollectWindow(info_dic):
     #     for old, new in dictionary.items():
     #         print(old + "->" + new)
     #     ReplaceAll(os.path.abspath(os.curdir) , work_dir, dictionary)
-    def next_stage():
+    def next_stage(info_dict):
         template_id = info_dic['template_id']
         rzfw, _, rzxm, _ = template_id.split('-')
         if (rzfw == 'SC' or rzfw == 'ZZ' or rzfw == 'JJSC') and (rzxm == 'QS' or rzxm == 'QES'):
@@ -1320,12 +1396,13 @@ def informCollectWindow(info_dic):
             window4_4(info_dic)
         else:
             #
+            ReplaceProcess(info_dict)
             window.destroy()
 
     # 封装第三层页面radio_button处理结果逻辑
     def addRadioRes(bool_str, radio_res):
         if radio_res.get() == 1:
-            info_dic['__{}__'.format(bool_str)] = '是'
+            info_dic['__{}__'.format(bool_str)] = ' '
         else:
             info_dic['__{}__'.format(bool_str)] = '否'
 
@@ -1398,7 +1475,7 @@ def informCollectWindow(info_dic):
         add_item_to_info_dict('采购',
                               ['产品', '产品规格型号', '产品供方', '产品数量方', '产品时间', '产品到货时间'],
                               gf_text.get(0.0, 40.0).strip())
-        next_stage()
+        next_stage(info_dic)
 
     btn_gen = tk.Button(window, text='信息确认完成，进入下一阶段。', command=textGen)
 
@@ -1492,6 +1569,7 @@ def informCollectWindow(info_dic):
                 infos = infos[:-1]
                 infos += '\n'
             xxht_info[0] = infos
+            xxht_text.delete(0.0, 'end')
             xxht_text.insert(0.0, infos)
             info_window.destroy()
 
@@ -1580,6 +1658,7 @@ def informCollectWindow(info_dic):
                 infos = infos[:-1]
                 infos += '\n'
             gf_info[0] = infos
+            gf_text.delete(0.0, "end")
             gf_text.insert(0.0, infos)
             info_window.destroy()
 
@@ -1711,6 +1790,7 @@ def informCollectWindow(info_dic):
                 infos = infos[:-1]
                 infos += '\n'
             cgcp_info[0] = infos
+            cgcp_text.delete(0.0, "end")
             cgcp_text.insert(0.0, infos)
             info_window.destroy()
 
@@ -1976,7 +2056,7 @@ class window4_1():
             self.info_dic['__{}__'.format(key_str)] = '无'
             self.info_dic['__{}__'.format(edit_str)] = ''
         else:
-            self.info_dic['__{}__'.format(key_str)] = '有'
+            self.info_dic['__{}__'.format(key_str)] = ' '
             self.info_dic['__{}__'.format(edit_str)] = edit_text.get(0.0, 20.0).strip()
 
     def getinfo(self):
@@ -2015,7 +2095,6 @@ class window4_1():
         self.add_radio_res_to_dict(f_qtxx.tsgcjcV, '特殊过程挤出', f_qtxx.tsgcjc, '特殊过程挤出操作工')
         self.add_item_to_dict(f_qtxx.sjaqjyspxr1, '三级安全教育受培训人1')
         self.add_item_to_dict(f_qtxx.sjaqjyspxr2, '三级安全教育受培训人2')
-        self.add_item_to_dict(f_qtxx.sjaqjyspxr3, '三级安全教育受培训人3')
         self.add_item_to_dict(f_qtxx.sjaqjyrq1, '三级安全教育第一天日期')
         self.add_item_to_dict(f_qtxx.sjaqjyrq2, '三级安全教育第二天日期')
         self.add_item_to_dict(f_qtxx.sjaqjyrq3, '三级安全教育第三天日期')
@@ -2023,12 +2102,13 @@ class window4_1():
         if f_qtxx.kyjV.get() == 0:
             self.info_dic['__是否有空压机__'] = '否'
         else:
-            self.info_dic['__是否有空压机__'] = '是'
+            self.info_dic['__是否有空压机__'] = ' '
 
-        print(self.info_dic)
-        gen_yaml(self.info_dic)
+        file = open('tagList.yml', 'r', encoding='utf-8')
+        key_dict = yaml.load(file.read())
+        ReplaceProcess(self.info_dic)    
 
-
+                   
 class cpgxPage(tk.Frame):
     '''主页'''
 
@@ -2117,10 +2197,10 @@ class cpgxPage(tk.Frame):
 
             info_self.mainloop()
 
-        cpgx2_text = Text(self, width=120, heigh=4)
-        cpgx2win_L = Label(self, text='产品2工序：', bg='Lavender')
-        btn_cpgx2 = tk.Button(self, text='修改产品2工序。', command=lambda: cpgx2self())
-        cpgx2_info = [cpgx2_text.get(0.0, 40.0)]
+        self.cpgx2_text = Text(self, width=120, heigh=4, state=DISABLED)
+        self.cpgx2win_L = Label(self, text='产品2工序：', bg='Lavender')
+        self.btn_cpgx2 = tk.Button(self, text='修改产品2工序。', command=lambda: cpgx2self())  # 解析
+        self.cpgx2_info = [self.cpgx2_text.get(0.0, 40.0)]
 
         def cpgx2self():
             info_self = tk.Tk()
@@ -2135,7 +2215,7 @@ class cpgxPage(tk.Frame):
                     for col, elem in enumerate(lin_list):
                         elem.grid(row=row, column=col)
 
-            def cpgx2Del(i):
+            def cpgx1Del(i):
                 for j in range(i, len(elem_list) - 1):
                     elem_list[j][0].config(text='产品2工序{}：'.format(j + 1))
                     elem_list[j][1].delete(0.0, "end")
@@ -2145,23 +2225,23 @@ class cpgxPage(tk.Frame):
                 del elem_list[-1]
                 rendering()
 
-            def cpgx2Add(self, cpgx2_i, infos):
+            def cpgx1Add(self, cpgx1_i, infos):
                 line_list = []
-                cpgx2cp_L = Label(self, text='产品2工序{}：'.format(cpgx2_i), bg='Lavender')
-                cpgx2cp = Text(self, height=1, width=120, relief=RAISED, highlightcolor='black', highlightthickness=1)
+                cpgx1cp_L = Label(self, text='产品2工序{}：'.format(cpgx1_i), bg='Lavender')
+                cpgx1cp = Text(self, height=1, width=120, relief=RAISED, highlightcolor='black', highlightthickness=1)
                 if infos != []:
-                    cpgx2cp.insert(0.0, infos[0])
-                line_list.append(cpgx2cp_L)
-                line_list.append(cpgx2cp)
+                    cpgx1cp.insert(0.0, infos[0])
+                line_list.append(cpgx1cp_L)
+                line_list.append(cpgx1cp)
 
-                btn_del = Button(info_self, text='删除该工序', command=lambda: cpgx2Del(cpgx2_i - 1))
+                btn_del = Button(info_self, text='删除该工序', command=lambda: cpgx1Del(cpgx1_i - 1))
                 line_list.append(btn_del)
 
                 elem_list.append(line_list)
 
                 rendering()
 
-            def cpgx2Done():
+            def cpgx1Done():
                 infos = ''
                 for row, lin_list in enumerate(elem_list):
                     for col, elem in enumerate(lin_list):
@@ -2171,29 +2251,32 @@ class cpgxPage(tk.Frame):
                         infos += ','
                     infos = infos[:-1]
                     infos += '\n'
-                cpgx2_info[0] = infos
-                cpgx2_text.insert(0.0, infos)
+                self.cpgx2_info[0] = infos
+                self.cpgx2_text.config(state=NORMAL)
+                self.cpgx2_text.delete(0.0, "end")
+                self.cpgx2_text.insert(0.0, infos)
+                self.cpgx2_text.config(state=DISABLED)
                 info_self.destroy()
 
-            infos = cpgx2_info[0].split('\n')
+            infos = self.cpgx2_info[0].split('\n')
             for i, info in enumerate(infos, start=1):
                 if info == '':
                     continue
-                cpgx2Add(info_self, i, info.split(','))
+                cpgx1Add(info_self, i, info.split(','))
 
             btn_gen = tk.Button(info_self, text='新增工序信息。',
-                                command=lambda: cpgx2Add(info_self, len(elem_list) + 1, []))
-            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx2Done())
+                                command=lambda: cpgx1Add(info_self, len(elem_list) + 1, []))
+            btn_done = tk.Button(info_self, text='信息确认完成。', command=lambda: cpgx1Done())
 
             btn_gen.grid(row=0, column=0, columnspan=1)
             btn_done.grid(row=0, column=2, columnspan=1)
 
             info_self.mainloop()
 
-        cpgx3_text = Text(self, width=120, heigh=4)
-        cpgx3win_L = Label(self, text='产品3工序：', bg='Lavender')
-        btn_cpgx3 = tk.Button(self, text='修改产品3工序。', command=lambda: cpgx3self())
-        cpgx3_info = [cpgx3_text.get(0.0, 40.0)]
+        self.cpgx3_text = Text(self, width=120, heigh=4)
+        self.cpgx3win_L = Label(self, text='产品3工序：', bg='Lavender')
+        self.btn_cpgx3 = tk.Button(self, text='修改产品3工序。', command=lambda: cpgx3self())
+        cpgx3_info = [self.cpgx3_text.get(0.0, 40.0)]
 
         def cpgx3self():
             info_self = tk.Tk()
@@ -2245,7 +2328,8 @@ class cpgxPage(tk.Frame):
                     infos = infos[:-1]
                     infos += '\n'
                 cpgx3_info[0] = infos
-                cpgx3_text.insert(0.0, infos)
+                self.cpgx3_text.delete(0.0, "end")
+                self.cpgx3_text.insert(0.0, infos)
                 info_self.destroy()
 
             infos = cpgx3_info[0].split('\n')
@@ -2263,10 +2347,10 @@ class cpgxPage(tk.Frame):
 
             info_self.mainloop()
 
-        cpgx4_text = Text(self, width=120, heigh=4)
-        cpgx4win_L = Label(self, text='产品4工序：', bg='Lavender')
-        btn_cpgx4 = tk.Button(self, text='修改产品4工序。', command=lambda: cpgx4self())
-        cpgx4_info = [cpgx4_text.get(0.0, 40.0)]
+        self.cpgx4_text = Text(self, width=120, heigh=4)
+        self.cpgx4win_L = Label(self, text='产品4工序：', bg='Lavender')
+        self.btn_cpgx4 = tk.Button(self, text='修改产品4工序。', command=lambda: cpgx4self())
+        cpgx4_info = [self.cpgx4_text.get(0.0, 40.0)]
 
         def cpgx4self():
             info_self = tk.Tk()
@@ -2318,7 +2402,8 @@ class cpgxPage(tk.Frame):
                     infos = infos[:-1]
                     infos += '\n'
                 cpgx4_info[0] = infos
-                cpgx4_text.insert(0.0, infos)
+                self.cpgx4_text.delete(0.0, "end")
+                self.cpgx4_text.insert(0.0, infos)
                 info_self.destroy()
 
             infos = cpgx4_info[0].split('\n')
@@ -2336,10 +2421,10 @@ class cpgxPage(tk.Frame):
 
             info_self.mainloop()
 
-        cpgx5_text = Text(self, width=120, heigh=4)
+        self.cpgx5_text = Text(self, width=120, heigh=4)
         cpgx5win_L = Label(self, text='产品5工序：', bg='Lavender')
         btn_cpgx5 = tk.Button(self, text='修改产品5工序。', command=lambda: cpgx5self())
-        cpgx5_info = [cpgx5_text.get(0.0, 40.0)]
+        cpgx5_info = [self.cpgx5_text.get(0.0, 40.0)]
 
         def cpgx5self():
             info_self = tk.Tk()
@@ -2391,7 +2476,8 @@ class cpgxPage(tk.Frame):
                     infos = infos[:-1]
                     infos += '\n'
                 cpgx5_info[0] = infos
-                cpgx5_text.insert(0.0, infos)
+                self.cpgx5_text.delete(0.0, "end")
+                self.cpgx5_text.insert(0.0, infos)
                 info_self.destroy()
 
             infos = cpgx5_info[0].split('\n')
@@ -2419,21 +2505,21 @@ class cpgxPage(tk.Frame):
         self.btn_cpgx1.grid(row=3, column=0, rowspan=2)
         self.cpgx1_text.grid(row=1, column=1, rowspan=4, pady=5, columnspan=4)
 
-        cpgx2win_L.grid(row=5, column=0, rowspan=2)
-        btn_cpgx2.grid(row=7, column=0, rowspan=2)
-        cpgx2_text.grid(row=5, column=1, rowspan=4, pady=5, columnspan=4)
+        self.cpgx2win_L.grid(row=5, column=0, rowspan=2)
+        self.btn_cpgx2.grid(row=7, column=0, rowspan=2)
+        self.cpgx2_text.grid(row=5, column=1, rowspan=4, pady=5, columnspan=4)
 
-        cpgx3win_L.grid(row=9, column=0, rowspan=2)
-        btn_cpgx3.grid(row=11, column=0, rowspan=2)
-        cpgx3_text.grid(row=9, column=1, rowspan=4, pady=5, columnspan=4)
+        self.cpgx3win_L.grid(row=9, column=0, rowspan=2)
+        self.btn_cpgx3.grid(row=11, column=0, rowspan=2)
+        self.cpgx3_text.grid(row=9, column=1, rowspan=4, pady=5, columnspan=4)
 
-        cpgx4win_L.grid(row=13, column=0, rowspan=2)
-        btn_cpgx4.grid(row=15, column=0, rowspan=2)
-        cpgx4_text.grid(row=13, column=1, rowspan=4, pady=5, columnspan=4)
+        self.cpgx4win_L.grid(row=13, column=0, rowspan=2)
+        self.btn_cpgx4.grid(row=15, column=0, rowspan=2)
+        self.cpgx4_text.grid(row=13, column=1, rowspan=4, pady=5, columnspan=4)
 
         cpgx5win_L.grid(row=17, column=0, rowspan=2)
         btn_cpgx5.grid(row=19, column=0, rowspan=2)
-        cpgx5_text.grid(row=17, column=1, rowspan=4, pady=5, columnspan=4)
+        self.cpgx5_text.grid(row=17, column=1, rowspan=4, pady=5, columnspan=4)
 
 
 class cpczPage(tk.Frame):
@@ -2524,10 +2610,10 @@ class cpczPage(tk.Frame):
 
             info_self.mainloop()
 
-        cpgx2_text = Text(self, width=120, heigh=4)
-        cpgx2win_L = Label(self, text='产品2操作工：', bg='Lavender')
-        btn_cpgx2 = tk.Button(self, text='修改产品2操作工。', command=lambda: cpgx2self())
-        cpgx2_info = [cpgx2_text.get(0.0, 40.0)]
+        self.cpgx2_text = Text(self, width=120, heigh=4)
+        self.cpgx2win_L = Label(self, text='产品2操作工：', bg='Lavender')
+        self.btn_cpgx2 = tk.Button(self, text='修改产品2操作工。', command=lambda: cpgx2self())
+        cpgx2_info = [self.cpgx2_text.get(0.0, 40.0)]
 
         def cpgx2self():
             info_self = tk.Tk()
@@ -2579,7 +2665,8 @@ class cpczPage(tk.Frame):
                     infos = infos[:-1]
                     infos += '\n'
                 cpgx2_info[0] = infos
-                cpgx2_text.insert(0.0, infos)
+                self.cpgx2_text.delete(0.0, "end")
+                self.cpgx2_text.insert(0.0, infos)
                 info_self.destroy()
 
             infos = cpgx2_info[0].split('\n')
@@ -2597,10 +2684,10 @@ class cpczPage(tk.Frame):
 
             info_self.mainloop()
 
-        cpgx3_text = Text(self, width=120, heigh=4)
-        cpgx3win_L = Label(self, text='产品3操作工：', bg='Lavender')
-        btn_cpgx3 = tk.Button(self, text='修改产品3操作工。', command=lambda: cpgx3self())
-        cpgx3_info = [cpgx3_text.get(0.0, 40.0)]
+        self.cpgx3_text = Text(self, width=120, heigh=4)
+        self.cpgx3win_L = Label(self, text='产品3操作工：', bg='Lavender')
+        self.btn_cpgx3 = tk.Button(self, text='修改产品3操作工。', command=lambda: cpgx3self())
+        cpgx3_info = [self.cpgx3_text.get(0.0, 40.0)]
 
         def cpgx3self():
             info_self = tk.Tk()
@@ -2652,7 +2739,8 @@ class cpczPage(tk.Frame):
                     infos = infos[:-1]
                     infos += '\n'
                 cpgx3_info[0] = infos
-                cpgx3_text.insert(0.0, infos)
+                self.cpgx3_text.delete(0.0, "end")
+                self.cpgx3_text.insert(0.0, infos)
                 info_self.destroy()
 
             infos = cpgx3_info[0].split('\n')
@@ -2670,10 +2758,10 @@ class cpczPage(tk.Frame):
 
             info_self.mainloop()
 
-        cpgx4_text = Text(self, width=120, heigh=4)
-        cpgx4win_L = Label(self, text='产品4操作工：', bg='Lavender')
-        btn_cpgx4 = tk.Button(self, text='修改产品4操作工。', command=lambda: cpgx4self())
-        cpgx4_info = [cpgx4_text.get(0.0, 40.0)]
+        self.cpgx4_text = Text(self, width=120, heigh=4)
+        self.cpgx4win_L = Label(self, text='产品4操作工：', bg='Lavender')
+        self.btn_cpgx4 = tk.Button(self, text='修改产品4操作工。', command=lambda: cpgx4self())
+        cpgx4_info = [self.cpgx4_text.get(0.0, 40.0)]
 
         def cpgx4self():
             info_self = tk.Tk()
@@ -2725,7 +2813,8 @@ class cpczPage(tk.Frame):
                     infos = infos[:-1]
                     infos += '\n'
                 cpgx4_info[0] = infos
-                cpgx4_text.insert(0.0, infos)
+                self.cpgx4_text.delete(0.0, "end")
+                self.cpgx4_text.insert(0.0, infos)
                 info_self.destroy()
 
             infos = cpgx4_info[0].split('\n')
@@ -2743,10 +2832,10 @@ class cpczPage(tk.Frame):
 
             info_self.mainloop()
 
-        cpgx5_text = Text(self, width=120, heigh=4)
+        self.cpgx5_text = Text(self, width=120, heigh=4)
         cpgx5win_L = Label(self, text='产品5操作工：', bg='Lavender')
         btn_cpgx5 = tk.Button(self, text='修改产品5操作工。', command=lambda: cpgx5self())
-        cpgx5_info = [cpgx5_text.get(0.0, 40.0)]
+        cpgx5_info = [self.cpgx5_text.get(0.0, 40.0)]
 
         def cpgx5self():
             info_self = tk.Tk()
@@ -2798,7 +2887,8 @@ class cpczPage(tk.Frame):
                     infos = infos[:-1]
                     infos += '\n'
                 cpgx5_info[0] = infos
-                cpgx5_text.insert(0.0, infos)
+                self.cpgx5_text.delete(0.0, "end")
+                self.cpgx5_text.insert(0.0, infos)
                 info_self.destroy()
 
             infos = cpgx5_info[0].split('\n')
@@ -2826,21 +2916,21 @@ class cpczPage(tk.Frame):
         self.btn_cpgx1.grid(row=3, column=0, rowspan=2)
         self.cpgx1_text.grid(row=1, column=1, rowspan=4, pady=5, columnspan=4)
 
-        cpgx2win_L.grid(row=5, column=0, rowspan=2)
-        btn_cpgx2.grid(row=7, column=0, rowspan=2)
-        cpgx2_text.grid(row=5, column=1, rowspan=4, pady=5, columnspan=4)
+        self.cpgx2win_L.grid(row=5, column=0, rowspan=2)
+        self.btn_cpgx2.grid(row=7, column=0, rowspan=2)
+        self.cpgx2_text.grid(row=5, column=1, rowspan=4, pady=5, columnspan=4)
 
-        cpgx3win_L.grid(row=9, column=0, rowspan=2)
-        btn_cpgx3.grid(row=11, column=0, rowspan=2)
-        cpgx3_text.grid(row=9, column=1, rowspan=4, pady=5, columnspan=4)
+        self.cpgx3win_L.grid(row=9, column=0, rowspan=2)
+        self.btn_cpgx3.grid(row=11, column=0, rowspan=2)
+        self.cpgx3_text.grid(row=9, column=1, rowspan=4, pady=5, columnspan=4)
 
-        cpgx4win_L.grid(row=13, column=0, rowspan=2)
-        btn_cpgx4.grid(row=15, column=0, rowspan=2)
-        cpgx4_text.grid(row=13, column=1, rowspan=4, pady=5, columnspan=4)
+        self.cpgx4win_L.grid(row=13, column=0, rowspan=2)
+        self.btn_cpgx4.grid(row=15, column=0, rowspan=2)
+        self.cpgx4_text.grid(row=13, column=1, rowspan=4, pady=5, columnspan=4)
 
         cpgx5win_L.grid(row=17, column=0, rowspan=2)
         btn_cpgx5.grid(row=19, column=0, rowspan=2)
-        cpgx5_text.grid(row=17, column=1, rowspan=4, pady=5, columnspan=4)
+        self.cpgx5_text.grid(row=17, column=1, rowspan=4, pady=5, columnspan=4)
 
 
 class cpxxPage(tk.Frame):
@@ -2971,9 +3061,9 @@ class cpxxPage(tk.Frame):
 
             info_self.mainloop()
 
-        cpgx2_text = Text(self, width=120, heigh=4)
-        cpgx2win_L = Label(self, text='产品2信息：', bg='Lavender')
-        btn_cpgx2 = tk.Button(self, text='修改产品2信息。', command=lambda: cpgx2self())
+        self.cpgx2_text = Text(self, width=120, heigh=4)
+        self.cpgx2win_L = Label(self, text='产品2信息：', bg='Lavender')
+        self.btn_cpgx2 = tk.Button(self, text='修改产品2信息。', command=lambda: cpgx2self())
 
         def cpgx2self():
             info_self = tk.Tk()
@@ -3086,10 +3176,10 @@ class cpxxPage(tk.Frame):
 
             info_self.mainloop()
 
-        cpgx3_text = Text(self, width=120, heigh=4)
-        cpgx3win_L = Label(self, text='产品3信息：', bg='Lavender')
-        btn_cpgx3 = tk.Button(self, text='修改产品3信息。', command=lambda: cpgx3self())
-        cpgx3_info = [cpgx3_text.get(0.0, 40.0)]
+        self.cpgx3_text = Text(self, width=120, heigh=4)
+        self.cpgx3win_L = Label(self, text='产品3信息：', bg='Lavender')
+        self.btn_cpgx3 = tk.Button(self, text='修改产品3信息。', command=lambda: cpgx3self())
+        cpgx3_info = [self.cpgx3_text.get(0.0, 40.0)]
 
         def cpgx3self():
             info_self = tk.Tk()
@@ -3202,10 +3292,10 @@ class cpxxPage(tk.Frame):
 
             info_self.mainloop()
 
-        cpgx4_text = Text(self, width=120, heigh=4)
-        cpgx4win_L = Label(self, text='产品4信息：', bg='Lavender')
-        btn_cpgx4 = tk.Button(self, text='修改产品4信息。', command=lambda: cpgx4self())
-        cpgx4_info = [cpgx4_text.get(0.0, 40.0)]
+        self.cpgx4_text = Text(self, width=120, heigh=4)
+        self.cpgx4win_L = Label(self, text='产品4信息：', bg='Lavender')
+        self.btn_cpgx4 = tk.Button(self, text='修改产品4信息。', command=lambda: cpgx4self())
+        cpgx4_info = [self.cpgx4_text.get(0.0, 40.0)]
 
         def cpgx4self():
             info_self = tk.Tk()
@@ -3318,10 +3408,10 @@ class cpxxPage(tk.Frame):
 
             info_self.mainloop()
 
-        cpgx5_text = Text(self, width=120, heigh=4)
+        self.cpgx5_text = Text(self, width=120, heigh=4)
         cpgx5win_L = Label(self, text='产品5信息：', bg='Lavender')
         btn_cpgx5 = tk.Button(self, text='修改产品5信息。', command=lambda: cpgx5self())
-        cpgx5_info = [cpgx5_text.get(0.0, 40.0)]
+        cpgx5_info = [self.cpgx5_text.get(0.0, 40.0)]
 
         def cpgx5self():
             info_self = tk.Tk()
@@ -3444,21 +3534,21 @@ class cpxxPage(tk.Frame):
         self.btn_cpgx1.grid(row=3, column=0, rowspan=2)
         self.cpgx1_text.grid(row=1, column=1, rowspan=4, pady=5, columnspan=4)
 
-        cpgx2win_L.grid(row=5, column=0, rowspan=2)
-        btn_cpgx2.grid(row=7, column=0, rowspan=2)
-        cpgx2_text.grid(row=5, column=1, rowspan=4, pady=5, columnspan=4)
+        self.cpgx2win_L.grid(row=5, column=0, rowspan=2)
+        self.btn_cpgx2.grid(row=7, column=0, rowspan=2)
+        self.cpgx2_text.grid(row=5, column=1, rowspan=4, pady=5, columnspan=4)
 
-        cpgx3win_L.grid(row=9, column=0, rowspan=2)
-        btn_cpgx3.grid(row=11, column=0, rowspan=2)
-        cpgx3_text.grid(row=9, column=1, rowspan=4, pady=5, columnspan=4)
+        self.cpgx3win_L.grid(row=9, column=0, rowspan=2)
+        self.btn_cpgx3.grid(row=11, column=0, rowspan=2)
+        self.cpgx3_text.grid(row=9, column=1, rowspan=4, pady=5, columnspan=4)
 
-        cpgx4win_L.grid(row=13, column=0, rowspan=2)
-        btn_cpgx4.grid(row=15, column=0, rowspan=2)
-        cpgx4_text.grid(row=13, column=1, rowspan=4, pady=5, columnspan=4)
+        self.cpgx4win_L.grid(row=13, column=0, rowspan=2)
+        self.btn_cpgx4.grid(row=15, column=0, rowspan=2)
+        self.cpgx4_text.grid(row=13, column=1, rowspan=4, pady=5, columnspan=4)
 
         cpgx5win_L.grid(row=17, column=0, rowspan=2)
         btn_cpgx5.grid(row=19, column=0, rowspan=2)
-        cpgx5_text.grid(row=17, column=1, rowspan=4, pady=5, columnspan=4)
+        self.cpgx5_text.grid(row=17, column=1, rowspan=4, pady=5, columnspan=4)
 
 
 class qtxxPage(tk.Frame):
@@ -3475,110 +3565,110 @@ class qtxxPage(tk.Frame):
         btngen = tk.Button(self, text='信息无误开始生成文档！', command=lambda: root.getinfo())
 
         jyy1_L = Label(self, text='检验员1：', bg='Lavender')
-        jyy1 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.jyy1 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
         scbry1_L = Label(self, text='生产部人员1：', bg='Lavender')
-        scbry1 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.scbry1 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
         scbry2_L = Label(self, text='生产部人员2：', bg='Lavender')
-        scbry2 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.scbry2 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
         scbry3_L = Label(self, text='生产部人员3：', bg='Lavender')
-        scbry3 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.scbry3 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
-        tsgcjbV = tk.IntVar(master=self)
+        self.tsgcjbV = tk.IntVar(master=self)
 
         def tsgcjbbool():
-            if tsgcjbV.get() == 0:
-                tsgcjb.config(state=DISABLED)
+            if self.tsgcjbV.get() == 0:
+                self.tsgcjb.config(state=DISABLED)
             else:
-                tsgcjb.config(state=NORMAL)
+                self.tsgcjb.config(state=NORMAL)
 
-        tsgcjbC1 = tk.Radiobutton(self, text="有搅拌过程", variable=tsgcjbV, value=1, command=tsgcjbbool, bg='Lavender')
-        tsgcjbC2 = tk.Radiobutton(self, text="无搅拌过程", variable=tsgcjbV, value=0, command=tsgcjbbool, bg='Lavender')
+        tsgcjbC1 = tk.Radiobutton(self, text="有搅拌过程", variable=self.tsgcjbV, value=1, command=tsgcjbbool, bg='Lavender')
+        tsgcjbC2 = tk.Radiobutton(self, text="无搅拌过程", variable=self.tsgcjbV, value=0, command=tsgcjbbool, bg='Lavender')
         tsgcjb_L = Label(self, text='特殊过程搅拌搅拌工：', bg='Lavender')
-        tsgcjb = Text(self, height=1, width=40, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.tsgcjb = Text(self, height=1, width=40, relief=RAISED, highlightcolor='black', highlightthickness=1)
         tsgcjbbool()
 
-        tsgcbmjshV = tk.IntVar(master=self)
+        self.tsgcbmjshV = tk.IntVar(master=self)
 
         def tsgcbmjshbool():
-            if tsgcbmjshV.get() == 0:
-                tsgcbmjsh.config(state=DISABLED)
+            if self.tsgcbmjshV.get() == 0:
+                self.tsgcbmjsh.config(state=DISABLED)
             else:
-                tsgcbmjsh.config(state=NORMAL)
+                self.tsgcbmjsh.config(state=NORMAL)
 
-        tsgcbmjshC1 = tk.Radiobutton(self, text="有薄膜金属化过程", variable=tsgcbmjshV, value=1, command=tsgcbmjshbool,
+        tsgcbmjshC1 = tk.Radiobutton(self, text="有薄膜金属化过程", variable=self.tsgcbmjshV, value=1, command=tsgcbmjshbool,
                                      bg='Lavender')
-        tsgcbmjshC2 = tk.Radiobutton(self, text="无薄膜金属化过程", variable=tsgcbmjshV, value=0, command=tsgcbmjshbool,
+        tsgcbmjshC2 = tk.Radiobutton(self, text="无薄膜金属化过程", variable=self.tsgcbmjshV, value=0, command=tsgcbmjshbool,
                                      bg='Lavender')
         tsgcbmjsh_L = Label(self, text='特殊过程薄膜金属化操作工：', bg='Lavender')
-        tsgcbmjsh = Text(self, height=1, width=40, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.tsgcbmjsh = Text(self, height=1, width=40, relief=RAISED, highlightcolor='black', highlightthickness=1)
         tsgcbmjshbool()
 
-        tsgchjV = tk.IntVar(master=self)
+        self.tsgchjV = tk.IntVar(master=self)
 
         def tsgchjbool():
-            if tsgchjV.get() == 0:
-                tsgchj.config(state=DISABLED)
+            if self.tsgchjV.get() == 0:
+                self.tsgchj.config(state=DISABLED)
             else:
-                tsgchj.config(state=NORMAL)
+                self.tsgchj.config(state=NORMAL)
 
-        tsgchjC1 = tk.Radiobutton(self, text="有焊接过程", variable=tsgchjV, value=1, command=tsgchjbool, bg='Lavender')
-        tsgchjC2 = tk.Radiobutton(self, text="无焊接过程", variable=tsgchjV, value=0, command=tsgchjbool, bg='Lavender')
+        tsgchjC1 = tk.Radiobutton(self, text="有焊接过程", variable=self.tsgchjV, value=1, command=tsgchjbool, bg='Lavender')
+        tsgchjC2 = tk.Radiobutton(self, text="无焊接过程", variable=self.tsgchjV, value=0, command=tsgchjbool, bg='Lavender')
         tsgchj_L = Label(self, text='特殊过程焊接操作工：', bg='Lavender')
-        tsgchj = Text(self, height=1, width=40, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.tsgchj = Text(self, height=1, width=40, relief=RAISED, highlightcolor='black', highlightthickness=1)
         tsgchjbool()
 
-        tsgchhV = tk.IntVar(master=self)
+        self.tsgchhV = tk.IntVar(master=self)
 
         def tsgchhbool():
-            if tsgchhV.get() == 0:
-                tsgchh.config(state=DISABLED)
+            if self.tsgchhV.get() == 0:
+                self.tsgchh.config(state=DISABLED)
             else:
-                tsgchh.config(state=NORMAL)
+                self.tsgchh.config(state=NORMAL)
 
-        tsgchhC1 = tk.Radiobutton(self, text="有混合过程", variable=tsgchhV, value=1, command=tsgchhbool, bg='Lavender')
-        tsgchhC2 = tk.Radiobutton(self, text="无混合过程", variable=tsgchhV, value=0, command=tsgchhbool, bg='Lavender')
+        tsgchhC1 = tk.Radiobutton(self, text="有混合过程", variable=self.tsgchhV, value=1, command=tsgchhbool, bg='Lavender')
+        tsgchhC2 = tk.Radiobutton(self, text="无混合过程", variable=self.tsgchhV, value=0, command=tsgchhbool, bg='Lavender')
         tsgchh_L = Label(self, text='特殊过程混合操作工：', bg='Lavender')
-        tsgchh = Text(self, height=1, width=40, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.tsgchh = Text(self, height=1, width=40, relief=RAISED, highlightcolor='black', highlightthickness=1)
         tsgchhbool()
 
-        tsgcjcV = tk.IntVar(master=self)
+        self.tsgcjcV = tk.IntVar(master=self)
 
         def tsgcjcbool():
-            if tsgcjcV.get() == 0:
-                tsgcjc.config(state=DISABLED)
+            if self.tsgcjcV.get() == 0:
+                self.tsgcjc.config(state=DISABLED)
             else:
-                tsgcjc.config(state=NORMAL)
+                self.tsgcjc.config(state=NORMAL)
 
-        tsgcjcC1 = tk.Radiobutton(self, text="有挤出过程", variable=tsgcjcV, value=1, command=tsgcjcbool, bg='Lavender')
-        tsgcjcC2 = tk.Radiobutton(self, text="无挤出过程", variable=tsgcjcV, value=0, command=tsgcjcbool, bg='Lavender')
+        tsgcjcC1 = tk.Radiobutton(self, text="有挤出过程", variable=self.tsgcjcV, value=1, command=tsgcjcbool, bg='Lavender')
+        tsgcjcC2 = tk.Radiobutton(self, text="无挤出过程", variable=self.tsgcjcV, value=0, command=tsgcjcbool, bg='Lavender')
         tsgcjc_L = Label(self, text='特殊过程挤出操作工：', bg='Lavender')
-        tsgcjc = Text(self, height=1, width=40, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.tsgcjc = Text(self, height=1, width=40, relief=RAISED, highlightcolor='black', highlightthickness=1)
         tsgcjcbool()
 
         sjaqjyspxr1_L = Label(self, text='三级安全教育受培训人1：', bg='Lavender')
-        sjaqjyspxr1 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.sjaqjyspxr1 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
         sjaqjyspxr2_L = Label(self, text='三级安全教育受培训人2：', bg='Lavender')
-        sjaqjyspxr2 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.sjaqjyspxr2 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
         sjaqjyrq1_L = Label(self, text='三级安全教育第一天日期：', bg='Lavender')
-        sjaqjyrq1 = Text(self, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.sjaqjyrq1 = Text(self, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
         sjaqjyrq2_L = Label(self, text='三级安全教育第二天日期：', bg='Lavender')
-        sjaqjyrq2 = Text(self, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.sjaqjyrq2 = Text(self, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
         sjaqjyrq3_L = Label(self, text='三级安全教育第三天日期：', bg='Lavender')
-        sjaqjyrq3 = Text(self, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.sjaqjyrq3 = Text(self, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
         sjaqjybzpxr3_L = Label(self, text='三级安全教育班组培训人：', bg='Lavender')
-        sjaqjybzpxr3 = Text(self, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.sjaqjybzpxr3 = Text(self, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
-        kyjV = tk.IntVar(master=self)
-        kyjC1 = tk.Radiobutton(self, text="有空压机", variable=kyjV, value=1, bg='Lavender')
-        kyjC2 = tk.Radiobutton(self, text="无空压机", variable=kyjV, value=0, bg='Lavender')
+        self.kyjV = tk.IntVar(master=self)
+        kyjC1 = tk.Radiobutton(self, text="有空压机", variable=self.kyjV, value=1, bg='Lavender')
+        kyjC2 = tk.Radiobutton(self, text="无空压机", variable=self.kyjV, value=0, bg='Lavender')
 
         btncpgx.grid(row=0, column=0)
         btncpxx.grid(row=0, column=1)
@@ -3587,54 +3677,54 @@ class qtxxPage(tk.Frame):
         btngen.grid(row=0, column=4)
 
         jyy1_L.grid(row=1, column=0)
-        jyy1.grid(row=1, column=1)
+        self.jyy1.grid(row=1, column=1)
 
         scbry1_L.grid(row=2, column=0)
-        scbry1.grid(row=2, column=1)
+        self.scbry1.grid(row=2, column=1)
         scbry2_L.grid(row=2, column=2)
-        scbry2.grid(row=2, column=3)
+        self.scbry2.grid(row=2, column=3)
         scbry3_L.grid(row=2, column=4)
-        scbry3.grid(row=2, column=5)
+        self.scbry3.grid(row=2, column=5)
 
         tsgcjbC1.grid(row=3, column=0)
         tsgcjbC2.grid(row=3, column=1)
         tsgcjb_L.grid(row=3, column=2)
-        tsgcjb.grid(row=3, column=3, columnspan=4)
+        self.tsgcjb.grid(row=3, column=3, columnspan=4)
 
         tsgcbmjshC1.grid(row=4, column=0)
         tsgcbmjshC2.grid(row=4, column=1)
         tsgcbmjsh_L.grid(row=4, column=2)
-        tsgcbmjsh.grid(row=4, column=3, columnspan=4)
+        self.tsgcbmjsh.grid(row=4, column=3, columnspan=4)
 
         tsgchjC1.grid(row=5, column=0)
         tsgchjC2.grid(row=5, column=1)
         tsgchj_L.grid(row=5, column=2)
-        tsgchj.grid(row=5, column=3, columnspan=4)
+        self.tsgchj.grid(row=5, column=3, columnspan=4)
 
         tsgchhC1.grid(row=6, column=0)
         tsgchhC2.grid(row=6, column=1)
         tsgchh_L.grid(row=6, column=2)
-        tsgchh.grid(row=6, column=3, columnspan=4)
+        self.tsgchh.grid(row=6, column=3, columnspan=4)
 
         tsgcjcC1.grid(row=7, column=0)
         tsgcjcC2.grid(row=7, column=1)
         tsgcjc_L.grid(row=7, column=2)
-        tsgcjc.grid(row=7, column=3, columnspan=4)
+        self.tsgcjc.grid(row=7, column=3, columnspan=4)
 
         sjaqjyspxr1_L.grid(row=8, column=0)
-        sjaqjyspxr1.grid(row=8, column=1)
+        self.sjaqjyspxr1.grid(row=8, column=1)
         sjaqjyspxr2_L.grid(row=8, column=2)
-        sjaqjyspxr2.grid(row=8, column=3)
+        self.sjaqjyspxr2.grid(row=8, column=3)
 
         sjaqjyrq1_L.grid(row=9, column=0)
-        sjaqjyrq1.grid(row=9, column=1)
+        self.sjaqjyrq1.grid(row=9, column=1)
         sjaqjyrq2_L.grid(row=9, column=2)
-        sjaqjyrq2.grid(row=9, column=3)
+        self.sjaqjyrq2.grid(row=9, column=3)
         sjaqjyrq3_L.grid(row=9, column=4)
-        sjaqjyrq3.grid(row=9, column=5)
+        self.sjaqjyrq3.grid(row=9, column=5)
 
         sjaqjybzpxr3_L.grid(row=10, column=0)
-        sjaqjybzpxr3.grid(row=10, column=1)
+        self.sjaqjybzpxr3.grid(row=10, column=1)
 
         kyjC1.grid(row=10, column=2)
         kyjC2.grid(row=10, column=3)
@@ -3738,11 +3828,10 @@ class window4_2():
         self.add_cpxx_to_dict(self.frames[cpxxPage_2].cpgx5_text.get(0.0, 20.0).strip(), 5)
 
         # 第四个界面信息收集
-        f_qtxx = self.frames[qtxxPage]
+        f_qtxx = self.frames[qtxxPage_2]
         self.add_item_to_dict(f_qtxx.jyy1, '检验员1')
         self.add_item_to_dict(f_qtxx.scbry1, '生产部人员1')
         self.add_item_to_dict(f_qtxx.scbry2, '生产部人员2')
-        self.add_item_to_dict(f_qtxx.scbry3, '生产部人员3')
         self.add_radio_res_to_dict(f_qtxx.tsgcjbV, '特殊过程搅拌', f_qtxx.tsgcjb, '特殊过程搅拌搅拌工')
         self.add_radio_res_to_dict(f_qtxx.tsgcbmjshV, '特殊过程薄膜金属化', f_qtxx.tsgcbmjsh,
                                    '特殊过程薄膜金属化操作工')
@@ -3754,8 +3843,7 @@ class window4_2():
         else:
             self.info_dic['__是否有空压机__'] = '是'
 
-        print(self.info_dic)
-        gen_yaml(self.info_dic)
+        ReplaceProcess(self.info_dic)    
 
 
 class cpgxPage_2(tk.Frame):
@@ -3901,6 +3989,7 @@ class cpgxPage_2(tk.Frame):
                     infos = infos[:-1]
                     infos += '\n'
                 cpgx2_info[0] = infos
+                self.cpgx2_text.delete(0.0, "end")
                 self.cpgx2_text.insert(0.0, infos)
                 info_self.destroy()
 
@@ -3974,6 +4063,7 @@ class cpgxPage_2(tk.Frame):
                     infos = infos[:-1]
                     infos += '\n'
                 cpgx3_info[0] = infos
+                self.cpgx3_text.delete(0.0, "end")
                 self.cpgx3_text.insert(0.0, infos)
                 info_self.destroy()
 
@@ -4047,6 +4137,7 @@ class cpgxPage_2(tk.Frame):
                     infos = infos[:-1]
                     infos += '\n'
                 cpgx4_info[0] = infos
+                self.cpgx4_text.delete(0.0, "end")
                 self.cpgx4_text.insert(0.0, infos)
                 info_self.destroy()
 
@@ -4120,6 +4211,7 @@ class cpgxPage_2(tk.Frame):
                     infos = infos[:-1]
                     infos += '\n'
                 cpgx5_info[0] = infos
+                self.cpgx5_text.delete(0.0, "end")
                 self.cpgx5_text.insert(0.0, infos)
                 info_self.destroy()
 
@@ -4256,7 +4348,7 @@ class cpczPage_2(tk.Frame):
         self.cpgx2_text = Text(self, width=120, heigh=4)
         self.cpgx2win_L = Label(self, text='产品2操作工：', bg='Lavender')
         self.btn_cpgx2 = tk.Button(self, text='修改产品2操作工。', command=lambda: cpgx2self())
-        cpgx2_info = [cpgx2_text.get(0.0, 40.0)]
+        cpgx2_info = [self.cpgx2_text.get(0.0, 40.0)]
 
         def cpgx2self():
             info_self = tk.Tk()
@@ -4308,6 +4400,7 @@ class cpczPage_2(tk.Frame):
                     infos = infos[:-1]
                     infos += '\n'
                 cpgx2_info[0] = infos
+                self.cpgx2_text.delete(0.0, "end")
                 self.cpgx2_text.insert(0.0, infos)
                 info_self.destroy()
 
@@ -4381,6 +4474,7 @@ class cpczPage_2(tk.Frame):
                     infos = infos[:-1]
                     infos += '\n'
                 cpgx3_info[0] = infos
+                self.cpgx3_text.delete(0.0, "end")
                 self.cpgx3_text.insert(0.0, infos)
                 info_self.destroy()
 
@@ -4454,6 +4548,7 @@ class cpczPage_2(tk.Frame):
                     infos = infos[:-1]
                     infos += '\n'
                 cpgx4_info[0] = infos
+                self.cpgx4_text.delete(0.0, "end")
                 self.cpgx4_text.insert(0.0, infos)
                 info_self.destroy()
 
@@ -4475,7 +4570,7 @@ class cpczPage_2(tk.Frame):
         self.cpgx5_text = Text(self, width=120, heigh=4)
         self.cpgx5win_L = Label(self, text='产品5操作工：', bg='Lavender')
         self.btn_cpgx5 = tk.Button(self, text='修改产品5操作工。', command=lambda: cpgx5self())
-        cpgx5_info = [cpgx5_text.get(0.0, 40.0)]
+        cpgx5_info = [self.cpgx5_text.get(0.0, 40.0)]
 
         def cpgx5self():
             info_self = tk.Tk()
@@ -4527,6 +4622,7 @@ class cpczPage_2(tk.Frame):
                     infos = infos[:-1]
                     infos += '\n'
                 cpgx5_info[0] = infos
+                self.cpgx5_text.delete(0.0, "end")
                 self.cpgx5_text.insert(0.0, infos)
                 info_self.destroy()
 
@@ -5050,7 +5146,7 @@ class cpxxPage_2(tk.Frame):
         self.cpgx5_text = Text(self, width=120, heigh=4)
         self.cpgx5win_L = Label(self, text='产品5信息：', bg='Lavender')
         self.btn_cpgx5 = tk.Button(self, text='修改产品5信息。', command=lambda: cpgx5self())
-        cpgx5_info = [cpgx5_text.get(0.0, 40.0)]
+        cpgx5_info = [self.cpgx5_text.get(0.0, 40.0)]
 
         def cpgx5self():
             info_self = tk.Tk()
@@ -5204,92 +5300,110 @@ class qtxxPage_2(tk.Frame):
         btngen = tk.Button(self, text='信息无误开始生成文档！', command=lambda: root.getinfo())
 
         jyy1_L = Label(self, text='检验员1：', bg='Lavender')
-        jyy1 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.jyy1 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
         scbry1_L = Label(self, text='生产部人员1：', bg='Lavender')
-        scbry1 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.scbry1 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
         scbry2_L = Label(self, text='生产部人员2：', bg='Lavender')
-        scbry2 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.scbry2 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
         scbry3_L = Label(self, text='生产部人员3：', bg='Lavender')
-        scbry3 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.scbry3 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
-        tsgcjbV = tk.IntVar(master=self)
+        self.tsgcjbV = tk.IntVar(master=self)
 
         def tsgcjbbool():
-            if tsgcjbV.get() == 0:
-                tsgcjb.config(state=DISABLED)
+            if self.tsgcjbV.get() == 0:
+                self.tsgcjb.config(state=DISABLED)
             else:
-                tsgcjb.config(state=NORMAL)
+                self.tsgcjb.config(state=NORMAL)
 
-        tsgcjbC1 = tk.Radiobutton(self, text="有搅拌过程", variable=tsgcjbV, value=1, command=tsgcjbbool, bg='Lavender')
-        tsgcjbC2 = tk.Radiobutton(self, text="无搅拌过程", variable=tsgcjbV, value=0, command=tsgcjbbool, bg='Lavender')
+        tsgcjbC1 = tk.Radiobutton(self, text="有搅拌过程", variable=self.tsgcjbV, value=1, command=tsgcjbbool, bg='Lavender')
+        tsgcjbC2 = tk.Radiobutton(self, text="无搅拌过程", variable=self.tsgcjbV, value=0, command=tsgcjbbool, bg='Lavender')
         tsgcjb_L = Label(self, text='特殊过程搅拌搅拌工：', bg='Lavender')
-        tsgcjb = Text(self, height=1, width=40, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.tsgcjb = Text(self, height=1, width=40, relief=RAISED, highlightcolor='black', highlightthickness=1)
         tsgcjbbool()
 
-        tsgcbmjshV = tk.IntVar(master=self)
+        self.tsgcbmjshV = tk.IntVar(master=self)
 
         def tsgcbmjshbool():
-            if tsgcbmjshV.get() == 0:
-                tsgcbmjsh.config(state=DISABLED)
+            if self.tsgcbmjshV.get() == 0:
+                self.tsgcbmjsh.config(state=DISABLED)
             else:
-                tsgcbmjsh.config(state=NORMAL)
+                self.tsgcbmjsh.config(state=NORMAL)
 
-        tsgcbmjshC1 = tk.Radiobutton(self, text="有薄膜金属化过程", variable=tsgcbmjshV, value=1, command=tsgcbmjshbool,
+        tsgcbmjshC1 = tk.Radiobutton(self, text="有薄膜金属化过程", variable=self.tsgcbmjshV, value=1, command=tsgcbmjshbool,
                                      bg='Lavender')
-        tsgcbmjshC2 = tk.Radiobutton(self, text="无薄膜金属化过程", variable=tsgcbmjshV, value=0, command=tsgcbmjshbool,
+        tsgcbmjshC2 = tk.Radiobutton(self, text="无薄膜金属化过程", variable=self.tsgcbmjshV, value=0, command=tsgcbmjshbool,
                                      bg='Lavender')
         tsgcbmjsh_L = Label(self, text='特殊过程薄膜金属化操作工：', bg='Lavender')
-        tsgcbmjsh = Text(self, height=1, width=40, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.tsgcbmjsh = Text(self, height=1, width=40, relief=RAISED, highlightcolor='black', highlightthickness=1)
         tsgcbmjshbool()
 
-        tsgchjV = tk.IntVar(master=self)
+        self.tsgchjV = tk.IntVar(master=self)
 
         def tsgchjbool():
-            if tsgchjV.get() == 0:
-                tsgchj.config(state=DISABLED)
+            if self.tsgchjV.get() == 0:
+                self.tsgchj.config(state=DISABLED)
             else:
-                tsgchj.config(state=NORMAL)
+                self.tsgchj.config(state=NORMAL)
 
-        tsgchjC1 = tk.Radiobutton(self, text="有焊接过程", variable=tsgchjV, value=1, command=tsgchjbool, bg='Lavender')
-        tsgchjC2 = tk.Radiobutton(self, text="无焊接过程", variable=tsgchjV, value=0, command=tsgchjbool, bg='Lavender')
+        tsgchjC1 = tk.Radiobutton(self, text="有焊接过程", variable=self.tsgchjV, value=1, command=tsgchjbool, bg='Lavender')
+        tsgchjC2 = tk.Radiobutton(self, text="无焊接过程", variable=self.tsgchjV, value=0, command=tsgchjbool, bg='Lavender')
         tsgchj_L = Label(self, text='特殊过程焊接操作工：', bg='Lavender')
-        tsgchj = Text(self, height=1, width=40, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.tsgchj = Text(self, height=1, width=40, relief=RAISED, highlightcolor='black', highlightthickness=1)
         tsgchjbool()
 
-        tsgchhV = tk.IntVar(master=self)
+        self.tsgchhV = tk.IntVar(master=self)
 
         def tsgchhbool():
-            if tsgchhV.get() == 0:
-                tsgchh.config(state=DISABLED)
+            if self.tsgchhV.get() == 0:
+                self.tsgchh.config(state=DISABLED)
             else:
-                tsgchh.config(state=NORMAL)
+                self.tsgchh.config(state=NORMAL)
 
-        tsgchhC1 = tk.Radiobutton(self, text="有混合过程", variable=tsgchhV, value=1, command=tsgchhbool, bg='Lavender')
-        tsgchhC2 = tk.Radiobutton(self, text="无混合过程", variable=tsgchhV, value=0, command=tsgchhbool, bg='Lavender')
+        tsgchhC1 = tk.Radiobutton(self, text="有混合过程", variable=self.tsgchhV, value=1, command=tsgchhbool, bg='Lavender')
+        tsgchhC2 = tk.Radiobutton(self, text="无混合过程", variable=self.tsgchhV, value=0, command=tsgchhbool, bg='Lavender')
         tsgchh_L = Label(self, text='特殊过程混合操作工：', bg='Lavender')
-        tsgchh = Text(self, height=1, width=40, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.tsgchh = Text(self, height=1, width=40, relief=RAISED, highlightcolor='black', highlightthickness=1)
         tsgchhbool()
 
-        tsgcjcV = tk.IntVar(master=self)
+        self.tsgcjcV = tk.IntVar(master=self)
 
         def tsgcjcbool():
-            if tsgcjcV.get() == 0:
-                tsgcjc.config(state=DISABLED)
+            if self.tsgcjcV.get() == 0:
+                self.tsgcjc.config(state=DISABLED)
             else:
-                tsgcjc.config(state=NORMAL)
+                self.tsgcjc.config(state=NORMAL)
 
-        tsgcjcC1 = tk.Radiobutton(self, text="有挤出过程", variable=tsgcjcV, value=1, command=tsgcjcbool, bg='Lavender')
-        tsgcjcC2 = tk.Radiobutton(self, text="无挤出过程", variable=tsgcjcV, value=0, command=tsgcjcbool, bg='Lavender')
+        tsgcjcC1 = tk.Radiobutton(self, text="有挤出过程", variable=self.tsgcjcV, value=1, command=tsgcjcbool, bg='Lavender')
+        tsgcjcC2 = tk.Radiobutton(self, text="无挤出过程", variable=self.tsgcjcV, value=0, command=tsgcjcbool, bg='Lavender')
         tsgcjc_L = Label(self, text='特殊过程挤出操作工：', bg='Lavender')
-        tsgcjc = Text(self, height=1, width=40, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.tsgcjc = Text(self, height=1, width=40, relief=RAISED, highlightcolor='black', highlightthickness=1)
         tsgcjcbool()
 
-        kyjV = tk.IntVar(master=self)
-        kyjC1 = tk.Radiobutton(self, text="有空压机", variable=kyjV, value=1, bg='Lavender')
-        kyjC2 = tk.Radiobutton(self, text="无空压机", variable=kyjV, value=0, bg='Lavender')
+        sjaqjyspxr1_L = Label(self, text='三级安全教育受培训人1：', bg='Lavender')
+        self.sjaqjyspxr1 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
+
+        sjaqjyspxr2_L = Label(self, text='三级安全教育受培训人2：', bg='Lavender')
+        self.sjaqjyspxr2 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
+
+        sjaqjyrq1_L = Label(self, text='三级安全教育第一天日期：', bg='Lavender')
+        self.sjaqjyrq1 = Text(self, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
+
+        sjaqjyrq2_L = Label(self, text='三级安全教育第二天日期：', bg='Lavender')
+        self.sjaqjyrq2 = Text(self, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
+
+        sjaqjyrq3_L = Label(self, text='三级安全教育第三天日期：', bg='Lavender')
+        self.sjaqjyrq3 = Text(self, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
+
+        sjaqjybzpxr3_L = Label(self, text='三级安全教育班组培训人：', bg='Lavender')
+        self.sjaqjybzpxr3 = Text(self, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
+
+        self.kyjV = tk.IntVar(master=self)
+        kyjC1 = tk.Radiobutton(self, text="有空压机", variable=self.kyjV, value=1, bg='Lavender')
+        kyjC2 = tk.Radiobutton(self, text="无空压机", variable=self.kyjV, value=0, bg='Lavender')
 
         btncpgx.grid(row=0, column=0)
         btncpxx.grid(row=0, column=1)
@@ -5298,39 +5412,54 @@ class qtxxPage_2(tk.Frame):
         btngen.grid(row=0, column=4)
 
         jyy1_L.grid(row=1, column=0)
-        jyy1.grid(row=1, column=1)
+        self.jyy1.grid(row=1, column=1)
 
         scbry1_L.grid(row=2, column=0)
-        scbry1.grid(row=2, column=1)
+        self.scbry1.grid(row=2, column=1)
         scbry2_L.grid(row=2, column=2)
-        scbry2.grid(row=2, column=3)
+        self.scbry2.grid(row=2, column=3)
         scbry3_L.grid(row=2, column=4)
-        scbry3.grid(row=2, column=5)
+        self.scbry3.grid(row=2, column=5)
 
         tsgcjbC1.grid(row=3, column=0)
         tsgcjbC2.grid(row=3, column=1)
         tsgcjb_L.grid(row=3, column=2)
-        tsgcjb.grid(row=3, column=3, columnspan=4)
+        self.tsgcjb.grid(row=3, column=3, columnspan=4)
 
         tsgcbmjshC1.grid(row=4, column=0)
         tsgcbmjshC2.grid(row=4, column=1)
         tsgcbmjsh_L.grid(row=4, column=2)
-        tsgcbmjsh.grid(row=4, column=3, columnspan=4)
+        self.tsgcbmjsh.grid(row=4, column=3, columnspan=4)
 
         tsgchjC1.grid(row=5, column=0)
         tsgchjC2.grid(row=5, column=1)
         tsgchj_L.grid(row=5, column=2)
-        tsgchj.grid(row=5, column=3, columnspan=4)
+        self.tsgchj.grid(row=5, column=3, columnspan=4)
 
         tsgchhC1.grid(row=6, column=0)
         tsgchhC2.grid(row=6, column=1)
         tsgchh_L.grid(row=6, column=2)
-        tsgchh.grid(row=6, column=3, columnspan=4)
+        self.tsgchh.grid(row=6, column=3, columnspan=4)
 
         tsgcjcC1.grid(row=7, column=0)
         tsgcjcC2.grid(row=7, column=1)
         tsgcjc_L.grid(row=7, column=2)
-        tsgcjc.grid(row=7, column=3, columnspan=4)
+        self.tsgcjc.grid(row=7, column=3, columnspan=4)
+
+        sjaqjyspxr1_L.grid(row=8, column=0)
+        self.sjaqjyspxr1.grid(row=8, column=1)
+        sjaqjyspxr2_L.grid(row=8, column=2)
+        self.sjaqjyspxr2.grid(row=8, column=3)
+
+        sjaqjyrq1_L.grid(row=9, column=0)
+        self.sjaqjyrq1.grid(row=9, column=1)
+        sjaqjyrq2_L.grid(row=9, column=2)
+        self.sjaqjyrq2.grid(row=9, column=3)
+        sjaqjyrq3_L.grid(row=9, column=4)
+        self.sjaqjyrq3.grid(row=9, column=5)
+
+        sjaqjybzpxr3_L.grid(row=10, column=0)
+        self.sjaqjybzpxr3.grid(row=10, column=1)
 
         kyjC1.grid(row=10, column=2)
         kyjC2.grid(row=10, column=3)
@@ -5370,10 +5499,9 @@ class window4_4():
         self.info_dic['__{}__'.format(key_str)] = edit_text.get(0.0, 20.0).strip()
 
     def getinfo(self):
-        f_qtxx = self.frames[qtxxPage]
+        f_qtxx = self.frames[qtxxPage_4]
         self.add_item_to_dict(f_qtxx.sjaqjyspxr1, '三级安全教育受培训人1')
         self.add_item_to_dict(f_qtxx.sjaqjyspxr2, '三级安全教育受培训人2')
-        self.add_item_to_dict(f_qtxx.sjaqjyspxr3, '三级安全教育受培训人3')
         self.add_item_to_dict(f_qtxx.sjaqjyrq1, '三级安全教育第一天日期')
         self.add_item_to_dict(f_qtxx.sjaqjyrq2, '三级安全教育第二天日期')
         self.add_item_to_dict(f_qtxx.sjaqjyrq3, '三级安全教育第三天日期')
@@ -5382,7 +5510,7 @@ class window4_4():
             self.info_dic['__是否有空压机__'] = '否'
         else:
             self.info_dic['__是否有空压机__'] = '是'
-        gen_yaml(self.info_dic)
+        ReplaceProcess(self.info_dic)        
 
 
 class qtxxPage_4(tk.Frame):
@@ -5395,43 +5523,43 @@ class qtxxPage_4(tk.Frame):
         btngen = tk.Button(self, text='信息无误开始生成文档！', command=lambda: root.getinfo())
 
         sjaqjyspxr1_L = Label(self, text='三级安全教育受培训人1：', bg='Lavender')
-        sjaqjyspxr1 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.sjaqjyspxr1 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
         sjaqjyspxr2_L = Label(self, text='三级安全教育受培训人2：', bg='Lavender')
-        sjaqjyspxr2 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.sjaqjyspxr2 = Text(self, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
         sjaqjyrq1_L = Label(self, text='三级安全教育第一天日期：', bg='Lavender')
-        sjaqjyrq1 = Text(self, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.sjaqjyrq1 = Text(self, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
         sjaqjyrq2_L = Label(self, text='三级安全教育第二天日期：', bg='Lavender')
-        sjaqjyrq2 = Text(self, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.sjaqjyrq2 = Text(self, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
         sjaqjyrq3_L = Label(self, text='三级安全教育第三天日期：', bg='Lavender')
-        sjaqjyrq3 = Text(self, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.sjaqjyrq3 = Text(self, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
         sjaqjybzpxr3_L = Label(self, text='三级安全教育班组培训人：', bg='Lavender')
-        sjaqjybzpxr3 = Text(self, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
+        self.sjaqjybzpxr3 = Text(self, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
-        kyjV = tk.IntVar(master=self)
-        kyjC1 = tk.Radiobutton(self, text="有空压机", variable=kyjV, value=1, bg='Lavender')
-        kyjC2 = tk.Radiobutton(self, text="无空压机", variable=kyjV, value=0, bg='Lavender')
+        self.kyjV = tk.IntVar(master=self)
+        kyjC1 = tk.Radiobutton(self, text="有空压机", variable=self.kyjV, value=1, bg='Lavender')
+        kyjC2 = tk.Radiobutton(self, text="无空压机", variable=self.kyjV, value=0, bg='Lavender')
 
-        btngen.grid(row=0, column=4)
+        btngen.grid(row=0, column=2)
 
         sjaqjyspxr1_L.grid(row=8, column=0)
-        sjaqjyspxr1.grid(row=8, column=1)
+        self.sjaqjyspxr1.grid(row=8, column=1)
         sjaqjyspxr2_L.grid(row=8, column=2)
-        sjaqjyspxr2.grid(row=8, column=3)
+        self.sjaqjyspxr2.grid(row=8, column=3)
 
         sjaqjyrq1_L.grid(row=9, column=0)
-        sjaqjyrq1.grid(row=9, column=1)
+        self.sjaqjyrq1.grid(row=9, column=1)
         sjaqjyrq2_L.grid(row=9, column=2)
-        sjaqjyrq2.grid(row=9, column=3)
+        self.sjaqjyrq2.grid(row=9, column=3)
         sjaqjyrq3_L.grid(row=9, column=4)
-        sjaqjyrq3.grid(row=9, column=5)
+        self.sjaqjyrq3.grid(row=9, column=5)
 
         sjaqjybzpxr3_L.grid(row=10, column=0)
-        sjaqjybzpxr3.grid(row=10, column=1)
+        self.sjaqjybzpxr3.grid(row=10, column=1)
 
         kyjC1.grid(row=10, column=2)
         kyjC2.grid(row=10, column=3)
