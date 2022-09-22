@@ -1,15 +1,12 @@
 import tkinter as tk
 from tkinter import *
-
-
+from fileSystem.third_window import informCollectWindow
+from temp_storage import *
 
 
 # 第二层界面
-from fileSystem.third_window import informCollectWindow
-
-
 def InforWindow_1(info_dic):
-    '''Q界面'''
+    """Q界面"""
     window = tk.Tk()
 
     # 给窗口的可视化起名字
@@ -26,28 +23,35 @@ def InforWindow_1(info_dic):
     code_L = Label(window, text='企业代码：', bg='Lavender')
     code = Text(window, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
+
     ver_L = Label(window, text='版本：', bg='Lavender')
     ver = Text(window, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
     ver.insert('0.0', 'A')
+
 
     times_L = Label(window, text='版次：', bg='Lavender')
     times = Text(window, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
     times.insert('0.0', '0')
 
+
     m_L = Label(window, text='管理者代表：', bg='Lavender')
     m = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+
 
     mx_L = Label(window, text='最高管理者：', bg='Lavender')
     mx = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
+
     t_L = Label(window, text='手册发布实施日期：', bg='Lavender')
     t = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+
 
     jianjie_L = Label(window, text='公司简介：', bg='Lavender')
     jianjie = Text(window, height=2, width=97, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
     fanwei_L = Label(window, text='认证范围：', bg='Lavender')
     fanwei = Text(window, height=1, width=97, relief=RAISED, highlightcolor='black', highlightthickness=1)
+
 
     waibaoV = tk.IntVar()
 
@@ -61,25 +65,33 @@ def InforWindow_1(info_dic):
                               bg='Lavender')
     waibaoC2 = tk.Radiobutton(window, text="公司无外包过程", variable=waibaoV, value=0, command=waibaobool,
                               bg='Lavender')
+    insert_radio_res_to_button("公司无外包过程", waibaoV)
+
     wbguocheng_L = Label(window, text='外包过程表述：', bg='Lavender')
     wbguocheng = Text(window, height=2, width=74, relief=RAISED, highlightcolor='black', highlightthickness=1)
     wbguocheng.insert('0.0', '本公司外包过程为XX')
+
 
     tsguocheng_L = Label(window, text='特殊过程：', bg='Lavender')
     tsguocheng = Text(window, height=2, width=97, relief=RAISED, highlightcolor='black', highlightthickness=1)
     tsguocheng.insert('0.0', '无特殊过程/特殊过程为XX')
 
+
     zhijian_L = Label(window, text='质检部门：', bg='Lavender')
     zhijian = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
 
+
     zjfuze_L = Label(window, text='质检负责人：', bg='Lavender')
     zjfuze = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    insert_val_into_input(zjfuze_L["text"], zjfuze)
 
     zjbmcode_L = Label(window, text='质检部门代码：', bg='Lavender')
     zjbmcode = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    insert_val_into_input(zjbmcode_L["text"], zjbmcode)
 
     xiaoshou_L = Label(window, text='销售部门：', bg='Lavender')
     xiaoshou = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    insert_val_into_input(xiaoshou_L["text"], xiaoshou)
 
     xsfuze_L = Label(window, text='销售负责人：', bg='Lavender')
     xsfuze = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)

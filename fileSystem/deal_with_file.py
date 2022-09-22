@@ -1,4 +1,6 @@
 import os
+
+import yaml
 from docx import Document
 import random
 
