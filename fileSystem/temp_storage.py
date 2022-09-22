@@ -6,7 +6,8 @@ temp_dic = {}
 is_auto_restore = False
 save_dic = {}
 '''
-1. 存储时，将info_dic和当前页面的所有填写过的内容直接存入缓存文件中
+1. 存储时，当前页面的所有填写过的内容存入缓存文件中，最后存储的就是temp_dic的所有内容
+2. 在每个页面跳转下一个页面的时候，需要调用一下当前页面的存储函数，缓存当前页面的文本框中所有的内容
 2. 读取时,将临时文件中的key经过处理存入temp_dic
 3. 在页面的每个页面的每个控件进行检查，如果有就进行注入
 '''
@@ -18,25 +19,30 @@ def read_file_to_temp_list(temp_file):
     return temp_dic
 
 
-# 将info_dic存入将要存储的save_dic
-def save_info_dic_to_save_dic(info_dic):
-    save_dic.update(info_dic)
-
-
 # 文本框的自动注入
 def insert_val_into_input(text_label, text_input):
-    if not is_auto_restore or text_label["text"] in temp_dic.keys():
+    if not is_auto_restore or text_label in temp_dic.keys():
         return
     else:
-        text_input.insert(temp_dic[text_label["text"]])
+        text_input.insert(0.0, temp_dic[text_label])
 
 
 # 文本框存储
 def save_input_into_dic(text_label, text_input):
-    save_dic["__{}__".format(text_label["text"])] = text_input.get(0.0, 20.0).strip()
+    save_dic[text_label] = text_input.get(0.0, 20.0).strip()
 
 
-def save_radio_res_to_dic(radio_label, radio_res):
-    key = "__{}__".format(radio_label["text"])
+def save_radio_res_to_dic(label_text, radio_res):
+    key = label_text
     if radio_res == 0:
         save_dic[key] = '是'
+    else:
+        save_dic[key] = '否'
+
+
+def insert_radio_res_to_button(label_text, buttonV):
+    if is_auto_restore and save_dic[label_text] is not None:
+        if save_dic[label_text] == '是':
+            buttonV.set(1)
+        else:
+            buttonV.set(0)
