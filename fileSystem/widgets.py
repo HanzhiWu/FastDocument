@@ -47,6 +47,7 @@ class GroupButtonWithText:
         self.neg_btn = tk.Radiobutton(self.frame, text=neg_opt, variable=self.titleV, value=0, command=self.btnbool,
                                       bg='Lavender')
         self.text = EditText(self.frame, text_title)
+        # 设置长宽
         self.text.text_setting(height=2, width=74)
         insert_val_into_input(self.text_title, self.text)
         insert_radio_res_to_button(self.title, self.titleV)
@@ -61,7 +62,7 @@ class GroupButtonWithText:
         else:
             self.text.text.config(state=NORMAL)
 
-    def save_res_into_info_dic(self, info_dic):
+    def save_value_into_info_dic(self, info_dic):
         if self.titleV.get() == 1:
             info_dic["__{}__".format(self.title)] = '是'
         else:
@@ -79,5 +80,7 @@ class GroupButtonWithText:
 root = Tk()
 app = GroupButtonWithText(root, "吴瀚之", "yes", "no", "what")
 app.frame.grid(row=0, column=0)
+app1 = GroupButtonWithText(root, "吴瀚之", "yes", "no", "what")
+app1.frame.grid(row=0, column=1)
 
 root.mainloop()
