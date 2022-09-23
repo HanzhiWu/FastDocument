@@ -19,6 +19,9 @@ def read_file_to_temp_list(temp_file):
     return temp_dic
 
 
+def gen_temp_storage():
+    is_auto_restore = False
+
 # 文本框的自动注入
 def insert_val_into_input(text_label, text_input):
     if not is_auto_restore or text_label in temp_dic.keys():
@@ -29,7 +32,9 @@ def insert_val_into_input(text_label, text_input):
 
 # 文本框存储
 def save_input_into_dic(text_label, text_input):
-    save_dic[text_label] = text_input.get(0.0, 20.0).strip()
+    text = text_input.get(0.0, 20.0).strip()
+    if text != '':
+        save_dic[text_label] = text_input.get(0.0, 20.0).strip()
 
 
 def save_radio_res_to_dic(label_text, radio_res):
