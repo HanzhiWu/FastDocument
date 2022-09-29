@@ -1,8 +1,12 @@
 from temp_storage import *
+import tkinter as tk
+from tkinter import *
+from tkinter.messagebox import showinfo
+import deal_with_file as df
 
 
 class EditText:
-    def __init__(self, root, title):
+    def __init__(self, root, title, default=''):
         super().__init__()
         self.frame = Frame(root, padx=2)  # container
         self.title = title
@@ -10,6 +14,8 @@ class EditText:
         self.label.grid(row=0, column=0)
         self.text = Text(self.frame, height=1, width=70, relief=RAISED, highlightcolor='black',
                          highlightthickness=1)
+        self.default = default
+        self.text.insert('0.0', self.default)
         insert_val_into_input(self.title, self.text)
         self.text.grid(row=0, column=1)
 
@@ -28,14 +34,17 @@ class EditText:
     def save_value_into_info_dic(self, info_dic, key=''):
         if key == '':
             key = self.title
-        info_dic['__{}__'.format(key)] = self.get_text()
+        content = self.get_text()
+        if content == self.default:
+            content = ''
+        info_dic['__{}__'.format(key)] = content
 
     def temp_save(self):
         save_input_into_dic(self.title, self.text)
 
 
 class GroupButtonWithText:
-    def __init__(self, root, title, pos_opt, neg_opt, text_title):
+    def __init__(self, root, title, pos_opt, neg_opt, text_title, text_default=''):
         super().__init__()
         self.frame = Frame(root)  # container
         self.titleV = tk.IntVar()
@@ -46,7 +55,7 @@ class GroupButtonWithText:
                                       bg='Lavender')
         self.neg_btn = tk.Radiobutton(self.frame, text=neg_opt, variable=self.titleV, value=0, command=self.btnbool,
                                       bg='Lavender')
-        self.text = EditText(self.frame, text_title)
+        self.text = EditText(self.frame, text_title, text_default)
         # 设置长宽
         self.text.text_setting(height=2, width=74)
         insert_val_into_input(self.text_title, self.text)
@@ -67,7 +76,7 @@ class GroupButtonWithText:
             info_dic["__{}__".format(self.title)] = '是'
         else:
             info_dic["__{}__".format(self.title)] = '否'
-        info_dic[self.text_title] = self.text.get_text()
+        self.text.save_value_into_info_dic(info_dic)
 
     def temp_save(self):
         save_radio_res_to_dic(self.title, self.titleV.get())
@@ -265,10 +274,10 @@ class AddText:
                 element.label.destroy()
 
 
-root = Tk()
-root.config(background='Lavender')
-app = AddText(root, "吴瀚之", "合同", "修改", [8, 12], ['产品', '技术'])
-app.set_position(row=0, column=0)
-app1 = GroupButton(root, '吴瀚之帅不帅', "yes", "no")
-app1.set_position(row=1, column=0)
-root.mainloop()
+# root = Tk()
+# root.config(background='Lavender')
+# app = AddText(root, "吴瀚之", "合同", "修改", [8, 12], ['产品', '技术'])
+# app.set_position(row=0, column=0)
+# app1 = GroupButton(root, '吴瀚之帅不帅', "yes", "no")
+# app1.set_position(row=1, column=0)
+# root.mainloop()

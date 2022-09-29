@@ -1,5 +1,5 @@
 temp_dic = {}
-global is_auto_restore
+is_auto_restore = False
 save_dic = {}
 '''
 1. 存储时，当前页面的所有填写过的内容存入缓存文件中，最后存储的就是temp_dic的所有内容
