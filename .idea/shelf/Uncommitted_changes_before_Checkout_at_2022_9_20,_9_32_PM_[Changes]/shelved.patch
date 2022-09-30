@@ -1,0 +1,29 @@
+Index: fileSystem/temp_storage.py
+===================================================================
+diff --git a/fileSystem/temp_storage.py b/fileSystem/temp_storage.py
+--- a/fileSystem/temp_storage.py	
++++ b/fileSystem/temp_storage.py	
+@@ -25,7 +25,7 @@
+ 
+ # 文本框的自动注入
+ def insert_val_into_input(text_label, text_input):
+-    if not is_auto_restore or text_label["text"] in temp_dic.keys():
++    if not is_auto_restore or text_label["text"] in temp_dic.keys() or text_label["text"] == '':
+         return
+     else:
+         text_input.insert(temp_dic[text_label["text"]])
+@@ -40,3 +40,14 @@
+     key = "__{}__".format(radio_label["text"])
+     if radio_res == 0:
+         save_dic[key] = '是'
++    else:
++        save_dic[key] = '否'
++
++
++def insert_radio_res_to_widget(buttonV, bool_text):
++    if temp_dic[bool_text] is None or is_auto_restore:
++        return
++    if temp_dic[bool_text] == '是':
++        buttonV.set(1)
++    else:
++        buttonV.set(2)
