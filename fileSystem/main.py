@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 
-from fileSystem.second_window import InforWindow_1, InforWindow_2, InforWindow_3
+from fileSystem.second_window import InfoWindow_1, InfoWindow_2, InfoWindow_3
 
 
 # 第一层界面
@@ -153,18 +153,18 @@ def mainWindow():
         info_dic['template_id'] = template_id  # yml中原本没有，用来选择模板，且用于生成输出路径名，所以后续会写入替换字典中
         # Q界面
         if 'Q' in projectselected and len(projectselected) == 1:
-            InforWindow_1(info_dic)
+            InfoWindow_1(info_dic)
             return
             # E/QE 界面
         if 'E' in projectselected and len(projectselected) == 1 or 'S' not in projectselected and len(
                 projectselected) == 2:
-            InforWindow_2(info_dic)
+            InfoWindow_2(info_dic)
             return
         # S/QS/ES/QES界面
         if 'S' in projectselected and len(projectselected) == 1 or 'E' not in projectselected and len(
                 projectselected) == 2 \
                 or 'Q' not in projectselected and len(projectselected) == 2 or len(projectselected) == 3:
-            InforWindow_3(info_dic)
+            InfoWindow_3(info_dic)
             return
 
     '''跳转按钮'''

@@ -1,794 +1,568 @@
+from fileSystem.third_window import informCollectWindow
+from fileSystem.widgets import EditText, GroupButtonWithText
+from temp_storage import *
 import tkinter as tk
 from tkinter import *
-from fileSystem.third_window import informCollectWindow
-from temp_storage import *
+from tkinter.messagebox import showinfo
+import deal_with_file as df
 
 
-# 第二层界面
-def InforWindow_1(info_dic):
+def InfoWindow_1(info_dic):
     """Q界面"""
     window = tk.Tk()
 
     # 给窗口的可视化起名字
     window.title('认证文件管理系统')
     window.config(background='Lavender')
-
+    widget_list = []
     # 设定窗口的大小(长 * 宽)
-    window.geometry('770x550')  # 这里的乘是小x
+    window.geometry('800x450')  # 这里的乘是小x
     window.resizable(0, 0)
 
-    name_L = Label(window, text='企业名称：', bg='Lavender')
-    name = Text(window, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    name = EditText(window, '企业名称')
+    name.text_setting(height=1, width=25)
+    widget_list.append(name)
 
-    code_L = Label(window, text='企业代码：', bg='Lavender')
-    code = Text(window, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    code = EditText(window, '企业代码')
+    code.text_setting(height=1, width=25)
+    widget_list.append(code)
 
+    ver = EditText(window, '版本', default='A')
+    ver.text_setting(height=1, width=12)
+    widget_list.append(ver)
 
-    ver_L = Label(window, text='版本：', bg='Lavender')
-    ver = Text(window, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
-    ver.insert('0.0', 'A')
+    times = EditText(window, '版次', default='0')
+    times.text_setting(height=1, width=12)
+    widget_list.append(times)
 
+    m = EditText(window, '管理者代表')
+    m.text_setting(height=1, width=22)
+    widget_list.append(m)
 
-    times_L = Label(window, text='版次：', bg='Lavender')
-    times = Text(window, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
-    times.insert('0.0', '0')
+    mx = EditText(window, '最高管理者')
+    mx.text_setting(height=1, width=22)
+    widget_list.append(mx)
 
+    t = EditText(window, '手册发布实施日期')
+    t.text_setting(height=1, width=22)
+    widget_list.append(t)
 
-    m_L = Label(window, text='管理者代表：', bg='Lavender')
-    m = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    jianjie = EditText(window, '公司简介')
+    jianjie.text_setting(height=2, width=97)
+    widget_list.append(jianjie)
 
+    fanwei = EditText(window, '认证范围')
+    fanwei.text_setting(height=1, width=97)
+    widget_list.append(fanwei)
 
-    mx_L = Label(window, text='最高管理者：', bg='Lavender')
-    mx = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    waibao = GroupButtonWithText(window, title='公司有无外包过程', pos_opt='公司有外包过程', neg_opt='公司无外包过程',
+                                 text_title='外包过程表述', text_default='本公司外包过程为XX')
+    waibao.text.text.insert('0.0', '本公司外包过程为XX')
+    widget_list.append(waibao)
 
+    tsguocheng = EditText(window, '特殊过程')
+    tsguocheng.text_setting(height=2, width=97)
+    tsguocheng.text.insert('0.0', '无特殊过程/特殊过程为XX')
+    widget_list.append(tsguocheng)
 
-    t_L = Label(window, text='手册发布实施日期：', bg='Lavender')
-    t = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    zhijian = EditText(window, '质检部门')
+    zhijian.text_setting(height=1, width=22)
+    widget_list.append(zhijian)
 
+    zjfuze = EditText(window, '质检负责人')
+    zjfuze.text_setting(height=1, width=22)
+    widget_list.append(zjfuze)
 
-    jianjie_L = Label(window, text='公司简介：', bg='Lavender')
-    jianjie = Text(window, height=2, width=97, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    zjbmcode = EditText(window, '质检部门代码')
+    zjbmcode.text_setting(height=1, width=22)
+    widget_list.append(zjbmcode)
 
-    fanwei_L = Label(window, text='认证范围：', bg='Lavender')
-    fanwei = Text(window, height=1, width=97, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    xiaoshou = EditText(window, '销售部门')
+    xiaoshou.text_setting(height=1, width=22)
+    widget_list.append(xiaoshou)
 
+    xsfuze = EditText(window, '销售负责人')
+    xsfuze.text_setting(height=1, width=22)
+    widget_list.append(xsfuze)
 
-    waibaoV = tk.IntVar()
+    xsbmcode = EditText(window, '销售部门代码')
+    xsbmcode.text_setting(height=1, width=22)
+    widget_list.append(xsbmcode)
 
-    def waibaobool():
-        if waibaoV.get() == 0:
-            wbguocheng.config(state=DISABLED)
-        else:
-            wbguocheng.config(state=NORMAL)
+    shengchan = EditText(window, '生产部门')
+    shengchan.text_setting(height=1, width=22)
+    widget_list.append(shengchan)
 
-    waibaoC1 = tk.Radiobutton(window, text="公司有外包过程", variable=waibaoV, value=1, command=waibaobool,
-                              bg='Lavender')
-    waibaoC2 = tk.Radiobutton(window, text="公司无外包过程", variable=waibaoV, value=0, command=waibaobool,
-                              bg='Lavender')
-    insert_radio_res_to_button("公司无外包过程", waibaoV)
+    scfuze = EditText(window, '生产负责人')
+    scfuze.text_setting(height=1, width=22)
+    widget_list.append(scfuze)
 
-    wbguocheng_L = Label(window, text='外包过程表述：', bg='Lavender')
-    wbguocheng = Text(window, height=2, width=74, relief=RAISED, highlightcolor='black', highlightthickness=1)
-    wbguocheng.insert('0.0', '本公司外包过程为XX')
+    scbmcode = EditText(window, '生产部门代码')
+    scbmcode.text_setting(height=1, width=22)
+    widget_list.append(scbmcode)
 
+    xingzheng = EditText(window, '行政部门')
+    xingzheng.text_setting(height=1, width=22)
+    widget_list.append(xingzheng)
 
-    tsguocheng_L = Label(window, text='特殊过程：', bg='Lavender')
-    tsguocheng = Text(window, height=2, width=97, relief=RAISED, highlightcolor='black', highlightthickness=1)
-    tsguocheng.insert('0.0', '无特殊过程/特殊过程为XX')
+    xzfuze = EditText(window, '行政负责人')
+    xzfuze.text_setting(height=1, width=22)
+    widget_list.append(xzfuze)
 
+    xzbmcode = EditText(window, '行政部门代码')
+    xzbmcode.text_setting(height=1, width=22)
+    widget_list.append(xzbmcode)
 
-    zhijian_L = Label(window, text='质检部门：', bg='Lavender')
-    zhijian = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    caigou = EditText(window, '采购部门')
+    caigou.text_setting(height=1, width=22)
+    widget_list.append(caigou)
 
+    cgfuze = EditText(window, '采购负责人')
+    cgfuze.text_setting(height=1, width=22)
+    widget_list.append(cgfuze)
 
-    zjfuze_L = Label(window, text='质检负责人：', bg='Lavender')
-    zjfuze = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
-    insert_val_into_input(zjfuze_L["text"], zjfuze)
+    cgbmcode = EditText(window, '采购部门代码')
+    cgbmcode.text_setting(height=1, width=22)
+    widget_list.append(cgbmcode)
 
-    zjbmcode_L = Label(window, text='质检部门代码：', bg='Lavender')
-    zjbmcode = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
-    insert_val_into_input(zjbmcode_L["text"], zjbmcode)
+    shangchanliuchng1 = EditText(window, '生产工艺流程1', default='若无该流程则跳过该项')
+    shangchanliuchng1.text_setting(height=1, width=91)
+    widget_list.append(shangchanliuchng1)
 
-    xiaoshou_L = Label(window, text='销售部门：', bg='Lavender')
-    xiaoshou = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
-    insert_val_into_input(xiaoshou_L["text"], xiaoshou)
+    shangchanliuchng2 = EditText(window, '生产工艺流程2', default='若无该流程则跳过该项')
+    shangchanliuchng2.text_setting(height=1, width=91)
+    widget_list.append(shangchanliuchng2)
 
-    xsfuze_L = Label(window, text='销售负责人：', bg='Lavender')
-    xsfuze = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    shangchanliuchng3 = EditText(window, '生产工艺流程3', default='若无该流程则跳过该项')
+    shangchanliuchng3.text_setting(height=1, width=91)
+    widget_list.append(shangchanliuchng3)
 
-    xsbmcode_L = Label(window, text='销售部门代码：', bg='Lavender')
-    xsbmcode = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
-
-    shengchan_L = Label(window, text='生产部门：', bg='Lavender')
-    shengchan = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
-
-    scfuze_L = Label(window, text='生产负责人：', bg='Lavender')
-    scfuze = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
-
-    scbmcode_L = Label(window, text='生产部门代码：', bg='Lavender')
-    scbmcode = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
-
-    xingzheng_L = Label(window, text='行政部门：', bg='Lavender')
-    xingzheng = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
-
-    xzfuze_L = Label(window, text='行政负责人：', bg='Lavender')
-    xzfuze = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
-
-    xzbmcode_L = Label(window, text='行政部门代码：', bg='Lavender')
-    xzbmcode = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
-
-    caigou_L = Label(window, text='采购部门：', bg='Lavender')
-    caigou = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
-
-    cgfuze_L = Label(window, text='采购负责人：', bg='Lavender')
-    cgfuze = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
-
-    cgbmcode_L = Label(window, text='采购部门代码：', bg='Lavender')
-    cgbmcode = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
-
-    shangchanliuchng1_L = Label(window, text='生产工艺流程1：', bg='Lavender')
-    shengchanliucheng1 = Text(window, height=1, width=91, relief=RAISED, highlightcolor='black', highlightthickness=1)
-    shengchanliucheng1.insert('0.0', '若无该流程则跳过该项')
-
-    shangchanliuchng2_L = Label(window, text='生产工艺流程2：', bg='Lavender')
-    shengchanliucheng2 = Text(window, height=1, width=91, relief=RAISED, highlightcolor='black', highlightthickness=1)
-    shengchanliucheng2.insert('0.0', '若无该流程则跳过该项')
-
-    shangchanliuchng3_L = Label(window, text='生产工艺流程3：', bg='Lavender')
-    shengchanliucheng3 = Text(window, height=1, width=91, relief=RAISED, highlightcolor='black', highlightthickness=1)
-    shengchanliucheng3.insert('0.0', '若无该流程则跳过该项')
-
-    def textGen():
-        info_dic['__企业名称__'] = name.get(0.0, 20.0).strip()
-        info_dic['__企业代码__'] = code.get(0.0, 20.0).strip()
-        info_dic['__版本__'] = ver.get(0.0, 20.0).strip()
-        info_dic['__版次__'] = '\'' + times.get(0.0, 20.0).strip() + '\''
-        info_dic['__管理者代表__'] = m.get(0.0, 20.0).strip()
-        info_dic['__最高管理者__'] = mx.get(0.0, 20.0).strip()
-        info_dic['__手册发布实施日期__'] = t.get(0.0, 20.0).strip()
-        info_dic['__公司简介__'] = jianjie.get(0.0, 20.0).strip()
-        info_dic['__认证范围__'] = fanwei.get(0.0, 20.0).strip()
-        if waibaoV.get() == 1:
-            info_dic['__有无外包过程__'] = '有'
-            info_dic['__外包过程表述__'] = wbguocheng.get(0.0, 20.0).strip()
-        else:
-            info_dic['__有无外包过程__'] = '无'
-            info_dic['__外包过程表述__'] = ' '
-        info_dic['__特殊过程__'] = tsguocheng.get(0.0, 20.0).strip()
-        info_dic['__质检部门__'] = zhijian.get(0.0, 20.0).strip()
-        info_dic['__质检负责人__'] = zjfuze.get(0.0, 20.0).strip()
-        info_dic['__质检部门代码__'] = zjbmcode.get(0.0, 20.0).strip()
-        info_dic['__销售部门__'] = xiaoshou.get(0.0, 20.0).strip()
-        info_dic['__销售负责人__'] = xsfuze.get(0.0, 20.0).strip()
-        info_dic['__销售部门代码__'] = xsbmcode.get(0.0, 20.0).strip()
-        info_dic['__生产部门__'] = shengchan.get(0.0, 20.0).strip()
-        info_dic['__生产负责人__'] = scfuze.get(0.0, 20.0).strip()
-        info_dic['__生产部门代码__'] = scbmcode.get(0.0, 20.0).strip()
-        info_dic['__行政部门__'] = xingzheng.get(0.0, 20.0).strip()
-        info_dic['__行政负责人__'] = xzfuze.get(0.0, 20.0).strip()
-        info_dic['__行政部门代码__'] = xzbmcode.get(0.0, 20.0).strip()
-        info_dic['__采购部门__'] = caigou.get(0.0, 20.0).strip()
-        info_dic['__采购负责人__'] = cgfuze.get(0.0, 20.0).strip()
-        info_dic['__采购部门代码__'] = cgbmcode.get(0.0, 20.0).strip()
-        info_dic['__生产工艺流程1__'] = shengchanliucheng1.get(0.0, 20.0).strip()
-        info_dic['__生产工艺流程2__'] = shengchanliucheng2.get(0.0, 20.0).strip()
-        info_dic['__生产工艺流程3__'] = shengchanliucheng3.get(0.0, 20.0).strip()
-        window.destroy()
+    def text_gen():
+        for widget in widget_list:
+            widget.save_value_into_info_dic(info_dic)
+            widget.temp_save()
         informCollectWindow(info_dic)
 
-    btn_gen = tk.Button(window, text='确认信息无误，进入下一采集阶段。', command=lambda: [textGen()])
+    def temp_save_to_local():
+        for widget in widget_list:
+            widget.temp_save()
+        gen_temp_storage()
 
-    '''place布局'''
-    name_L.place(x=5, y=5)  # 14 / token
-    name.place(x=75, y=7)  # 5.6 / 1
+    btn_gen = tk.Button(window, text='确认信息无误，进入下一采集阶段。', command=lambda: [text_gen()])
+    btn_save = tk.Button(window, text='缓存信息。', command=lambda: [temp_save_to_local()])
 
-    code_L.place(x=245, y=5)
-    code.place(x=315, y=7)
-
-    ver_L.place(x=485, y=5)
-    ver.place(x=530, y=7)
-
-    times_L.place(x=625, y=5)
-    times.place(x=670, y=7)
-
-    m_L.place(x=5, y=35)
-    m.place(x=90, y=37)
-
-    mx_L.place(x=245, y=35)
-    mx.place(x=330, y=37)
-
-    t_L.place(x=475, y=35)
-    t.place(x=600, y=37)
-
-    jianjie_L.place(x=5, y=70)
-    jianjie.place(x=75, y=67)
-
-    fanwei_L.place(x=5, y=110)
-    fanwei.place(x=75, y=112)
-
-    waibaoC1.place(x=5, y=140)
-    waibaoC2.place(x=5, y=160)
-    wbguocheng_L.place(x=135, y=150)
-    wbguocheng.place(x=235, y=147)
-
-    tsguocheng_L.place(x=5, y=195)
-    tsguocheng.place(x=75, y=192)
-
-    zhijian_L.place(x=6, y=235)
-    zhijian.place(x=76, y=237)
-    zjfuze_L.place(x=244, y=235)
-    zjfuze.place(x=329, y=237)
-    zjbmcode_L.place(x=497, y=235)
-    zjbmcode.place(x=597, y=237)
-
-    xiaoshou_L.place(x=6, y=265)
-    xiaoshou.place(x=76, y=267)
-    xsfuze_L.place(x=244, y=265)
-    xsfuze.place(x=329, y=267)
-    xsbmcode_L.place(x=497, y=265)
-    xsbmcode.place(x=597, y=267)
-
-    shengchan_L.place(x=6, y=295)
-    shengchan.place(x=76, y=297)
-    scfuze_L.place(x=244, y=295)
-    scfuze.place(x=329, y=297)
-    scbmcode_L.place(x=497, y=295)
-    scbmcode.place(x=597, y=297)
-
-    xingzheng_L.place(x=6, y=325)
-    xingzheng.place(x=76, y=327)
-    xzfuze_L.place(x=244, y=325)
-    xzfuze.place(x=329, y=327)
-    xzbmcode_L.place(x=497, y=325)
-    xzbmcode.place(x=597, y=327)
-
-    caigou_L.place(x=6, y=355)
-    caigou.place(x=76, y=357)
-    cgfuze_L.place(x=244, y=355)
-    cgfuze.place(x=329, y=357)
-    cgbmcode_L.place(x=497, y=355)
-    cgbmcode.place(x=597, y=357)
-
-    shangchanliuchng1_L.place(x=5, y=385)
-    shengchanliucheng1.place(x=115, y=387)
-
-    shangchanliuchng2_L.place(x=5, y=415)
-    shengchanliucheng2.place(x=115, y=417)
-
-    shangchanliuchng3_L.place(x=5, y=445)
-    shengchanliucheng3.place(x=115, y=447)
-
-    btn_gen.place(relx=0.35, rely=0.9)
+    name.set_position(row=0, column=0)
+    code.set_position(row=0, column=1)
+    ver.set_position(row=0, column=2)
+    times.set_position(row=0, column=3)
+    m.set_position(row=1, column=0)
+    mx.set_position(row=1, column=1)
+    t.set_position(row=1, column=2, columnspan=2)
+    jianjie.set_position(row=2, column=0, rowspan=2, columnspan=4)
+    fanwei.set_position(row=4, column=0, rowspan=1, columnspan=4)
+    waibao.set_position(row=6, column=0, rowspan=2, columnspan=4)
+    tsguocheng.set_position(row=8, column=0, rowspan=2, columnspan=4)
+    zhijian.set_position(row=10, column=0, columnspan=1)
+    zjfuze.set_position(row=10, column=1, columnspan=1)
+    zjbmcode.set_position(row=10, column=2, columnspan=2)
+    xiaoshou.set_position(row=11, column=0, columnspan=1)
+    xsfuze.set_position(row=11, column=1, columnspan=1)
+    xsbmcode.set_position(row=11, column=2, columnspan=2)
+    shengchan.set_position(row=12, column=0, columnspan=1)
+    scfuze.set_position(row=12, column=1, columnspan=1)
+    scbmcode.set_position(row=12, column=2, columnspan=2)
+    caigou.set_position(row=13, column=0, columnspan=1)
+    cgfuze.set_position(row=13, column=1, columnspan=1)
+    cgbmcode.set_position(row=13, column=2, columnspan=2)
+    shangchanliuchng1.set_position(row=14, column=0, columnspan=4)
+    shangchanliuchng2.set_position(row=15, column=0, columnspan=4)
+    shangchanliuchng3.set_position(row=16, column=0, columnspan=4)
+    btn_gen.grid(row=17, column=0, columnspan=2, pady=(50, 0))
+    btn_save.grid(row=17, column=2, columnspan=1, pady=(50, 0))
 
     window.mainloop()
 
 
-def InforWindow_2(info_dic):
-    '''E/QE界面'''
+def InfoWindow_2(info_dic):
+    """E/QE界面"""
+
     window = tk.Tk()
 
     # 给窗口的可视化起名字
     window.title('认证文件管理系统')
     window.config(background='Lavender')
-
+    widget_list = []
     # 设定窗口的大小(长 * 宽)
-    window.geometry('770x580')  # 这里的乘是小x
+    window.geometry('800x580')  # 这里的乘是小x
     window.resizable(0, 0)
 
-    name_L = Label(window, text='企业名称：', bg='Lavender')
-    name = Text(window, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    name = EditText(window, '企业名称')
+    name.text_setting(height=1, width=25)
+    widget_list.append(name)
 
-    code_L = Label(window, text='企业代码：', bg='Lavender')
-    code = Text(window, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    code = EditText(window, '企业代码')
+    code.text_setting(height=1, width=25)
+    widget_list.append(code)
 
-    ver_L = Label(window, text='版本：', bg='Lavender')
-    ver = Text(window, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
-    ver.insert('0.0', 'A')
+    ver = EditText(window, '版本', default='A')
+    ver.text_setting(height=1, width=12)
+    widget_list.append(ver)
 
-    times_L = Label(window, text='版次：', bg='Lavender')
-    times = Text(window, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
-    times.insert('0.0', '0')
+    times = EditText(window, '版次', default='0')
+    times.text_setting(height=1, width=12)
+    widget_list.append(times)
 
-    m_L = Label(window, text='管理者代表：', bg='Lavender')
-    m = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    m = EditText(window, '管理者代表')
+    m.text_setting(height=1, width=22)
+    widget_list.append(m)
 
-    mx_L = Label(window, text='最高管理者：', bg='Lavender')
-    mx = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    mx = EditText(window, '最高管理者')
+    mx.text_setting(height=1, width=22)
+    widget_list.append(mx)
 
-    t_L = Label(window, text='手册发布实施日期：', bg='Lavender')
-    t = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    t = EditText(window, '手册发布实施日期')
+    t.text_setting(height=1, width=22)
+    widget_list.append(t)
 
-    jianjie_L = Label(window, text='公司简介：', bg='Lavender')
-    jianjie = Text(window, height=2, width=97, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    jianjie = EditText(window, '公司简介')
+    jianjie.text_setting(height=2, width=97)
+    widget_list.append(jianjie)
 
-    fanwei_L = Label(window, text='认证范围：', bg='Lavender')
-    fanwei = Text(window, height=1, width=97, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    fanwei = EditText(window, '认证范围')
+    fanwei.text_setting(height=1, width=97)
+    widget_list.append(fanwei)
 
-    waibaoV = tk.IntVar()
+    waibao = GroupButtonWithText(window, title='公司有无外包过程', pos_opt='公司有外包过程', neg_opt='公司无外包过程',
+                                 text_title='外包过程表述', text_default='本公司外包过程为XX')
+    widget_list.append(waibao)
 
-    def waibaobool():
-        if waibaoV.get() == 0:
-            wbguocheng.config(state=DISABLED)
-        else:
-            wbguocheng.config(state=NORMAL)
+    tsguocheng = EditText(window, '特殊过程', default='无特殊过程/特殊过程为XX')
+    tsguocheng.text_setting(height=2, width=97)
+    widget_list.append(tsguocheng)
 
-    waibaoC1 = tk.Radiobutton(window, text="公司有外包过程", variable=waibaoV, value=1, command=waibaobool,
-                              bg='Lavender')
-    waibaoC2 = tk.Radiobutton(window, text="公司无外包过程", variable=waibaoV, value=0, command=waibaobool,
-                              bg='Lavender')
-    wbguocheng_L = Label(window, text='外包过程表述：', bg='Lavender')
-    wbguocheng = Text(window, height=2, width=74, relief=RAISED, highlightcolor='black', highlightthickness=1)
-    wbguocheng.insert('0.0', '本公司外包过程为XX')
+    zhijian = EditText(window, '质检部门')
+    zhijian.text_setting(height=1, width=22)
+    widget_list.append(zhijian)
 
-    tsguocheng_L = Label(window, text='特殊过程：', bg='Lavender')
-    tsguocheng = Text(window, height=2, width=97, relief=RAISED, highlightcolor='black', highlightthickness=1)
-    tsguocheng.insert('0.0', '无特殊过程/特殊过程为XX')
+    zjfuze = EditText(window, '质检负责人')
+    zjfuze.text_setting(height=1, width=22)
+    widget_list.append(zjfuze)
 
-    zhijian_L = Label(window, text='质检部门：', bg='Lavender')
-    zhijian = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    zjbmcode = EditText(window, '质检部门代码')
+    zjbmcode.text_setting(height=1, width=22)
+    widget_list.append(zjbmcode)
 
-    zjfuze_L = Label(window, text='质检负责人：', bg='Lavender')
-    zjfuze = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    xiaoshou = EditText(window, '销售部门')
+    xiaoshou.text_setting(height=1, width=22)
+    widget_list.append(xiaoshou)
 
-    zjbmcode_L = Label(window, text='质检部门代码：', bg='Lavender')
-    zjbmcode = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    xsfuze = EditText(window, '销售负责人')
+    xsfuze.text_setting(height=1, width=22)
+    widget_list.append(xsfuze)
 
-    xiaoshou_L = Label(window, text='销售部门：', bg='Lavender')
-    xiaoshou = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    xsbmcode = EditText(window, '销售部门代码')
+    xsbmcode.text_setting(height=1, width=22)
+    widget_list.append(xsbmcode)
 
-    xsfuze_L = Label(window, text='销售负责人：', bg='Lavender')
-    xsfuze = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    shengchan = EditText(window, '生产部门')
+    shengchan.text_setting(height=1, width=22)
+    widget_list.append(shengchan)
 
-    xsbmcode_L = Label(window, text='销售部门代码：', bg='Lavender')
-    xsbmcode = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    scfuze = EditText(window, '生产负责人')
+    scfuze.text_setting(height=1, width=22)
+    widget_list.append(scfuze)
 
-    shengchan_L = Label(window, text='生产部门：', bg='Lavender')
-    shengchan = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    scbmcode = EditText(window, '生产部门代码')
+    scbmcode.text_setting(height=1, width=22)
+    widget_list.append(scbmcode)
 
-    scfuze_L = Label(window, text='生产负责人：', bg='Lavender')
-    scfuze = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    xingzheng = EditText(window, '行政部门')
+    xingzheng.text_setting(height=1, width=22)
+    widget_list.append(xingzheng)
 
-    scbmcode_L = Label(window, text='生产部门代码：', bg='Lavender')
-    scbmcode = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    xzfuze = EditText(window, '行政负责人')
+    xzfuze.text_setting(height=1, width=22)
+    widget_list.append(xzfuze)
 
-    xingzheng_L = Label(window, text='行政部门：', bg='Lavender')
-    xingzheng = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    xzbmcode = EditText(window, '行政部门代码')
+    xzbmcode.text_setting(height=1, width=22)
+    widget_list.append(xzbmcode)
 
-    xzfuze_L = Label(window, text='行政负责人：', bg='Lavender')
-    xzfuze = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    caiwu = EditText(window, '财务部门')
+    caiwu.text_setting(height=1, width=22)
+    widget_list.append(caiwu)
 
-    xzbmcode_L = Label(window, text='行政部门代码：', bg='Lavender')
-    xzbmcode = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    cwfuze = EditText(window, '财务负责人')
+    cwfuze.text_setting(height=1, width=22)
+    widget_list.append(cwfuze)
 
-    caiwu_L = Label(window, text='财务部门：', bg='Lavender')
-    caiwu = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    cwbmcode = EditText(window, '财务部门代码')
+    cwbmcode.text_setting(height=1, width=22)
+    widget_list.append(cwbmcode)
 
-    cwfuze_L = Label(window, text='财务负责人：', bg='Lavender')
-    cwfuze = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    caigou = EditText(window, '采购部门')
+    caigou.text_setting(height=1, width=22)
+    widget_list.append(caigou)
 
-    cwbmcode_L = Label(window, text='财务部门代码：', bg='Lavender')
-    cwbmcode = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    cgfuze = EditText(window, '采购负责人')
+    cgfuze.text_setting(height=1, width=22)
+    widget_list.append(cgfuze)
 
-    caigou_L = Label(window, text='采购部门：', bg='Lavender')
-    caigou = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    cgbmcode = EditText(window, '采购部门代码')
+    cgbmcode.text_setting(height=1, width=22)
+    widget_list.append(cgbmcode)
 
-    cgfuze_L = Label(window, text='采购负责人：', bg='Lavender')
-    cgfuze = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    shangchanliuchng1 = EditText(window, '生产工艺流程1', default='若无该流程则跳过该项')
+    shangchanliuchng1.text_setting(height=1, width=91)
+    widget_list.append(shangchanliuchng1)
 
-    cgbmcode_L = Label(window, text='采购部门代码：', bg='Lavender')
-    cgbmcode = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    shangchanliuchng2 = EditText(window, '生产工艺流程2', default='若无该流程则跳过该项')
+    shangchanliuchng2.text_setting(height=1, width=91)
+    widget_list.append(shangchanliuchng2)
 
-    shangchanliuchng1_L = Label(window, text='生产工艺流程1：', bg='Lavender')
-    shengchanliucheng1 = Text(window, height=1, width=85, relief=RAISED, highlightcolor='black', highlightthickness=1)
-    shengchanliucheng1.insert('0.0', '若无该流程则跳过该项')
+    shangchanliuchng3 = EditText(window, '生产工艺流程3', default='若无该流程则跳过该项')
+    shangchanliuchng3.text_setting(height=1, width=91)
+    widget_list.append(shangchanliuchng3)
 
-    shangchanliuchng2_L = Label(window, text='生产工艺流程2：', bg='Lavender')
-    shengchanliucheng2 = Text(window, height=1, width=85, relief=RAISED, highlightcolor='black', highlightthickness=1)
-    shengchanliucheng2.insert('0.0', '若无该流程则跳过该项')
-
-    shangchanliuchng3_L = Label(window, text='生产工艺流程3：', bg='Lavender')
-    shengchanliucheng3 = Text(window, height=1, width=85, relief=RAISED, highlightcolor='black', highlightthickness=1)
-    shengchanliucheng3.insert('0.0', '若无该流程则跳过该项')
-
-    def textGen():
-        info_dic['__企业名称__'] = name.get(0.0, 20.0).strip()
-        info_dic['__企业代码__'] = code.get(0.0, 20.0).strip()
-        info_dic['__版本__'] = ver.get(0.0, 20.0).strip()
-        info_dic['__版次__'] = '\'' + times.get(0.0, 20.0).strip() + '\''
-        info_dic['__管理者代表__'] = m.get(0.0, 20.0).strip()
-        info_dic['__最高管理者__'] = mx.get(0.0, 20.0).strip()
-        info_dic['__手册发布实施日期__'] = t.get(0.0, 20.0).strip()
-        info_dic['__公司简介__'] = jianjie.get(0.0, 20.0).strip()
-        info_dic['__认证范围__'] = fanwei.get(0.0, 20.0).strip()
-        if waibaoV.get() == 1:
-            info_dic['__有无外包过程__'] = '有'
-            info_dic['__外包过程表述__'] = wbguocheng.get(0.0, 20.0).strip()
-        else:
-            info_dic['__有无外包过程__'] = '无'
-            info_dic['__外包过程表述__'] = ' '
-        info_dic['__特殊过程__'] = tsguocheng.get(0.0, 20.0).strip()
-        info_dic['__质检部门__'] = zhijian.get(0.0, 20.0).strip()
-        info_dic['__质检负责人__'] = zjfuze.get(0.0, 20.0).strip()
-        info_dic['__质检部门代码__'] = zjbmcode.get(0.0, 20.0).strip()
-        info_dic['__销售部门__'] = xiaoshou.get(0.0, 20.0).strip()
-        info_dic['__销售负责人__'] = xsfuze.get(0.0, 20.0).strip()
-        info_dic['__销售部门代码__'] = xsbmcode.get(0.0, 20.0).strip()
-        info_dic['__生产部门__'] = shengchan.get(0.0, 20.0).strip()
-        info_dic['__生产负责人__'] = scfuze.get(0.0, 20.0).strip()
-        info_dic['__生产部门代码__'] = scbmcode.get(0.0, 20.0).strip()
-        info_dic['__行政部门__'] = xingzheng.get(0.0, 20.0).strip()
-        info_dic['__行政负责人__'] = xzfuze.get(0.0, 20.0).strip()
-        info_dic['__行政部门代码__'] = xzbmcode.get(0.0, 20.0).strip()
-        info_dic['__财务部门__'] = caiwu.get(0.0, 20.0).strip()
-        info_dic['__财务负责人__'] = cwfuze.get(0.0, 20.0).strip()
-        info_dic['__财务部门代码__'] = cwbmcode.get(0.0, 20.0).strip()
-        info_dic['__采购部门__'] = caigou.get(0.0, 20.0).strip()
-        info_dic['__采购负责人__'] = cgfuze.get(0.0, 20.0).strip()
-        info_dic['__采购部门代码__'] = cgbmcode.get(0.0, 20.0).strip()
-        info_dic['__生产工艺流程1__'] = shengchanliucheng1.get(0.0, 20.0).strip()
-        info_dic['__生产工艺流程2__'] = shengchanliucheng2.get(0.0, 20.0).strip()
-        info_dic['__生产工艺流程3__'] = shengchanliucheng3.get(0.0, 20.0).strip()
-        window.destroy()
+    def text_gen():
+        for widget in widget_list:
+            widget.save_value_into_info_dic(info_dic)
+            widget.temp_save()
         informCollectWindow(info_dic)
 
-    btn_gen = tk.Button(window, text='确认信息无误，进入下一采集阶段。', command=lambda: [textGen()])
+    def temp_save_to_local():
+        for widget in widget_list:
+            widget.temp_save()
+        gen_temp_storage()
 
-    '''place布局'''
-    name_L.place(x=5, y=5)  # 14 / token
-    name.place(x=75, y=7)  # 5.6 / 1
+    btn_gen = tk.Button(window, text='确认信息无误，进入下一采集阶段。', command=lambda: [text_gen()])
+    btn_save = tk.Button(window, text='缓存信息。', command=lambda: [temp_save_to_local()])
 
-    code_L.place(x=245, y=5)
-    code.place(x=315, y=7)
-
-    ver_L.place(x=485, y=5)
-    ver.place(x=530, y=7)
-
-    times_L.place(x=625, y=5)
-    times.place(x=670, y=7)
-
-    m_L.place(x=5, y=35)
-    m.place(x=90, y=37)
-
-    mx_L.place(x=245, y=35)
-    mx.place(x=330, y=37)
-
-    t_L.place(x=475, y=35)
-    t.place(x=600, y=37)
-
-    jianjie_L.place(x=5, y=70)
-    jianjie.place(x=75, y=67)
-
-    fanwei_L.place(x=5, y=110)
-    fanwei.place(x=75, y=112)
-
-    waibaoC1.place(x=5, y=140)
-    waibaoC2.place(x=5, y=160)
-    wbguocheng_L.place(x=135, y=150)
-    wbguocheng.place(x=235, y=147)
-
-    tsguocheng_L.place(x=5, y=195)
-    tsguocheng.place(x=75, y=192)
-
-    zhijian_L.place(x=6, y=235)
-    zhijian.place(x=76, y=237)
-    zjfuze_L.place(x=244, y=235)
-    zjfuze.place(x=329, y=237)
-    zjbmcode_L.place(x=497, y=235)
-    zjbmcode.place(x=597, y=237)
-
-    xiaoshou_L.place(x=6, y=265)
-    xiaoshou.place(x=76, y=267)
-    xsfuze_L.place(x=244, y=265)
-    xsfuze.place(x=329, y=267)
-    xsbmcode_L.place(x=497, y=265)
-    xsbmcode.place(x=597, y=267)
-
-    shengchan_L.place(x=6, y=295)
-    shengchan.place(x=76, y=297)
-    scfuze_L.place(x=244, y=295)
-    scfuze.place(x=329, y=297)
-    scbmcode_L.place(x=497, y=295)
-    scbmcode.place(x=597, y=297)
-
-    xingzheng_L.place(x=6, y=325)
-    xingzheng.place(x=76, y=327)
-    xzfuze_L.place(x=244, y=325)
-    xzfuze.place(x=329, y=327)
-    xzbmcode_L.place(x=497, y=325)
-    xzbmcode.place(x=597, y=327)
-
-    caiwu_L.place(x=6, y=355)
-    caiwu.place(x=76, y=357)
-    cwfuze_L.place(x=244, y=355)
-    cwfuze.place(x=329, y=357)
-    cwbmcode_L.place(x=497, y=355)
-    cwbmcode.place(x=597, y=357)
-
-    caigou_L.place(x=6, y=385)
-    caigou.place(x=76, y=387)
-    cgfuze_L.place(x=244, y=385)
-    cgfuze.place(x=329, y=387)
-    cgbmcode_L.place(x=497, y=385)
-    cgbmcode.place(x=597, y=387)
-
-    shangchanliuchng1_L.place(x=5, y=415)
-    shengchanliucheng1.place(x=115, y=417)
-
-    shangchanliuchng2_L.place(x=5, y=445)
-    shengchanliucheng2.place(x=115, y=447)
-
-    shangchanliuchng3_L.place(x=5, y=475)
-    shengchanliucheng3.place(x=115, y=477)
-
-    btn_gen.place(relx=0.35, rely=0.9)
+    name.set_position(row=0, column=0)
+    code.set_position(row=0, column=1)
+    ver.set_position(row=0, column=2)
+    times.set_position(row=0, column=3)
+    m.set_position(row=1, column=0)
+    mx.set_position(row=1, column=1)
+    t.set_position(row=1, column=2, columnspan=2)
+    jianjie.set_position(row=2, column=0, rowspan=2, columnspan=4)
+    fanwei.set_position(row=4, column=0, rowspan=1, columnspan=4)
+    waibao.set_position(row=6, column=0, rowspan=2, columnspan=4)
+    tsguocheng.set_position(row=8, column=0, rowspan=2, columnspan=4)
+    zhijian.set_position(row=10, column=0, columnspan=1)
+    zjfuze.set_position(row=10, column=1, columnspan=1)
+    zjbmcode.set_position(row=10, column=2, columnspan=2)
+    xiaoshou.set_position(row=11, column=0, columnspan=1)
+    xsfuze.set_position(row=11, column=1, columnspan=1)
+    xsbmcode.set_position(row=11, column=2, columnspan=2)
+    shengchan.set_position(row=12, column=0, columnspan=1)
+    scfuze.set_position(row=12, column=1, columnspan=1)
+    scbmcode.set_position(row=12, column=2, columnspan=2)
+    caiwu.set_position(row=13, column=0, columnspan=1)
+    cwfuze.set_position(row=13, column=1, columnspan=1)
+    cwbmcode.set_position(row=13, column=2, columnspan=2)
+    caigou.set_position(row=14, column=0, columnspan=1)
+    cgfuze.set_position(row=14, column=1, columnspan=1)
+    cgbmcode.set_position(row=14, column=2, columnspan=2)
+    shangchanliuchng1.set_position(row=15, column=0, columnspan=4)
+    shangchanliuchng2.set_position(row=16, column=0, columnspan=4)
+    shangchanliuchng3.set_position(row=17, column=0, columnspan=4)
+    btn_gen.grid(row=18, column=0, columnspan=2, pady=(50, 0))
+    btn_save.grid(row=18, column=2, columnspan=1, pady=(50, 0))
 
     window.mainloop()
 
 
-def InforWindow_3(info_dic):
-    '''S/QS/ES/QES界面'''
+def InfoWindow_3(info_dic):
+    """S/QS/ES/QES界面"""
+
     window = tk.Tk()
 
     # 给窗口的可视化起名字
     window.title('认证文件管理系统')
     window.config(background='Lavender')
-
+    widget_list = []
     # 设定窗口的大小(长 * 宽)
-    window.geometry('770x590')  # 这里的乘是小x
+    window.geometry('800x580')  # 这里的乘是小x
     window.resizable(0, 0)
 
-    name_L = Label(window, text='企业名称：', bg='Lavender')
-    name = Text(window, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    name = EditText(window, '企业名称')
+    name.text_setting(height=1, width=25)
+    widget_list.append(name)
 
-    code_L = Label(window, text='企业代码：', bg='Lavender')
-    code = Text(window, height=1, width=25, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    code = EditText(window, '企业代码')
+    code.text_setting(height=1, width=25)
+    widget_list.append(code)
 
-    ver_L = Label(window, text='版本：', bg='Lavender')
-    ver = Text(window, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
-    ver.insert('0.0', 'A')
+    ver = EditText(window, '版本', default='A')
+    ver.text_setting(height=1, width=12)
+    widget_list.append(ver)
 
-    times_L = Label(window, text='版次：', bg='Lavender')
-    times = Text(window, height=1, width=12, relief=RAISED, highlightcolor='black', highlightthickness=1)
-    times.insert('0.0', '0')
+    times = EditText(window, '版次', default='0')
+    times.text_setting(height=1, width=12)
+    widget_list.append(times)
 
-    m_L = Label(window, text='管理者代表：', bg='Lavender')
-    m = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    m = EditText(window, '管理者代表')
+    m.text_setting(height=1, width=22)
+    widget_list.append(m)
 
-    mx_L = Label(window, text='最高管理者：', bg='Lavender')
-    mx = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    mx = EditText(window, '最高管理者')
+    mx.text_setting(height=1, width=22)
+    widget_list.append(mx)
 
-    t_L = Label(window, text='手册发布实施日期：', bg='Lavender')
-    t = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    t = EditText(window, '手册发布实施日期')
+    t.text_setting(height=1, width=22)
+    widget_list.append(t)
 
-    jianjie_L = Label(window, text='公司简介：', bg='Lavender')
-    jianjie = Text(window, height=2, width=97, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    jianjie = EditText(window, '公司简介')
+    jianjie.text_setting(height=2, width=97)
+    widget_list.append(jianjie)
 
-    fanwei_L = Label(window, text='认证范围：', bg='Lavender')
-    fanwei = Text(window, height=1, width=97, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    fanwei = EditText(window, '认证范围')
+    fanwei.text_setting(height=1, width=97)
+    widget_list.append(fanwei)
 
-    waibaoV = tk.IntVar()
+    waibao = GroupButtonWithText(window, title='公司有无外包过程', pos_opt='公司有外包过程', neg_opt='公司无外包过程',
+                                 text_title='外包过程表述', text_default='本公司外包过程为XX')
+    widget_list.append(waibao)
 
-    def waibaobool():
-        if waibaoV.get() == 0:
-            wbguocheng.config(state=DISABLED)
-        else:
-            wbguocheng.config(state=NORMAL)
+    tsguocheng = EditText(window, '特殊过程', default='无特殊过程/特殊过程为XX')
+    tsguocheng.text_setting(height=2, width=97)
+    widget_list.append(tsguocheng)
 
-    waibaoC1 = tk.Radiobutton(window, text="公司有外包过程", variable=waibaoV, value=1, command=waibaobool,
-                              bg='Lavender')
-    waibaoC2 = tk.Radiobutton(window, text="公司无外包过程", variable=waibaoV, value=0, command=waibaobool,
-                              bg='Lavender')
-    wbguocheng_L = Label(window, text='外包过程表述：', bg='Lavender')
-    wbguocheng = Text(window, height=2, width=74, relief=RAISED, highlightcolor='black', highlightthickness=1)
-    wbguocheng.insert('0.0', '本公司外包过程为XX')
+    zhijian = EditText(window, '质检部门')
+    zhijian.text_setting(height=1, width=22)
+    widget_list.append(zhijian)
 
-    tsguocheng_L = Label(window, text='特殊过程：', bg='Lavender')
-    tsguocheng = Text(window, height=2, width=97, relief=RAISED, highlightcolor='black', highlightthickness=1)
-    tsguocheng.insert('0.0', '无特殊过程/特殊过程为XX')
+    zjfuze = EditText(window, '质检负责人')
+    zjfuze.text_setting(height=1, width=22)
+    widget_list.append(zjfuze)
 
-    zhijian_L = Label(window, text='质检部门：', bg='Lavender')
-    zhijian = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    zjbmcode = EditText(window, '质检部门代码')
+    zjbmcode.text_setting(height=1, width=22)
+    widget_list.append(zjbmcode)
 
-    zjfuze_L = Label(window, text='质检负责人：', bg='Lavender')
-    zjfuze = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    xiaoshou = EditText(window, '销售部门')
+    xiaoshou.text_setting(height=1, width=22)
+    widget_list.append(xiaoshou)
 
-    zjbmcode_L = Label(window, text='质检部门代码：', bg='Lavender')
-    zjbmcode = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    xsfuze = EditText(window, '销售负责人')
+    xsfuze.text_setting(height=1, width=22)
+    widget_list.append(xsfuze)
 
-    xiaoshou_L = Label(window, text='销售部门：', bg='Lavender')
-    xiaoshou = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    xsbmcode = EditText(window, '销售部门代码')
+    xsbmcode.text_setting(height=1, width=22)
+    widget_list.append(xsbmcode)
 
-    xsfuze_L = Label(window, text='销售负责人：', bg='Lavender')
-    xsfuze = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    shengchan = EditText(window, '生产部门')
+    shengchan.text_setting(height=1, width=22)
+    widget_list.append(shengchan)
 
-    xsbmcode_L = Label(window, text='销售部门代码：', bg='Lavender')
-    xsbmcode = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    scfuze = EditText(window, '生产负责人')
+    scfuze.text_setting(height=1, width=22)
+    widget_list.append(scfuze)
 
-    shengchan_L = Label(window, text='生产部门：', bg='Lavender')
-    shengchan = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    scbmcode = EditText(window, '生产部门代码')
+    scbmcode.text_setting(height=1, width=22)
+    widget_list.append(scbmcode)
 
-    scfuze_L = Label(window, text='生产负责人：', bg='Lavender')
-    scfuze = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    xingzheng = EditText(window, '行政部门')
+    xingzheng.text_setting(height=1, width=22)
+    widget_list.append(xingzheng)
 
-    scbmcode_L = Label(window, text='生产部门代码：', bg='Lavender')
-    scbmcode = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    xzfuze = EditText(window, '行政负责人')
+    xzfuze.text_setting(height=1, width=22)
+    widget_list.append(xzfuze)
 
-    xingzheng_L = Label(window, text='行政部门：', bg='Lavender')
-    xingzheng = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    xzbmcode = EditText(window, '行政部门代码')
+    xzbmcode.text_setting(height=1, width=22)
+    widget_list.append(xzbmcode)
 
-    xzfuze_L = Label(window, text='行政负责人：', bg='Lavender')
-    xzfuze = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    caiwu = EditText(window, '财务部门')
+    caiwu.text_setting(height=1, width=22)
+    widget_list.append(caiwu)
 
-    xzbmcode_L = Label(window, text='行政部门代码：', bg='Lavender')
-    xzbmcode = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    cwfuze = EditText(window, '财务负责人')
+    cwfuze.text_setting(height=1, width=22)
+    widget_list.append(cwfuze)
 
-    caiwu_L = Label(window, text='财务部门：', bg='Lavender')
-    caiwu = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    cwbmcode = EditText(window, '财务部门代码')
+    cwbmcode.text_setting(height=1, width=22)
+    widget_list.append(cwbmcode)
 
-    cwfuze_L = Label(window, text='财务负责人：', bg='Lavender')
-    cwfuze = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    caigou = EditText(window, '采购部门')
+    caigou.text_setting(height=1, width=22)
+    widget_list.append(caigou)
 
-    cwbmcode_L = Label(window, text='财务部门代码：', bg='Lavender')
-    cwbmcode = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    cgfuze = EditText(window, '采购负责人')
+    cgfuze.text_setting(height=1, width=22)
+    widget_list.append(cgfuze)
 
-    caigou_L = Label(window, text='采购部门：', bg='Lavender')
-    caigou = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    cgbmcode = EditText(window, '采购部门代码')
+    cgbmcode.text_setting(height=1, width=22)
+    widget_list.append(cgbmcode)
 
-    cgfuze_L = Label(window, text='采购负责人：', bg='Lavender')
-    cgfuze = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    anquanfuze = EditText(window, '安全负责人')
+    anquanfuze.text_setting(height=1, width=22)
+    widget_list.append(anquanfuze)
 
-    cgbmcode_L = Label(window, text='采购部门代码：', bg='Lavender')
-    cgbmcode = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    shangchanliuchng1 = EditText(window, '生产工艺流程1', default='若无该流程则跳过该项')
+    shangchanliuchng1.text_setting(height=1, width=91)
+    widget_list.append(shangchanliuchng1)
 
-    anquanfuze_L = Label(window, text='安全负责人：', bg='Lavender')
-    anquanfuze = Text(window, height=1, width=22, relief=RAISED, highlightcolor='black', highlightthickness=1)
+    shangchanliuchng2 = EditText(window, '生产工艺流程2', default='若无该流程则跳过该项')
+    shangchanliuchng2.text_setting(height=1, width=91)
+    widget_list.append(shangchanliuchng2)
 
-    shangchanliuchng1_L = Label(window, text='生产工艺流程1：', bg='Lavender')
-    shengchanliucheng1 = Text(window, height=1, width=85, relief=RAISED, highlightcolor='black', highlightthickness=1)
-    shengchanliucheng1.insert('0.0', '若无该流程则跳过该项')
+    shangchanliuchng3 = EditText(window, '生产工艺流程3', default='若无该流程则跳过该项')
+    shangchanliuchng3.text_setting(height=1, width=91)
+    widget_list.append(shangchanliuchng3)
 
-    shangchanliuchng2_L = Label(window, text='生产工艺流程2：', bg='Lavender')
-    shengchanliucheng2 = Text(window, height=1, width=85, relief=RAISED, highlightcolor='black', highlightthickness=1)
-    shengchanliucheng2.insert('0.0', '若无该流程则跳过该项')
-
-    shangchanliuchng3_L = Label(window, text='生产工艺流程3：', bg='Lavender')
-    shengchanliucheng3 = Text(window, height=1, width=85, relief=RAISED, highlightcolor='black', highlightthickness=1)
-    shengchanliucheng3.insert('0.0', '若无该流程则跳过该项')
-
-    def textGen():
-        info_dic['__企业名称__'] = name.get(0.0, 20.0).strip()
-        info_dic['__企业代码__'] = code.get(0.0, 20.0).strip()
-        info_dic['__版本__'] = ver.get(0.0, 20.0).strip()
-        info_dic['__版次__'] = '\'' + times.get(0.0, 20.0).strip() + '\''
-        info_dic['__管理者代表__'] = m.get(0.0, 20.0).strip()
-        info_dic['__最高管理者__'] = mx.get(0.0, 20.0).strip()
-        info_dic['__手册发布实施日期__'] = t.get(0.0, 20.0).strip()
-        info_dic['__公司简介__'] = jianjie.get(0.0, 20.0).strip()
-        info_dic['__认证范围__'] = fanwei.get(0.0, 20.0).strip()
-        if waibaoV.get() == 1:
-            info_dic['__有无外包过程__'] = '有'
-            info_dic['__外包过程表述__'] = wbguocheng.get(0.0, 20.0).strip()
-        else:
-            info_dic['__有无外包过程__'] = '无'
-            info_dic['__外包过程表述__'] = ' '
-        info_dic['__特殊过程__'] = tsguocheng.get(0.0, 20.0).strip()
-        info_dic['__质检部门__'] = zhijian.get(0.0, 20.0).strip()
-        info_dic['__质检负责人__'] = zjfuze.get(0.0, 20.0).strip()
-        info_dic['__质检部门代码__'] = zjbmcode.get(0.0, 20.0).strip()
-        info_dic['__销售部门__'] = xiaoshou.get(0.0, 20.0).strip()
-        info_dic['__销售负责人__'] = xsfuze.get(0.0, 20.0).strip()
-        info_dic['__销售部门代码__'] = xsbmcode.get(0.0, 20.0).strip()
-        info_dic['__生产部门__'] = shengchan.get(0.0, 20.0).strip()
-        info_dic['__生产负责人__'] = scfuze.get(0.0, 20.0).strip()
-        info_dic['__生产部门代码__'] = scbmcode.get(0.0, 20.0).strip()
-        info_dic['__行政部门__'] = xingzheng.get(0.0, 20.0).strip()
-        info_dic['__行政负责人__'] = xzfuze.get(0.0, 20.0).strip()
-        info_dic['__行政部门代码__'] = xzbmcode.get(0.0, 20.0).strip()
-        info_dic['__采购部门__'] = caigou.get(0.0, 20.0).strip()
-        info_dic['__采购负责人__'] = cgfuze.get(0.0, 20.0).strip()
-        info_dic['__采购部门代码__'] = cgbmcode.get(0.0, 20.0).strip()
-        info_dic['__财务部门__'] = caiwu.get(0.0, 20.0).strip()
-        info_dic['__财务负责人__'] = cwfuze.get(0.0, 20.0).strip()
-        info_dic['__财务部门代码__'] = cwbmcode.get(0.0, 20.0).strip()
-        info_dic['__安全负责人__'] = anquanfuze.get(0.0, 20.0).strip()
-        info_dic['__生产工艺流程1__'] = shengchanliucheng1.get(0.0, 20.0).strip()
-        info_dic['__生产工艺流程2__'] = shengchanliucheng2.get(0.0, 20.0).strip()
-        info_dic['__生产工艺流程3__'] = shengchanliucheng3.get(0.0, 20.0).strip()
-        window.destroy()
+    def text_gen():
+        for widget in widget_list:
+            widget.save_value_into_info_dic(info_dic)
+            widget.temp_save()
         informCollectWindow(info_dic)
 
-    btn_gen = tk.Button(window, text='确认信息无误，进入下一采集阶段。', command=lambda: [textGen()])
+    def temp_save_to_local():
+        for widget in widget_list:
+            widget.temp_save()
+        gen_temp_storage()
 
-    '''place布局'''
-    name_L.place(x=5, y=5)  # 14 / token
-    name.place(x=75, y=7)  # 5.6 / 1
+    btn_gen = tk.Button(window, text='确认信息无误，进入下一采集阶段。', command=lambda: [text_gen()])
+    btn_save = tk.Button(window, text='缓存信息。', command=lambda: [temp_save_to_local()])
 
-    code_L.place(x=245, y=5)
-    code.place(x=315, y=7)
-
-    ver_L.place(x=485, y=5)
-    ver.place(x=530, y=7)
-
-    times_L.place(x=625, y=5)
-    times.place(x=670, y=7)
-
-    m_L.place(x=5, y=35)
-    m.place(x=90, y=37)
-
-    mx_L.place(x=245, y=35)
-    mx.place(x=330, y=37)
-
-    t_L.place(x=475, y=35)
-    t.place(x=600, y=37)
-
-    jianjie_L.place(x=5, y=70)
-    jianjie.place(x=75, y=67)
-
-    fanwei_L.place(x=5, y=110)
-    fanwei.place(x=75, y=112)
-
-    waibaoC1.place(x=5, y=140)
-    waibaoC2.place(x=5, y=160)
-    wbguocheng_L.place(x=135, y=150)
-    wbguocheng.place(x=235, y=147)
-
-    tsguocheng_L.place(x=5, y=195)
-    tsguocheng.place(x=75, y=192)
-
-    zhijian_L.place(x=6, y=235)
-    zhijian.place(x=76, y=237)
-    zjfuze_L.place(x=244, y=235)
-    zjfuze.place(x=329, y=237)
-    zjbmcode_L.place(x=497, y=235)
-    zjbmcode.place(x=597, y=237)
-
-    xiaoshou_L.place(x=6, y=265)
-    xiaoshou.place(x=76, y=267)
-    xsfuze_L.place(x=244, y=265)
-    xsfuze.place(x=329, y=267)
-    xsbmcode_L.place(x=497, y=265)
-    xsbmcode.place(x=597, y=267)
-
-    shengchan_L.place(x=6, y=295)
-    shengchan.place(x=76, y=297)
-    scfuze_L.place(x=244, y=295)
-    scfuze.place(x=329, y=297)
-    scbmcode_L.place(x=497, y=295)
-    scbmcode.place(x=597, y=297)
-
-    xingzheng_L.place(x=6, y=325)
-    xingzheng.place(x=76, y=327)
-    xzfuze_L.place(x=244, y=325)
-    xzfuze.place(x=329, y=327)
-    xzbmcode_L.place(x=497, y=325)
-    xzbmcode.place(x=597, y=327)
-
-    caiwu_L.place(x=6, y=355)
-    caiwu.place(x=76, y=357)
-    cwfuze_L.place(x=244, y=355)
-    cwfuze.place(x=329, y=357)
-    cwbmcode_L.place(x=497, y=355)
-    cwbmcode.place(x=597, y=357)
-
-    caigou_L.place(x=6, y=385)
-    caigou.place(x=76, y=387)
-    cgfuze_L.place(x=244, y=385)
-    cgfuze.place(x=329, y=387)
-    cgbmcode_L.place(x=497, y=385)
-    cgbmcode.place(x=597, y=387)
-
-    anquanfuze_L.place(x=5, y=415)
-    anquanfuze.place(x=90, y=417)
-
-    shangchanliuchng1_L.place(x=5, y=445)
-    shengchanliucheng1.place(x=115, y=447)
-
-    shangchanliuchng2_L.place(x=5, y=475)
-    shengchanliucheng2.place(x=115, y=477)
-
-    shangchanliuchng3_L.place(x=5, y=505)
-    shengchanliucheng3.place(x=115, y=507)
-
-    btn_gen.place(relx=0.35, rely=0.92)
+    name.set_position(row=0, column=0)
+    code.set_position(row=0, column=1)
+    ver.set_position(row=0, column=2)
+    times.set_position(row=0, column=3)
+    m.set_position(row=1, column=0)
+    mx.set_position(row=1, column=1)
+    t.set_position(row=1, column=2, columnspan=2)
+    jianjie.set_position(row=2, column=0, rowspan=2, columnspan=4)
+    fanwei.set_position(row=4, column=0, rowspan=1, columnspan=4)
+    waibao.set_position(row=6, column=0, rowspan=2, columnspan=4)
+    tsguocheng.set_position(row=8, column=0, rowspan=2, columnspan=4)
+    zhijian.set_position(row=10, column=0, columnspan=1)
+    zjfuze.set_position(row=10, column=1, columnspan=1)
+    zjbmcode.set_position(row=10, column=2, columnspan=2)
+    xiaoshou.set_position(row=11, column=0, columnspan=1)
+    xsfuze.set_position(row=11, column=1, columnspan=1)
+    xsbmcode.set_position(row=11, column=2, columnspan=2)
+    shengchan.set_position(row=12, column=0, columnspan=1)
+    scfuze.set_position(row=12, column=1, columnspan=1)
+    scbmcode.set_position(row=12, column=2, columnspan=2)
+    caiwu.set_position(row=13, column=0, columnspan=1)
+    cwfuze.set_position(row=13, column=1, columnspan=1)
+    cwbmcode.set_position(row=13, column=2, columnspan=2)
+    caigou.set_position(row=14, column=0, columnspan=1)
+    cgfuze.set_position(row=14, column=1, columnspan=1)
+    cgbmcode.set_position(row=14, column=2, columnspan=2)
+    anquanfuze.set_position(row=15, column=0, columnspan=1)
+    shangchanliuchng1.set_position(row=16, column=0, columnspan=4)
+    shangchanliuchng2.set_position(row=17, column=0, columnspan=4)
+    shangchanliuchng3.set_position(row=18, column=0, columnspan=4)
+    btn_gen.grid(row=19, column=0, columnspan=2, pady=(50, 0))
+    btn_save.grid(row=19, column=2, columnspan=1, pady=(50, 0))
 
     window.mainloop()
