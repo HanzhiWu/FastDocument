@@ -1,5 +1,5 @@
-from fileSystem.third_window import informCollectWindow
-from fileSystem.widgets import EditText, GroupButtonWithText
+from third_window import informCollectWindow
+from widgets import EditText, GroupButtonWithText
 from temp_storage import *
 import tkinter as tk
 from tkinter import *
@@ -125,6 +125,30 @@ def InfoWindow_1(info_dic):
     cgbmcode.text_setting(height=1, width=22)
     widget_list.append(cgbmcode)
 
+    xscaigou = EditText(window, '销售采购部门')
+    xscaigou.text_setting(height=1, width=22)
+    widget_list.append(xscaigou)
+
+    xscgfuze = EditText(window, '销售采购负责人')
+    xscgfuze.text_setting(height=1, width=22)
+    widget_list.append(xscgfuze)
+
+    xscgbmcode = EditText(window, '销售采购部门代码')
+    xscgbmcode.text_setting(height=1, width=22)
+    widget_list.append(xscgbmcode)
+
+    xzcaigou = EditText(window, '行政采购部门')
+    xzcaigou.text_setting(height=1, width=22)
+    widget_list.append(xzcaigou)
+
+    xzcgfuze = EditText(window, '行政采购负责人')
+    xzcgfuze.text_setting(height=1, width=22)
+    widget_list.append(xzcgfuze)
+
+    xzcgbmcode = EditText(window, '行政采购部门代码')
+    xzcgbmcode.text_setting(height=1, width=22)
+    widget_list.append(xzcgbmcode)
+
     shangchanliuchng1 = EditText(window, '生产工艺流程1', default='若无该流程则跳过该项')
     shangchanliuchng1.text_setting(height=1, width=91)
     widget_list.append(shangchanliuchng1)
@@ -174,11 +198,17 @@ def InfoWindow_1(info_dic):
     caigou.set_position(row=13, column=0, columnspan=1)
     cgfuze.set_position(row=13, column=1, columnspan=1)
     cgbmcode.set_position(row=13, column=2, columnspan=2)
-    shangchanliuchng1.set_position(row=14, column=0, columnspan=4)
-    shangchanliuchng2.set_position(row=15, column=0, columnspan=4)
-    shangchanliuchng3.set_position(row=16, column=0, columnspan=4)
-    btn_gen.grid(row=17, column=0, columnspan=2, pady=(50, 0))
-    btn_save.grid(row=17, column=2, columnspan=1, pady=(50, 0))
+    xscaigou.set_position(row=14, column=0, columnspan=1)
+    xscgfuze.set_position(row=14, column=1, columnspan=1)
+    xscgbmcode.set_position(row=14, column=2, columnspan=2)
+    xzcaigou.set_position(row=15, column=0, columnspan=1)
+    xzcgfuze.set_position(row=15, column=1, columnspan=1)
+    xzcgbmcode.set_position(row=15, column=2, columnspan=2)
+    shangchanliuchng1.set_position(row=16, column=0, columnspan=4)
+    shangchanliuchng2.set_position(row=17, column=0, columnspan=4)
+    shangchanliuchng3.set_position(row=18, column=0, columnspan=4)
+    btn_gen.grid(row=19, column=0, columnspan=2, pady=(20, 0))
+    btn_save.grid(row=19, column=2, columnspan=1, pady=(20, 0))
 
     window.mainloop()
 
@@ -312,6 +342,30 @@ def InfoWindow_2(info_dic):
     cgbmcode.text_setting(height=1, width=22)
     widget_list.append(cgbmcode)
 
+    xscaigou = EditText(window, '销售采购部门')
+    xscaigou.text_setting(height=1, width=22)
+    widget_list.append(xscaigou)
+
+    xscgfuze = EditText(window, '销售采购负责人')
+    xscgfuze.text_setting(height=1, width=22)
+    widget_list.append(xscgfuze)
+
+    xscgbmcode = EditText(window, '销售采购部门代码')
+    xscgbmcode.text_setting(height=1, width=22)
+    widget_list.append(xscgbmcode)
+
+    xzcaigou = EditText(window, '行政采购部门')
+    xzcaigou.text_setting(height=1, width=22)
+    widget_list.append(xzcaigou)
+
+    xzcgfuze = EditText(window, '行政采购负责人')
+    xzcgfuze.text_setting(height=1, width=22)
+    widget_list.append(xzcgfuze)
+
+    xzcgbmcode = EditText(window, '行政采购部门代码')
+    xzcgbmcode.text_setting(height=1, width=22)
+    widget_list.append(xzcgbmcode)
+
     shangchanliuchng1 = EditText(window, '生产工艺流程1', default='若无该流程则跳过该项')
     shangchanliuchng1.text_setting(height=1, width=91)
     widget_list.append(shangchanliuchng1)
@@ -334,9 +388,18 @@ def InfoWindow_2(info_dic):
         for widget in widget_list:
             widget.temp_save()
         gen_temp_storage()
+    
+    def gen_docx(info_dict):
+        for widget in widget_list:
+            widget.save_value_into_info_dic(info_dict)
+        df.ReplaceProcess(info_dict, True)
+        showinfo(title="提示",
+                    message="文档输出完成!")
+        window.destroy()
 
     btn_gen = tk.Button(window, text='确认信息无误，进入下一采集阶段。', command=lambda: [text_gen()])
     btn_save = tk.Button(window, text='缓存信息。', command=lambda: [temp_save_to_local()])
+    btn_gen_docx = tk.Button(window, text='生成文档。', command=lambda: [gen_docx(info_dic)])
 
     name.set_position(row=0, column=0)
     code.set_position(row=0, column=1)
@@ -364,11 +427,18 @@ def InfoWindow_2(info_dic):
     caigou.set_position(row=14, column=0, columnspan=1)
     cgfuze.set_position(row=14, column=1, columnspan=1)
     cgbmcode.set_position(row=14, column=2, columnspan=2)
-    shangchanliuchng1.set_position(row=15, column=0, columnspan=4)
-    shangchanliuchng2.set_position(row=16, column=0, columnspan=4)
-    shangchanliuchng3.set_position(row=17, column=0, columnspan=4)
-    btn_gen.grid(row=18, column=0, columnspan=2, pady=(50, 0))
-    btn_save.grid(row=18, column=2, columnspan=1, pady=(50, 0))
+    xscaigou.set_position(row=15, column=0, columnspan=1)
+    xscgfuze.set_position(row=15, column=1, columnspan=1)
+    xscgbmcode.set_position(row=15, column=2, columnspan=2)
+    xzcaigou.set_position(row=16, column=0, columnspan=1)
+    xzcgfuze.set_position(row=16, column=1, columnspan=1)
+    xzcgbmcode.set_position(row=16, column=2, columnspan=2)
+    shangchanliuchng1.set_position(row=17, column=0, columnspan=4)
+    shangchanliuchng2.set_position(row=18, column=0, columnspan=4)
+    shangchanliuchng3.set_position(row=19, column=0, columnspan=4)
+    btn_gen.grid(row=20, column=0, columnspan=2, pady=(30, 0))
+    btn_save.grid(row=20, column=2, columnspan=1, pady=(30, 0))
+    btn_gen_docx.grid(row=20, column=3, columnspan=1, pady=(30, 0))
 
     window.mainloop()
 
@@ -502,6 +572,30 @@ def InfoWindow_3(info_dic):
     cgbmcode.text_setting(height=1, width=22)
     widget_list.append(cgbmcode)
 
+    xscaigou = EditText(window, '销售采购部门')
+    xscaigou.text_setting(height=1, width=22)
+    widget_list.append(xscaigou)
+
+    xscgfuze = EditText(window, '销售采购负责人')
+    xscgfuze.text_setting(height=1, width=22)
+    widget_list.append(xscgfuze)
+
+    xscgbmcode = EditText(window, '销售采购部门代码')
+    xscgbmcode.text_setting(height=1, width=22)
+    widget_list.append(xscgbmcode)
+
+    xzcaigou = EditText(window, '行政采购部门')
+    xzcaigou.text_setting(height=1, width=22)
+    widget_list.append(xzcaigou)
+
+    xzcgfuze = EditText(window, '行政采购负责人')
+    xzcgfuze.text_setting(height=1, width=22)
+    widget_list.append(xzcgfuze)
+
+    xzcgbmcode = EditText(window, '行政采购部门代码')
+    xzcgbmcode.text_setting(height=1, width=22)
+    widget_list.append(xzcgbmcode)
+
     anquanfuze = EditText(window, '安全负责人')
     anquanfuze.text_setting(height=1, width=22)
     widget_list.append(anquanfuze)
@@ -558,11 +652,17 @@ def InfoWindow_3(info_dic):
     caigou.set_position(row=14, column=0, columnspan=1)
     cgfuze.set_position(row=14, column=1, columnspan=1)
     cgbmcode.set_position(row=14, column=2, columnspan=2)
-    anquanfuze.set_position(row=15, column=0, columnspan=1)
-    shangchanliuchng1.set_position(row=16, column=0, columnspan=4)
-    shangchanliuchng2.set_position(row=17, column=0, columnspan=4)
-    shangchanliuchng3.set_position(row=18, column=0, columnspan=4)
-    btn_gen.grid(row=19, column=0, columnspan=2, pady=(50, 0))
-    btn_save.grid(row=19, column=2, columnspan=1, pady=(50, 0))
+    xscaigou.set_position(row=15, column=0, columnspan=1)
+    xscgfuze.set_position(row=15, column=1, columnspan=1)
+    xscgbmcode.set_position(row=15, column=2, columnspan=2)
+    xzcaigou.set_position(row=16, column=0, columnspan=1)
+    xzcgfuze.set_position(row=16, column=1, columnspan=1)
+    xzcgbmcode.set_position(row=16, column=2, columnspan=2)
+    anquanfuze.set_position(row=17, column=0, columnspan=1)
+    shangchanliuchng1.set_position(row=18, column=0, columnspan=4)
+    shangchanliuchng2.set_position(row=19, column=0, columnspan=4)
+    shangchanliuchng3.set_position(row=20, column=0, columnspan=4)
+    btn_gen.grid(row=21, column=0, columnspan=2, pady=(50, 0))
+    btn_save.grid(row=21, column=2, columnspan=1, pady=(50, 0))
 
     window.mainloop()
