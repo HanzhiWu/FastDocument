@@ -47,7 +47,7 @@ class GroupButtonWithText:
     def __init__(self, root, title, pos_opt, neg_opt, text_title, text_default=''):
         super().__init__()
         self.frame = Frame(root)  # container
-        self.titleV = tk.IntVar()
+        self.titleV = tk.IntVar(self.frame)
         self.title = title
         self.text_title = text_title
         self.pos_btn = tk.Radiobutton(self.frame, text=pos_opt, variable=self.titleV, value=1,
@@ -58,14 +58,15 @@ class GroupButtonWithText:
         self.text = EditText(self.frame, text_title, text_default)
         # 设置长宽
         self.text.text_setting(height=2, width=74)
-        insert_val_into_input(self.text_title, self.text)
-        insert_radio_res_to_button(self.title, self.titleV)
+        insert_val_into_input(self.text_title, self.text.text)
+        insert_radio_res_to_button(self.title, self.titleV, (self.pos_btn, self.neg_btn))
 
         self.pos_btn.grid(row=0, column=0)
         self.neg_btn.grid(row=1, column=0)
         self.text.frame.grid(row=0, column=1, rowspan=2)
 
     def btnbool(self):
+        print(self.titleV.get())
         if self.titleV.get() == 0:
             self.text.text.config(state=DISABLED)
         else:
@@ -90,14 +91,14 @@ class GroupButton:
     def __init__(self, root, title, pos_opt, neg_opt):
         super().__init__()
         self.frame = Frame(root)  # container
-        self.titleV = tk.IntVar()
+        self.titleV = tk.IntVar(self.frame)
         self.title = title
         self.label = Label(self.frame, text='{}：'.format(title), bg='Lavender')
         self.pos_btn = tk.Radiobutton(self.frame, text=pos_opt, variable=self.titleV, value=1,
                                       bg='Lavender')
         self.neg_btn = tk.Radiobutton(self.frame, text=neg_opt, variable=self.titleV, value=0,
                                       bg='Lavender')
-        insert_radio_res_to_button(self.title, self.titleV)
+        insert_radio_res_to_button(self.title, self.titleV, (self.pos_btn, self.neg_btn))
         self.label.grid(row=0, column=0, padx=2)
         self.pos_btn.grid(row=0, column=1, padx=2)
         self.neg_btn.grid(row=0, column=2, padx=2)
@@ -107,11 +108,9 @@ class GroupButton:
             info_dic["__{}__".format(self.title)] = '是'
         else:
             info_dic["__{}__".format(self.title)] = '否'
-        info_dic[self.text_title] = self.text.get_text()
 
     def temp_save(self):
         save_radio_res_to_dic(self.title, self.titleV.get())
-        self.text.temp_save()
 
     def set_position(self, row, column, columnspan=1, rowspan=1):
         self.frame.grid(row=row, column=column, columnspan=columnspan, rowspan=rowspan)
@@ -278,6 +277,6 @@ class AddText:
 # root.config(background='Lavender')
 # app = AddText(root, "吴瀚之", "合同", "修改", [8, 12], ['产品', '技术'])
 # app.set_position(row=0, column=0)
-# app1 = GroupButton(root, '吴瀚之帅不帅', "yes", "no")
+# app1 = GroupButtonWithText(root, '吴瀚之帅不帅', '1', '0', 'title')
 # app1.set_position(row=1, column=0)
 # root.mainloop()

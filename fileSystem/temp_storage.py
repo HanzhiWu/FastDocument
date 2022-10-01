@@ -1,3 +1,11 @@
+'''
+Author: vxfla 1849062059@qq.com
+Date: 2022-09-30 14:29:16
+LastEditors: vxfla 1849062059@qq.com
+LastEditTime: 2022-10-01 17:18:11
+FilePath: /FastDocument/fileSystem/temp_storage.py
+Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+'''
 temp_dic = {}
 is_auto_restore = False
 save_dic = {}
@@ -7,6 +15,8 @@ save_dic = {}
 2. 读取时,将临时文件中的key经过处理存入temp_dic
 3. 在页面的每个页面的每个控件进行检查，如果有就进行注入
 '''
+from tempfile import tempdir
+import yaml
 
 
 # 将选取的文件处理成为temp_dic 将自动填入的开关打开
@@ -16,6 +26,10 @@ def read_file_to_temp_list(temp_file):
     """
     将读取到的文件生成yml
     """
+    global temp_dic
+    with open(temp_file, 'r', encoding='utf8') as y:
+        temp_dic = yaml.safe_load(y.read())
+
     return temp_dic
 
 
@@ -25,11 +39,19 @@ def gen_temp_storage():
     """
     将已有的temp_dic生成yml存到对应的文件夹下
     """
+    global temp_dic
+    year = temp_dic['记录年份'] if '记录年份' in temp_dic else '*'
+    name = temp_dic['企业名称'] if '企业名称' in temp_dic else '*'
+    proj = temp_dic['template_id'].split('-')[1] if 'template_id' in temp_dic else '*'
+    li = [year, name, proj, '信息存档.txt']
+    filename = '-'.join(li)
+    with open('save/' + filename, 'w', encoding='utf-8') as f:
+        yaml.dump(data=temp_dic, stream=f, allow_unicode=True)
 
 
 # 文本框的自动注入
 def insert_val_into_input(text_label, text_input):
-    if not is_auto_restore or text_label in temp_dic.keys():
+    if not is_auto_restore or not text_label in temp_dic.keys():
         return
     else:
         text_input.delete(0.0, 'end')
@@ -46,14 +68,24 @@ def save_input_into_dic(text_label, text_input):
 def save_radio_res_to_dic(label_text, radio_res):
     key = label_text
     if radio_res == 0:
-        temp_dic[key] = '是'
-    else:
         temp_dic[key] = '否'
+    else:
+        temp_dic[key] = '是'
 
 
-def insert_radio_res_to_button(label_text, buttonV):
-    if is_auto_restore and temp_dic[label_text] is not None:
+def insert_radio_res_to_button(label_text, value, btns):
+    if is_auto_restore and label_text in temp_dic:
         if temp_dic[label_text] == '是':
-            buttonV.set(1)
+            value.set(1)
+            btns[0].select()
         else:
-            buttonV.set(0)
+            value.set(0)
+            btns[1].select()
+
+def clear_temp_storage():
+    global temp_dic
+    temp_dic = {}
+
+def add_item_temp_storage(key, val):
+    global temp_dic
+    temp_dic[key] = val
