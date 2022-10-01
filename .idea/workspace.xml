@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="3edc0637-eac0-4fcb-917b-2d0dd94266e5" name="Changes" comment="完成第二个界面的重构" />
+    <list default="true" id="d0d6835b-8697-40f8-b25f-d38b184720d7" name="Changes" comment="完成第二个界面的重构">
+      <change afterPath="$PROJECT_DIR$/fileSystem/forth_page_12.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fileSystem/widgets.py" beforeDir="false" afterPath="$PROJECT_DIR$/fileSystem/widgets.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -17,7 +21,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="main-dev" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -26,6 +30,7 @@
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectId" id="2F4vcVPpaARcOPRT4u4zD8doiSh" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -38,7 +43,29 @@
     &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
 }</component>
-  <component name="RunManager" selected="Python.main">
+  <component name="RunManager" selected="Python.forth_page_12">
+    <configuration name="forth_page_12" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="FastDocument" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/fileSystem" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/fileSystem/forth_page_12.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="FastDocument" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -129,16 +156,18 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.forth_page_12" />
         <item itemvalue="Python.widgets" />
         <item itemvalue="Python.main" />
         <item itemvalue="Python.test" />
+        <item itemvalue="Python.second_window" />
       </list>
     </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="3edc0637-eac0-4fcb-917b-2d0dd94266e5" name="Changes" comment="" />
+      <changelist id="d0d6835b-8697-40f8-b25f-d38b184720d7" name="Changes" comment="" />
       <created>1663764250644</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
@@ -154,6 +183,8 @@
       <workItem from="1664461217429" duration="5961000" />
       <workItem from="1664505815903" duration="910000" />
       <workItem from="1664506731806" duration="603000" />
+      <workItem from="1664521710649" duration="4307000" />
+      <workItem from="1664594042471" duration="5875000" />
     </task>
     <task id="LOCAL-00001" summary="save">
       <created>1663858231324</created>
@@ -241,7 +272,8 @@
     <SUITE FILE_PATH="coverage/FastDocument$test.coverage" NAME="test Coverage Results" MODIFIED="1664036292032" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/fileSystem" />
     <SUITE FILE_PATH="coverage/FastDocument$second_window1.coverage" NAME="second_window1 Coverage Results" MODIFIED="1664466567704" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/fileSystem" />
     <SUITE FILE_PATH="coverage/FastDocument$second_window.coverage" NAME="second_window Coverage Results" MODIFIED="1663680985683" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/fileSystem" />
-    <SUITE FILE_PATH="coverage/FastDocument$widgets.coverage" NAME="widgets Coverage Results" MODIFIED="1664461927586" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/fileSystem" />
-    <SUITE FILE_PATH="coverage/FastDocument$main.coverage" NAME="main Coverage Results" MODIFIED="1664036733289" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/fileSystem" />
+    <SUITE FILE_PATH="coverage/FastDocument$widgets.coverage" NAME="widgets Coverage Results" MODIFIED="1664597608956" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/fileSystem" />
+    <SUITE FILE_PATH="coverage/FastDocument$forth_page_12.coverage" NAME="forth_page_12 Coverage Results" MODIFIED="1664639164256" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/fileSystem" />
+    <SUITE FILE_PATH="coverage/FastDocument$main.coverage" NAME="main Coverage Results" MODIFIED="1664596602873" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/fileSystem" />
   </component>
 </project>

@@ -107,11 +107,9 @@ class GroupButton:
             info_dic["__{}__".format(self.title)] = '是'
         else:
             info_dic["__{}__".format(self.title)] = '否'
-        info_dic[self.text_title] = self.text.get_text()
 
     def temp_save(self):
         save_radio_res_to_dic(self.title, self.titleV.get())
-        self.text.temp_save()
 
     def set_position(self, row, column, columnspan=1, rowspan=1):
         self.frame.grid(row=row, column=column, columnspan=columnspan, rowspan=rowspan)
@@ -159,8 +157,8 @@ class AddText:
         btn_gen = tk.Button(info_window, text='新增{}信息'.format(self.key_word),
                             command=lambda: self.add_item(info_window, len(self.element_list) + 1))
         btn_done = tk.Button(info_window, text='信息确认完成', command=lambda: self.done(info_window))
-        btn_gen.grid(row=0, column=0, columnspan=3)
-        btn_done.grid(row=0, column=3, columnspan=3)
+        btn_gen.grid(row=0, column=0, columnspan=len(self.item_key_list))
+        btn_done.grid(row=0, column=len(self.item_key_list))
         self.convert_text_to_content(self.text.get(0.0, 40.0).strip())
         self.element_list = []
         for i, item in enumerate(self.content):
@@ -168,8 +166,9 @@ class AddText:
 
     def rendering(self):
         for row, row_item in enumerate(self.element_list, start=1):
-            row_item[0].frame.grid(row=row, column=0)
-            row_item[1].grid(row=row, column=1)
+            span = len(self.item_key_list)  # 页面布局调整
+            row_item[0].frame.grid(row=row, column=0, columnspan=span)
+            row_item[1].grid(row=row, column=span)
 
     def add_item(self, root, index):
         row_item = []
@@ -250,7 +249,7 @@ class AddText:
             self.element_list = []  # 控件的一维数组
             self.frame = Frame(root, bg='Lavender')  # container
             for i, key in enumerate(self.item_key_list):
-                editText = EditText(self.frame, "{}{}{}".format(self.key_word, index, key))
+                editText = EditText(self.frame, "{}{}".format(index, key))
                 editText.text_setting(width=self.width_list[i], height=1)
                 self.element_list.append(editText)
                 if content:
@@ -265,7 +264,7 @@ class AddText:
 
         def change_index(self, index):
             for i in range(len(self.element_list)):
-                self.element_list[i].label.config(text="{}{}{}: ".format(self.key_word, index, self.item_key_list[i]))
+                self.element_list[i].label.config(text="{}{}: ".format(self.key_word, index, self.item_key_list[i]))
 
         def destroy_all(self):
             for element in self.element_list:
@@ -279,5 +278,7 @@ class AddText:
 # app = AddText(root, "吴瀚之", "合同", "修改", [8, 12], ['产品', '技术'])
 # app.set_position(row=0, column=0)
 # app1 = GroupButton(root, '吴瀚之帅不帅', "yes", "no")
-# app1.set_position(row=1, column=0)
+# app1.set_position(row=2, column=0)
+# app2 = GroupButtonWithText(root, '吴瀚之帅不帅', "yes", "no", "zenmeshuai")
+# app2.set_position(row=4, column=0)
 # root.mainloop()
