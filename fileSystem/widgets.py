@@ -59,7 +59,7 @@ class GroupButtonWithText:
         # 设置长宽
         self.text.text_setting(height=2, width=74)
         insert_val_into_input(self.text_title, self.text)
-        insert_radio_res_to_button(self.title, self.titleV)
+        insert_radio_res_to_button(self.title, self.titleV, [self.pos_btn, self.neg_btn])
 
         self.pos_btn.grid(row=0, column=0)
         self.neg_btn.grid(row=1, column=0)
@@ -97,7 +97,7 @@ class GroupButton:
                                       bg='Lavender')
         self.neg_btn = tk.Radiobutton(self.frame, text=neg_opt, variable=self.titleV, value=0,
                                       bg='Lavender')
-        insert_radio_res_to_button(self.title, self.titleV)
+        insert_radio_res_to_button(self.title, self.titleV, [self.pos_btn, self.neg_btn])
         self.label.grid(row=0, column=0, padx=2)
         self.pos_btn.grid(row=0, column=1, padx=2)
         self.neg_btn.grid(row=0, column=2, padx=2)
@@ -271,7 +271,6 @@ class AddText:
                 element.frame.destroy()
                 element.text.destroy()
                 element.label.destroy()
-
 
 # root = Tk()
 # root.config(background='Lavender')
