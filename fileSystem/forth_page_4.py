@@ -1,3 +1,4 @@
+import tkinter
 import tkinter as tk
 from tkinter import *
 from tkinter.messagebox import showinfo
@@ -47,6 +48,7 @@ class window4_4():
             for widget in frame.widget_list:
                 widget.temp_save()
         gen_temp_storage()
+        tkinter.messagebox.showinfo("success", "生成缓存文件成功")
 
 
 class qtxxPage(tk.Frame):
@@ -55,6 +57,7 @@ class qtxxPage(tk.Frame):
         super().__init__(parent)
         self.config(bg='Lavender')
         btngen = tk.Button(self, text='信息无误开始生成文档！', command=lambda: root.getinfo())
+        btn_save = tk.Button(self, text='缓存信息。', command=lambda: root.temp_save_to_local())
 
         self.widget_list = []
 
@@ -93,5 +96,6 @@ class qtxxPage(tk.Frame):
         self.sjaqjyrq3.set_position(row=2, column=4, rowspan=1, columnspan=2)
         self.sjaqjybzpxr.set_position(row=3, column=0, rowspan=1, columnspan=2)
         self.kyj.set_position(row=3, column=2, rowspan=1, columnspan=2)
+        btn_save.grid(row=4, column=5, pady=20)
 
-window4_4({})
+# window4_4({})

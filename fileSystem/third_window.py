@@ -1,3 +1,4 @@
+import tkinter
 import tkinter as tk
 from tkinter import *
 from tkinter.messagebox import showinfo
@@ -18,7 +19,7 @@ def informCollectWindow(info_dic):
     window.config(background='Lavender')
     widget_list = []
 
-    window.geometry('1280x650')  # 这里的乘是小x
+    window.geometry('1280x700')  # 这里的乘是小x
 
     jlnf = EditText(window, '记录年份', '2022')
     jlnf.text_setting(height=1, width=22)
@@ -177,24 +178,15 @@ def informCollectWindow(info_dic):
 
     cgcp = AddText(window, '采购产品信息', '采购', '修改采购信息', [15, 8, 15, 8, 10, 10], ['产品', '产品规格型号', '产品供方', '产品数量', '时间', '到货时间'])
     widget_list.append(cgcp)
-    # def doc_gen():
-    #     dictionary = GetDictionary("tagList.yml")
-    #     work_dir = os.path.abspath('.') # 工作路径
 
-    #     for old, new in dictionary.items():
-    #         print(old + "->" + new)
-    #     ReplaceAll(os.path.abspath(os.curdir) , work_dir, dictionary)
     def next_stage(info_dict):
         template_id = info_dic['template_id']
         rzfw, _, rzxm, _ = template_id.split('-')
         if (rzfw == 'SC' or rzfw == 'ZZ' or rzfw == 'JJSC') and (rzxm == 'QS' or rzxm == 'QES'):
-            window.destroy()
             window4_1(info_dic)
         elif (rzfw == 'SC' or rzfw == 'ZZ' or rzfw == 'JJSC') and (rzxm == 'Q' or rzxm == 'QE'):
-            window.destroy()
             window4_2(info_dic)
         elif (rzfw == 'SC' or rzfw == 'ZZ' or rzfw == 'JJSC') and (rzxm == 'S' or rzxm == 'ES'):
-            window.destroy()
             window4_4(info_dic)
         else:
             #
@@ -214,6 +206,7 @@ def informCollectWindow(info_dic):
         for widget in widget_list:
             widget.temp_save()
         gen_temp_storage()
+        tkinter.messagebox.showinfo("success", "生成缓存文件成功")
 
     btn_gen = tk.Button(window, text='信息确认完成，进入下一阶段。', command=textGen)
     btn_save = tk.Button(window, text='缓存信息。', command=lambda: [temp_save_to_local()])

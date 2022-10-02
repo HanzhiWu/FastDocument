@@ -1,3 +1,5 @@
+import tkinter.messagebox
+
 from third_window import informCollectWindow
 from widgets import EditText, GroupButtonWithText
 from temp_storage import *
@@ -171,6 +173,8 @@ def InfoWindow_1(info_dic):
         for widget in widget_list:
             widget.temp_save()
         gen_temp_storage()
+        tkinter.messagebox.showinfo("success", "生成缓存文件成功")
+        print("成功")
 
     btn_gen = tk.Button(window, text='确认信息无误，进入下一采集阶段。', command=lambda: [text_gen()])
     btn_save = tk.Button(window, text='缓存信息。', command=lambda: [temp_save_to_local()])
@@ -388,6 +392,7 @@ def InfoWindow_2(info_dic):
         for widget in widget_list:
             widget.temp_save()
         gen_temp_storage()
+        tkinter.messagebox.showinfo("success", "生成缓存文件成功")
     
     def gen_docx(info_dict):
         for widget in widget_list:
@@ -399,7 +404,7 @@ def InfoWindow_2(info_dic):
 
     btn_gen = tk.Button(window, text='确认信息无误，进入下一采集阶段。', command=lambda: [text_gen()])
     btn_save = tk.Button(window, text='缓存信息。', command=lambda: [temp_save_to_local()])
-    btn_gen_docx = tk.Button(window, text='生成文档。', command=lambda: [gen_docx(info_dic)])
+    btn_gen_docx = tk.Button(window, text='输出上报材料', command=lambda: [gen_docx(info_dic)])
 
     name.set_position(row=0, column=0)
     code.set_position(row=0, column=1)
@@ -622,6 +627,7 @@ def InfoWindow_3(info_dic):
         for widget in widget_list:
             widget.temp_save()
         gen_temp_storage()
+        tkinter.messagebox.showinfo("success", "生成缓存文件成功")
 
     btn_gen = tk.Button(window, text='确认信息无误，进入下一采集阶段。', command=lambda: [text_gen()])
     btn_save = tk.Button(window, text='缓存信息。', command=lambda: [temp_save_to_local()])

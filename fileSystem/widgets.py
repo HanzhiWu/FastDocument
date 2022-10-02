@@ -9,6 +9,7 @@ class EditText:
     def __init__(self, root, title, default=''):
         super().__init__()
         self.frame = Frame(root, padx=2)  # container
+        self.frame = Frame(root, bg='Lavender', pady=2)
         self.title = title
         self.label = Label(self.frame, text='{}：'.format(title), bg='Lavender')
         self.label.grid(row=0, column=0)
@@ -47,7 +48,8 @@ class GroupButtonWithText:
     def __init__(self, root, title, pos_opt, neg_opt, text_title, text_default=''):
         super().__init__()
         self.frame = Frame(root)  # container
-        self.titleV = tk.IntVar()
+        self.frame = Frame(root, bg='Lavender', pady=2)
+        self.titleV = tk.IntVar(self.frame)
         self.title = title
         self.text_title = text_title
         self.pos_btn = tk.Radiobutton(self.frame, text=pos_opt, variable=self.titleV, value=1,
@@ -58,7 +60,7 @@ class GroupButtonWithText:
         self.text = EditText(self.frame, text_title, text_default)
         # 设置长宽
         self.text.text_setting(height=2, width=74)
-        insert_val_into_input(self.text_title, self.text)
+        insert_val_into_input(self.text_title, self.text.text)
         insert_radio_res_to_button(self.title, self.titleV, [self.pos_btn, self.neg_btn])
 
         self.pos_btn.grid(row=0, column=0)
@@ -90,7 +92,8 @@ class GroupButton:
     def __init__(self, root, title, pos_opt, neg_opt):
         super().__init__()
         self.frame = Frame(root)  # container
-        self.titleV = tk.IntVar()
+        self.frame = Frame(root, bg='Lavender', pady=2)
+        self.titleV = tk.IntVar(self.frame)
         self.title = title
         self.label = Label(self.frame, text='{}：'.format(title), bg='Lavender')
         self.pos_btn = tk.Radiobutton(self.frame, text=pos_opt, variable=self.titleV, value=1,
@@ -135,7 +138,7 @@ class AddText:
         self.width_list = width_list  # 子页面中每个item条目宽度
         self.content = []  # 内容的二维数组
 
-        self.frame = Frame(root, bg='Lavender')  # container
+        self.frame = Frame(root, bg='Lavender', pady=2)  # container
         self.label = Label(self.frame, text='{}：'.format(title), bg='Lavender')
         self.button = tk.Button(self.frame, text=btn_title, bg='Lavender', command=lambda: self.btn_window())
         self.element_list = []  # 控件中对应的控件，本质上是一个二维数组，与content一一对应
