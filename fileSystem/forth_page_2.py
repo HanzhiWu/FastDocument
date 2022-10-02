@@ -44,6 +44,9 @@ class window4_2():
             for widget in self.frames[frame].widget_list:
                 widget.save_value_into_info_dic(self.info_dic)
                 widget.temp_save()
+        df.ReplaceProcess(self.info_dic)
+        showinfo(title="提示",
+                 message="文档输出完成!")
 
     def temp_save_to_local(self):
         for frame in self.frames.keys():
