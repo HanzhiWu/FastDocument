@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d0d6835b-8697-40f8-b25f-d38b184720d7" name="Changes" comment="完成4页面的重构">
-      <change afterPath="$PROJECT_DIR$/fileSystem/save/2022-1234-1245789-信息存档.txt" afterDir="false" />
+    <list default="true" id="d0d6835b-8697-40f8-b25f-d38b184720d7" name="Changes" comment="完成第二个界面的重构">
       <change afterPath="$PROJECT_DIR$/fileSystem/templates/SC-123456-QES-N/01管理手册/01管理手册.docx" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/fileSystem/templates/SC-123456-QES-N/02程序文件/01程序文件.docx" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/fileSystem/templates/SC-123456-QES-N/03三层文件/01质量/02岗位任职要求.docx" afterDir="false" />
@@ -283,9 +282,7 @@
       <change beforePath="$PROJECT_DIR$/fileSystem/forth_page_1.py" beforeDir="false" afterPath="$PROJECT_DIR$/fileSystem/forth_page_1.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fileSystem/forth_page_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/fileSystem/forth_page_2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fileSystem/forth_page_4.py" beforeDir="false" afterPath="$PROJECT_DIR$/fileSystem/forth_page_4.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fileSystem/second_window.py" beforeDir="false" afterPath="$PROJECT_DIR$/fileSystem/second_window.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fileSystem/third_window.py" beforeDir="false" afterPath="$PROJECT_DIR$/fileSystem/third_window.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fileSystem/widgets.py" beforeDir="false" afterPath="$PROJECT_DIR$/fileSystem/widgets.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fileSystem/save/2022-1234-1245789-信息存档.txt" beforeDir="false" afterPath="$PROJECT_DIR$/fileSystem/save/2022-1234-1245789-信息存档.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -600,6 +597,6 @@
     <SUITE FILE_PATH="coverage/FastDocument$widgets.coverage" NAME="widgets Coverage Results" MODIFIED="1664681282335" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/fileSystem" />
     <SUITE FILE_PATH="coverage/FastDocument$forth_page_12.coverage" NAME="forth_page_1 Coverage Results" MODIFIED="1664642408206" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/fileSystem" />
     <SUITE FILE_PATH="coverage/FastDocument$forth_page_4.coverage" NAME="forth_page_4 Coverage Results" MODIFIED="1664698137553" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/fileSystem" />
-    <SUITE FILE_PATH="coverage/FastDocument$main.coverage" NAME="main Coverage Results" MODIFIED="1664699133155" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/fileSystem" />
+    <SUITE FILE_PATH="coverage/FastDocument$main.coverage" NAME="main Coverage Results" MODIFIED="1664700667960" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/fileSystem" />
   </component>
 </project>

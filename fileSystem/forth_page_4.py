@@ -38,14 +38,14 @@ class window4_4():
         frame.tkraise()  # 切换，提升当前 tk.Frame z轴顺序（使可见）！！此语句是本程序的点睛之处
 
     def get_info(self):
-        for frame in self.frames:
-            for widget in frame.widget_list:
+        for frame in self.frames.keys():
+            for widget in self.frames[frame].widget_list:
                 widget.save_value_into_info_dic(self.info_dic)
                 widget.temp_save()
 
     def temp_save_to_local(self):
-        for frame in self.frames:
-            for widget in frame.widget_list:
+        for frame in self.frames.keys():
+            for widget in self.frames[frame].widget_list:
                 widget.temp_save()
         gen_temp_storage()
         tkinter.messagebox.showinfo("success", "生成缓存文件成功")
@@ -56,7 +56,7 @@ class qtxxPage(tk.Frame):
         super().__init__(parent)
         super().__init__(parent)
         self.config(bg='Lavender')
-        btngen = tk.Button(self, text='信息无误开始生成文档！', command=lambda: root.getinfo())
+        btngen = tk.Button(self, text='信息无误开始生成文档！', command=lambda: root.get_info())
         btn_save = tk.Button(self, text='缓存信息。', command=lambda: root.temp_save_to_local())
 
         self.widget_list = []

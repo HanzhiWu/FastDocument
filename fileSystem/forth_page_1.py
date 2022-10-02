@@ -40,14 +40,14 @@ class window4_1():
         frame.tkraise()  # 切换，提升当前 tk.Frame z轴顺序（使可见）！！此语句是本程序的点睛之处
 
     def get_info(self):
-        for frame in self.frames:
-            for widget in frame.widget_list:
+        for frame in self.frames.keys():
+            for widget in self.frames[frame].widget_list:
                 widget.save_value_into_info_dic(self.info_dic)
                 widget.temp_save()
 
     def temp_save_to_local(self):
-        for frame in self.frames:
-            for widget in frame.widget_list:
+        for frame in self.frames.keys():
+            for widget in self.frames[frame].widget_list:
                 widget.temp_save()
         gen_temp_storage()
         tkinter.messagebox.showinfo("success", "生成缓存文件成功")
@@ -63,7 +63,7 @@ class cpgxPage(tk.Frame):
         btncpxx = tk.Button(self, text='修改产品信息', command=lambda: root.show_frame(cpxxPage))
         btncpcz = tk.Button(self, text='修改产品操作工', command=lambda: root.show_frame(cpczPage))
         btnqtxx = tk.Button(self, text='修改其他信息', command=lambda: root.show_frame(qtxxPage))
-        btngen = tk.Button(self, text='信息无误开始生成文档！', command=lambda: root.getinfo())
+        btngen = tk.Button(self, text='信息无误开始生成文档！', command=lambda: root.get_info())
 
         self.cpgx1 = AddText(self, "产品1工序", "工序", "修改产品1工序", [120])
         self.cpgx2 = AddText(self, "产品2工序", "工序", "修改产品2工序", [120])
@@ -96,7 +96,7 @@ class cpxxPage(tk.Frame):
         btncpxx = tk.Button(self, text='修改产品信息', command=lambda: root.show_frame(cpxxPage))
         btncpcz = tk.Button(self, text='修改产品操作工', command=lambda: root.show_frame(cpczPage))
         btnqtxx = tk.Button(self, text='修改其他信息', command=lambda: root.show_frame(qtxxPage))
-        btngen = tk.Button(self, text='信息无误开始生成文档！', command=lambda: root.getinfo())
+        btngen = tk.Button(self, text='信息无误开始生成文档！', command=lambda: root.get_info())
 
         self.cpxx1 = AddText(self, "产品1信息", "生产产品1的", "修改产品1工序", [15, 12, 8, 12, 15],
                              ['号产品', '号产品型号', '号产品数量', '号产品日期', '号产品客户'])
@@ -134,7 +134,7 @@ class cpczPage(tk.Frame):
         btncpxx = tk.Button(self, text='修改产品信息', command=lambda: root.show_frame(cpxxPage))
         btncpcz = tk.Button(self, text='修改产品操作工', command=lambda: root.show_frame(cpczPage))
         btnqtxx = tk.Button(self, text='修改其他信息', command=lambda: root.show_frame(qtxxPage))
-        btngen = tk.Button(self, text='信息无误开始生成文档！', command=lambda: root.getinfo())
+        btngen = tk.Button(self, text='信息无误开始生成文档！', command=lambda: root.get_info())
 
         self.cpcz1 = AddText(self, "产品1操作工", "操作工", "修改产品1操作工", [120])
         self.cpcz2 = AddText(self, "产品2操作工", "操作工", "修改产品2操作工", [120])
@@ -167,7 +167,7 @@ class qtxxPage(tk.Frame):
         btncpxx = tk.Button(self, text='修改产品信息', command=lambda: root.show_frame(cpxxPage))
         btncpcz = tk.Button(self, text='修改产品操作工', command=lambda: root.show_frame(cpczPage))
         btnqtxx = tk.Button(self, text='修改其他信息', command=lambda: root.show_frame(qtxxPage))
-        btngen = tk.Button(self, text='信息无误开始生成文档！', command=lambda: root.getinfo())
+        btngen = tk.Button(self, text='信息无误开始生成文档！', command=lambda: root.get_info())
 
 
         self.widget_list = []
