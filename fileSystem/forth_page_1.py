@@ -1,7 +1,8 @@
+import threading
 import tkinter
 import tkinter as tk
 from tkinter import *
-from tkinter.messagebox import showinfo
+from tkinter.messagebox import showinfo, showwarning
 import deal_with_file as df
 
 # 第四层界面
@@ -44,6 +45,7 @@ class window4_1():
             for widget in self.frames[frame].widget_list:
                 widget.save_value_into_info_dic(self.info_dic)
                 widget.temp_save()
+        print(self.info_dic)
         df.ReplaceProcess(self.info_dic)
         showinfo(title="提示",
                  message="文档输出完成!")
@@ -66,13 +68,14 @@ class cpgxPage(tk.Frame):
         btncpxx = tk.Button(self, text='修改产品信息', command=lambda: root.show_frame(cpxxPage))
         btncpcz = tk.Button(self, text='修改产品操作工', command=lambda: root.show_frame(cpczPage))
         btnqtxx = tk.Button(self, text='修改其他信息', command=lambda: root.show_frame(qtxxPage))
-        btngen = tk.Button(self, text='信息无误开始生成文档！', command=lambda: root.get_info())
+        btngen = tk.Button(self, text='信息无误开始生成文档！',
+                           command=lambda: threading.Thread(target=root.get_info).start())
 
-        self.cpgx1 = AddText(self, "产品1工序", "工序", "修改产品1工序", [120])
-        self.cpgx2 = AddText(self, "产品2工序", "工序", "修改产品2工序", [120])
-        self.cpgx3 = AddText(self, "产品3工序", "工序", "修改产品3工序", [120])
-        self.cpgx4 = AddText(self, "产品4工序", "工序", "修改产品4工序", [120])
-        self.cpgx5 = AddText(self, "产品5工序", "工序", "修改产品5工序", [120])
+        self.cpgx1 = AddText(self, "产品1工序", "产品1工序", "修改产品1工序", [120])
+        self.cpgx2 = AddText(self, "产品2工序", "产品2工序", "修改产品2工序", [120])
+        self.cpgx3 = AddText(self, "产品3工序", "产品3工序", "修改产品3工序", [120])
+        self.cpgx4 = AddText(self, "产品4工序", "产品4工序", "修改产品4工序", [120])
+        self.cpgx5 = AddText(self, "产品5工序", "产品5工序", "修改产品5工序", [120])
         self.widget_list = [self.cpgx1, self.cpgx2, self.cpgx3, self.cpgx4, self.cpgx5]
         btn_save = tk.Button(self, text='缓存信息。', command=lambda: root.temp_save_to_local())
 
@@ -99,7 +102,8 @@ class cpxxPage(tk.Frame):
         btncpxx = tk.Button(self, text='修改产品信息', command=lambda: root.show_frame(cpxxPage))
         btncpcz = tk.Button(self, text='修改产品操作工', command=lambda: root.show_frame(cpczPage))
         btnqtxx = tk.Button(self, text='修改其他信息', command=lambda: root.show_frame(qtxxPage))
-        btngen = tk.Button(self, text='信息无误开始生成文档！', command=lambda: root.get_info())
+        btngen = tk.Button(self, text='信息无误开始生成文档！',
+                           command=lambda: threading.Thread(target=root.get_info).start())
 
         self.cpxx1 = AddText(self, "产品1信息", "生产产品1的", "修改产品1工序", [15, 12, 8, 12, 15],
                              ['号产品', '号产品型号', '号产品数量', '号产品日期', '号产品客户'])
@@ -137,7 +141,8 @@ class cpczPage(tk.Frame):
         btncpxx = tk.Button(self, text='修改产品信息', command=lambda: root.show_frame(cpxxPage))
         btncpcz = tk.Button(self, text='修改产品操作工', command=lambda: root.show_frame(cpczPage))
         btnqtxx = tk.Button(self, text='修改其他信息', command=lambda: root.show_frame(qtxxPage))
-        btngen = tk.Button(self, text='信息无误开始生成文档！', command=lambda: root.get_info())
+        btngen = tk.Button(self, text='信息无误开始生成文档！',
+                           command=lambda: threading.Thread(target=root.get_info).start())
 
         self.cpcz1 = AddText(self, "产品1操作工", "操作工", "修改产品1操作工", [120])
         self.cpcz2 = AddText(self, "产品2操作工", "操作工", "修改产品2操作工", [120])
@@ -160,7 +165,6 @@ class cpczPage(tk.Frame):
         btn_save.grid(row=21, column=4, pady=20)
 
 
-
 class qtxxPage(tk.Frame):
     def __init__(self, parent, root):
         super().__init__(parent)
@@ -170,8 +174,8 @@ class qtxxPage(tk.Frame):
         btncpxx = tk.Button(self, text='修改产品信息', command=lambda: root.show_frame(cpxxPage))
         btncpcz = tk.Button(self, text='修改产品操作工', command=lambda: root.show_frame(cpczPage))
         btnqtxx = tk.Button(self, text='修改其他信息', command=lambda: root.show_frame(qtxxPage))
-        btngen = tk.Button(self, text='信息无误开始生成文档！', command=lambda: root.get_info())
-
+        btngen = tk.Button(self, text='信息无误开始生成文档！',
+                           command=lambda: threading.Thread(target=root.get_info).start())
 
         self.widget_list = []
         self.jyy1 = EditText(self, '检验员1')

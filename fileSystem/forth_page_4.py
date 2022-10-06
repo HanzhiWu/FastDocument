@@ -1,7 +1,8 @@
+import threading
 import tkinter
 import tkinter as tk
 from tkinter import *
-from tkinter.messagebox import showinfo
+from tkinter.messagebox import showinfo,showwarning
 import deal_with_file as df
 from temp_storage import *
 from widgets import *
@@ -42,6 +43,7 @@ class window4_4():
             for widget in self.frames[frame].widget_list:
                 widget.save_value_into_info_dic(self.info_dic)
                 widget.temp_save()
+        print(self.info_dic)
         df.ReplaceProcess(self.info_dic)
         showinfo(title="提示",
                  message="文档输出完成!")
@@ -59,7 +61,7 @@ class qtxxPage(tk.Frame):
         super().__init__(parent)
         super().__init__(parent)
         self.config(bg='Lavender')
-        btngen = tk.Button(self, text='信息无误开始生成文档！', command=lambda: root.get_info())
+        btngen = tk.Button(self, text='信息无误开始生成文档！', command=lambda: threading.Thread(target=root.get_info).start())
         btn_save = tk.Button(self, text='缓存信息。', command=lambda: root.temp_save_to_local())
 
         self.widget_list = []

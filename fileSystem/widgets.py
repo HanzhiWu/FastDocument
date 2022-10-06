@@ -221,11 +221,14 @@ class AddText:
         self.content = item_list
 
     def save_value_into_info_dic(self, info_dic):
-        row_list = self.get_text().split('\n')
+        content = self.get_text()
+        if content == '':
+            return
+        row_list = content.split('\n')
         item_list = [row.split(',') for row in row_list]
         for row in range(len(row_list)):
             for item in range(len(item_list[0])):
-                key_str = '__{}{}{}__'.format(self.key_word, row, self.item_key_list[item])
+                key_str = '__{}{}{}__'.format(self.key_word, row + 1, self.item_key_list[item])
                 if item_list[row][item] == '':
                     info_dic[key_str] = '无'
                 else:

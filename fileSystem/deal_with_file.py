@@ -263,6 +263,8 @@ def ReplaceProcess(info_dict, page2=False):
                    deltext)
         ReplaceAll(os.path.join('templates', dictionary['template_id'], '02程序文件'), work_dir, dictionary, delline,
                    deltext)
+    else:
+        ReplaceAll(os.path.join('templates', dictionary['template_id']), work_dir, dictionary, delline, deltext)
     res_home = info_dict['__企业名称__'] + info_dict['template_id'].split('-')[2] + '上报信息'
     ExamAll(res_home, 0)
     print('process done!')
