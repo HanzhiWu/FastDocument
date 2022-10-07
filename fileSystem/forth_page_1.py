@@ -6,7 +6,7 @@ from tkinter.messagebox import showinfo, showwarning
 import deal_with_file as df
 
 # 第四层界面
-from fileSystem.widgets import *
+from widgets import *
 
 
 class window4_1():
@@ -105,16 +105,16 @@ class cpxxPage(tk.Frame):
         btngen = tk.Button(self, text='信息无误开始生成文档！',
                            command=lambda: threading.Thread(target=root.get_info).start())
 
-        self.cpxx1 = AddText(self, "产品1信息", "生产产品1的", "修改产品1工序", [15, 12, 8, 12, 15],
-                             ['号产品', '号产品型号', '号产品数量', '号产品日期', '号产品客户'])
-        self.cpxx2 = AddText(self, "产品2信息", "生产产品2的", "修改产品2工序", [15, 12, 8, 12, 15],
-                             ['号产品', '号产品型号', '号产品数量', '号产品日期', '号产品客户'])
-        self.cpxx3 = AddText(self, "产品3信息", "生产产品3的", "修改产品3工序", [15, 12, 8, 12, 15],
-                             ['号产品', '号产品型号', '号产品数量', '号产品日期', '号产品客户'])
-        self.cpxx4 = AddText(self, "产品4信息", "生产产品4的", "修改产品4工序", [15, 12, 8, 12, 15],
-                             ['号产品', '号产品型号', '号产品数量', '号产品日期', '号产品客户'])
-        self.cpxx5 = AddText(self, "产品5信息", "生产产品5的", "修改产品5工序", [15, 12, 8, 12, 15],
-                             ['号产品', '号产品型号', '号产品数量', '号产品日期', '号产品客户'])
+        self.cpxx1 = AddText(self, "产品1信息", "生产产品1的", "修改产品1信息", [10, 10, 8, 10, 10, 8, 10],
+                             ['号产品', '号产品型号', '号产品数量', '号产品日期', '号产品客户', '号产品批号', '号产品订货时间'])
+        self.cpxx2 = AddText(self, "产品2信息", "生产产品2的", "修改产品2信息", [10, 10, 8, 10, 10, 8, 10],
+                             ['号产品', '号产品型号', '号产品数量', '号产品日期', '号产品客户', '号产品批号', '号产品订货时间'])
+        self.cpxx3 = AddText(self, "产品3信息", "生产产品3的", "修改产品3信息", [10, 10, 8, 10, 10, 8, 10],
+                             ['号产品', '号产品型号', '号产品数量', '号产品日期', '号产品客户', '号产品批号', '号产品订货时间'])
+        self.cpxx4 = AddText(self, "产品4信息", "生产产品4的", "修改产品4信息", [10, 10, 8, 10, 10, 8, 10],
+                             ['号产品', '号产品型号', '号产品数量', '号产品日期', '号产品客户', '号产品批号', '号产品订货时间'])
+        self.cpxx5 = AddText(self, "产品5信息", "生产产品5的", "修改产品5信息", [10, 10, 8, 10, 10, 8, 10],
+                             ['号产品', '号产品型号', '号产品数量', '号产品日期', '号产品客户', '号产品批号', '号产品订货时间'])
         btn_save = tk.Button(self, text='缓存信息。', command=lambda: root.temp_save_to_local())
 
         self.widget_list = [self.cpxx1, self.cpxx2, self.cpxx3, self.cpxx4, self.cpxx5]

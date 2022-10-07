@@ -1,5 +1,5 @@
 import tkinter.messagebox
-
+import threading
 from third_window import informCollectWindow
 from widgets import EditText, GroupButtonWithText
 from temp_storage import *
@@ -176,8 +176,17 @@ def InfoWindow_1(info_dic):
         tkinter.messagebox.showinfo("success", "生成缓存文件成功")
         print("成功")
 
+    def gen_docx(info_dict):
+        for widget in widget_list:
+            widget.save_value_into_info_dic(info_dict)
+        df.ReplaceProcess(info_dict, True)
+        showinfo(title="提示",
+                    message="文档输出完成!")
+        window.destroy()
+
     btn_gen = tk.Button(window, text='确认信息无误，进入下一采集阶段。', command=lambda: [text_gen()])
     btn_save = tk.Button(window, text='缓存信息。', command=lambda: [temp_save_to_local()])
+    btn_gen_docx = tk.Button(window, text='输出上报材料', command=lambda: threading.Thread(target=lambda: gen_docx(info_dic)).start())
 
     name.set_position(row=0, column=0)
     code.set_position(row=0, column=1)
@@ -211,8 +220,9 @@ def InfoWindow_1(info_dic):
     shangchanliuchng1.set_position(row=16, column=0, columnspan=4)
     shangchanliuchng2.set_position(row=17, column=0, columnspan=4)
     shangchanliuchng3.set_position(row=18, column=0, columnspan=4)
-    btn_gen.grid(row=19, column=0, columnspan=2, pady=(20, 0))
-    btn_save.grid(row=19, column=2, columnspan=1, pady=(20, 0))
+    btn_gen.grid(row=20, column=0, columnspan=2, pady=(30, 0))
+    btn_save.grid(row=20, column=2, columnspan=1, pady=(30, 0))
+    btn_gen_docx.grid(row=20, column=3, columnspan=1, pady=(30, 0))
 
     window.mainloop()
 
@@ -404,7 +414,7 @@ def InfoWindow_2(info_dic):
 
     btn_gen = tk.Button(window, text='确认信息无误，进入下一采集阶段。', command=lambda: [text_gen()])
     btn_save = tk.Button(window, text='缓存信息。', command=lambda: [temp_save_to_local()])
-    btn_gen_docx = tk.Button(window, text='输出上报材料', command=lambda: [gen_docx(info_dic)])
+    btn_gen_docx = tk.Button(window, text='输出上报材料', command=lambda: threading.Thread(target=lambda: gen_docx(info_dic)).start())
 
     name.set_position(row=0, column=0)
     code.set_position(row=0, column=1)
@@ -629,8 +639,17 @@ def InfoWindow_3(info_dic):
         gen_temp_storage()
         tkinter.messagebox.showinfo("success", "生成缓存文件成功")
 
+    def gen_docx(info_dict):
+        for widget in widget_list:
+            widget.save_value_into_info_dic(info_dict)
+        df.ReplaceProcess(info_dict, True)
+        showinfo(title="提示",
+                    message="文档输出完成!")
+        window.destroy()
+
     btn_gen = tk.Button(window, text='确认信息无误，进入下一采集阶段。', command=lambda: [text_gen()])
     btn_save = tk.Button(window, text='缓存信息。', command=lambda: [temp_save_to_local()])
+    btn_gen_docx = tk.Button(window, text='输出上报材料', command=lambda: threading.Thread(target=lambda: gen_docx(info_dic)).start())
 
     name.set_position(row=0, column=0)
     code.set_position(row=0, column=1)
@@ -668,7 +687,8 @@ def InfoWindow_3(info_dic):
     shangchanliuchng1.set_position(row=18, column=0, columnspan=4)
     shangchanliuchng2.set_position(row=19, column=0, columnspan=4)
     shangchanliuchng3.set_position(row=20, column=0, columnspan=4)
-    btn_gen.grid(row=21, column=0, columnspan=2, pady=(50, 0))
-    btn_save.grid(row=21, column=2, columnspan=1, pady=(50, 0))
+    btn_gen.grid(row=20, column=0, columnspan=2, pady=(30, 0))
+    btn_save.grid(row=20, column=2, columnspan=1, pady=(30, 0))
+    btn_gen_docx.grid(row=20, column=3, columnspan=1, pady=(30, 0))
 
     window.mainloop()

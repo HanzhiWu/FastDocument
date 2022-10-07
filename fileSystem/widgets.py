@@ -37,7 +37,7 @@ class EditText:
             key = self.title
         content = self.get_text()
         if content == self.default:
-            content = ''
+            content = '无'
         info_dic['__{}__'.format(key)] = content
 
     def temp_save(self):

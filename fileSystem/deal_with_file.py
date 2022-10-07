@@ -1,5 +1,7 @@
+from doctest import DocFileCase
 import os
-
+from pydoc import doc
+import re
 import yaml
 from docx import Document
 import random
@@ -74,6 +76,12 @@ def ReplaceInRuns(paragraph, replaceDict: dict, paragraphType):
                         new = str(random.randint(int(start), int(end)))
                     if "__是否有空压机__" in old and new == '否':
                         return 1
+                    if ("产品批号__" in old or "产品订货时间__" in old):
+                        matchObj = re.search( r'__[\u4e00-\u9fa5|0-9]*__', old, re.M|re.I)
+                        key1 = matchObj.group()[:12] + "批号__"
+                        key2 = matchObj.group()[:12] + "订货时间__"
+                        if replaceDict[key1] == '否' and replaceDict[key2] == '否':
+                            return 1
                     run.text = run.text.replace(old, new)
     else:
         if paragraphType == "table":
@@ -87,6 +95,12 @@ def ReplaceInRuns(paragraph, replaceDict: dict, paragraphType):
                         new = str(random.randint(int(start), int(end)))
                     if "__是否有空压机__" in old and new == '否':
                         return 1
+                    if ("产品批号__" in old or "产品订货时间__" in old):
+                        matchObj = re.search( r'__[\u4e00-\u9fa5|0-9]*__', old, re.M|re.I)
+                        key1 = matchObj.group()[:12] + "批号__"
+                        key2 = matchObj.group()[:12] + "订货时间__"
+                        if replaceDict[key1] == '否' and replaceDict[key2] == '否':
+                            return 1
                     text = text.replace(old, new)
             if text != "":
                 paragraph.runs[0].text = text
@@ -102,6 +116,8 @@ def ReplaceIn(docxFile, workdir, replaceDict: dict):
     if docxFile[-4:] == '.doc':
         print('无法加载doc文件： ', docxFile, '\n请转换成docx类型！')
         return
+    else:
+        print('正在处理：', docxFile)
 
     document = Document(docxFile)
 
@@ -151,6 +167,8 @@ def ReplaceAll(path: str, workdir: str, replaceDict: dict, delLineDict: dict, de
              os.path.isfile(os.path.join(path, i)) and os.path.splitext(i)[-1] in ['.doc', '.docx']]  # 所有word文件
     for file in files:
         respath = ReplaceIn(file, workdir, replaceDict)
+        if respath == None:
+            os.remove(file)
         del_rows(respath)
         del_text(respath)
 
@@ -180,6 +198,8 @@ def ExamIn(docxFile):
     if docxFile[-4:] == '.doc':
         print('无法加载doc文件： ', docxFile, '\n请转换成docx类型！')
         return
+    else:
+        print('正在检查：', docxFile)
 
     if docxFile.split('/')[-1][:2] == '.~':
         return
@@ -220,9 +240,8 @@ def ExamAll(path: str, depth: int):
              os.path.isfile(os.path.join(path, i)) and os.path.splitext(i)[-1] in ['.doc', '.docx']]  # 所有word文件
     for file in files:
         undeal_files.append(ExamIn(file))
-
     if depth == 0:
-        with open('undeal.txt', 'w') as f:
+        with open(path + '/undeal.txt', 'w') as f:
             for line in undeal_files:
                 if line:
                     f.write(line + '\n')
@@ -247,9 +266,9 @@ def ReplaceProcess(info_dict, page2=False):
 
     # 用收集信息更新替换字典
     for key in dictionary.keys():
-        if key in info_dict:
+        if key in info_dict and info_dict[key] != '无' and info_dict[key] != '否':
             dictionary[key] = info_dict[key]
-        elif key[2:-2] in info_dict:
+        elif key[2:-2] in info_dict and info_dict[key[2:-2]] != '无' and info_dict[key[2:-2]] != '否':
             dictionary[key] = info_dict[key[2:-2]]
         else:
             dictionary[key] = '否'
