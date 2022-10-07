@@ -146,7 +146,7 @@ def ReplaceAll(path: str, workdir: str, replaceDict: dict, delLineDict: dict, de
     folders = [os.path.join(path, i) for i in directories if
                os.path.isdir(os.path.join(path, i)) and not i.startswith('.')]  # 所有非隐藏文件夹
     for folder in folders:
-        ReplaceAll(folder, workdir, replaceDict, delLineDict, delTextDict, page2)
+        ReplaceAll(folder, workdir, replaceDict, delLineDict, delTextDict)
     files = [os.path.join(path, i) for i in directories if
              os.path.isfile(os.path.join(path, i)) and os.path.splitext(i)[-1] in ['.doc', '.docx']]  # 所有word文件
     for file in files:
@@ -189,12 +189,12 @@ def ExamIn(docxFile):
     # 页眉
     for section in document.sections:
         for paragraph in section.header.paragraphs:
-            if (ExamInRuns(paragraph, "header") == 1):
+            if ExamInRuns(paragraph, "header") == 1:
                 return docxFile
 
     # 文本段落
     for paragraph in document.paragraphs:
-        if (ExamInRuns(paragraph, "plain") == 1):
+        if ExamInRuns(paragraph, "plain") == 1:
             return docxFile
 
     # 表格
@@ -202,7 +202,7 @@ def ExamIn(docxFile):
         for row in table.rows:
             for cell in row.cells:
                 for paragraph in cell.paragraphs:
-                    if (ExamInRuns(paragraph, "table") == 1):
+                    if ExamInRuns(paragraph, "table") == 1:
                         return docxFile
 
 
@@ -259,8 +259,12 @@ def ReplaceProcess(info_dict, page2=False):
         if key in deltext and dictionary[key] == deltext[key]:
             dictionary[key] = '__删除文本__'
     if page2:
-        ReplaceAll(os.path.join('templates', dictionary['template_id'], '01管理手册'), work_dir, dictionary, delline, deltext)
-        ReplaceAll(os.path.join('templates', dictionary['template_id'], '02程序文件'), work_dir, dictionary, delline, deltext)
+        ReplaceAll(os.path.join('templates', dictionary['template_id'], '01管理手册'), work_dir, dictionary, delline,
+                   deltext)
+        ReplaceAll(os.path.join('templates', dictionary['template_id'], '02程序文件'), work_dir, dictionary, delline,
+                   deltext)
+    else:
+        ReplaceAll(os.path.join('templates', dictionary['template_id']), work_dir, dictionary, delline, deltext)
     res_home = info_dict['__企业名称__'] + info_dict['template_id'].split('-')[2] + '上报信息'
     ExamAll(res_home, 0)
     print('process done!')

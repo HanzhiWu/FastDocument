@@ -9,6 +9,7 @@ class EditText:
     def __init__(self, root, title, default=''):
         super().__init__()
         self.frame = Frame(root, padx=2)  # container
+        self.frame = Frame(root, bg='Lavender', pady=2)
         self.title = title
         self.label = Label(self.frame, text='{}：'.format(title), bg='Lavender')
         self.label.grid(row=0, column=0)
@@ -47,6 +48,7 @@ class GroupButtonWithText:
     def __init__(self, root, title, pos_opt, neg_opt, text_title, text_default=''):
         super().__init__()
         self.frame = Frame(root)  # container
+        self.frame = Frame(root, bg='Lavender', pady=2)
         self.titleV = tk.IntVar(self.frame)
         self.title = title
         self.text_title = text_title
@@ -59,14 +61,13 @@ class GroupButtonWithText:
         # 设置长宽
         self.text.text_setting(height=2, width=74)
         insert_val_into_input(self.text_title, self.text.text)
-        insert_radio_res_to_button(self.title, self.titleV, (self.pos_btn, self.neg_btn))
+        insert_radio_res_to_button(self.title, self.titleV, [self.pos_btn, self.neg_btn])
 
         self.pos_btn.grid(row=0, column=0)
         self.neg_btn.grid(row=1, column=0)
         self.text.frame.grid(row=0, column=1, rowspan=2)
 
     def btnbool(self):
-        print(self.titleV.get())
         if self.titleV.get() == 0:
             self.text.text.config(state=DISABLED)
         else:
@@ -91,6 +92,7 @@ class GroupButton:
     def __init__(self, root, title, pos_opt, neg_opt):
         super().__init__()
         self.frame = Frame(root)  # container
+        self.frame = Frame(root, bg='Lavender', pady=2)
         self.titleV = tk.IntVar(self.frame)
         self.title = title
         self.label = Label(self.frame, text='{}：'.format(title), bg='Lavender')
@@ -98,7 +100,7 @@ class GroupButton:
                                       bg='Lavender')
         self.neg_btn = tk.Radiobutton(self.frame, text=neg_opt, variable=self.titleV, value=0,
                                       bg='Lavender')
-        insert_radio_res_to_button(self.title, self.titleV, (self.pos_btn, self.neg_btn))
+        insert_radio_res_to_button(self.title, self.titleV, [self.pos_btn, self.neg_btn])
         self.label.grid(row=0, column=0, padx=2)
         self.pos_btn.grid(row=0, column=1, padx=2)
         self.neg_btn.grid(row=0, column=2, padx=2)
@@ -136,7 +138,7 @@ class AddText:
         self.width_list = width_list  # 子页面中每个item条目宽度
         self.content = []  # 内容的二维数组
 
-        self.frame = Frame(root, bg='Lavender')  # container
+        self.frame = Frame(root, bg='Lavender', pady=2)  # container
         self.label = Label(self.frame, text='{}：'.format(title), bg='Lavender')
         self.button = tk.Button(self.frame, text=btn_title, bg='Lavender', command=lambda: self.btn_window())
         self.element_list = []  # 控件中对应的控件，本质上是一个二维数组，与content一一对应
@@ -158,8 +160,8 @@ class AddText:
         btn_gen = tk.Button(info_window, text='新增{}信息'.format(self.key_word),
                             command=lambda: self.add_item(info_window, len(self.element_list) + 1))
         btn_done = tk.Button(info_window, text='信息确认完成', command=lambda: self.done(info_window))
-        btn_gen.grid(row=0, column=0, columnspan=3)
-        btn_done.grid(row=0, column=3, columnspan=3)
+        btn_gen.grid(row=0, column=0, columnspan=len(self.item_key_list))
+        btn_done.grid(row=0, column=len(self.item_key_list))
         self.convert_text_to_content(self.text.get(0.0, 40.0).strip())
         self.element_list = []
         for i, item in enumerate(self.content):
@@ -167,8 +169,9 @@ class AddText:
 
     def rendering(self):
         for row, row_item in enumerate(self.element_list, start=1):
-            row_item[0].frame.grid(row=row, column=0)
-            row_item[1].grid(row=row, column=1)
+            span = len(self.item_key_list)  # 页面布局调整
+            row_item[0].frame.grid(row=row, column=0, columnspan=span)
+            row_item[1].grid(row=row, column=span)
 
     def add_item(self, root, index):
         row_item = []
@@ -218,11 +221,14 @@ class AddText:
         self.content = item_list
 
     def save_value_into_info_dic(self, info_dic):
-        row_list = self.get_text().split('\n')
+        content = self.get_text()
+        if content == '':
+            return
+        row_list = content.split('\n')
         item_list = [row.split(',') for row in row_list]
         for row in range(len(row_list)):
             for item in range(len(item_list[0])):
-                key_str = '__{}{}{}__'.format(self.key_word, row, self.item_key_list[item])
+                key_str = '__{}{}{}__'.format(self.key_word, row + 1, self.item_key_list[item])
                 if item_list[row][item] == '':
                     info_dic[key_str] = '无'
                 else:
@@ -249,7 +255,7 @@ class AddText:
             self.element_list = []  # 控件的一维数组
             self.frame = Frame(root, bg='Lavender')  # container
             for i, key in enumerate(self.item_key_list):
-                editText = EditText(self.frame, "{}{}{}".format(self.key_word, index, key))
+                editText = EditText(self.frame, "{}{}".format(index, key))
                 editText.text_setting(width=self.width_list[i], height=1)
                 self.element_list.append(editText)
                 if content:
@@ -264,7 +270,7 @@ class AddText:
 
         def change_index(self, index):
             for i in range(len(self.element_list)):
-                self.element_list[i].label.config(text="{}{}{}: ".format(self.key_word, index, self.item_key_list[i]))
+                self.element_list[i].label.config(text="{}{}: ".format(self.key_word, index, self.item_key_list[i]))
 
         def destroy_all(self):
             for element in self.element_list:
@@ -272,11 +278,12 @@ class AddText:
                 element.text.destroy()
                 element.label.destroy()
 
-
 # root = Tk()
 # root.config(background='Lavender')
 # app = AddText(root, "吴瀚之", "合同", "修改", [8, 12], ['产品', '技术'])
 # app.set_position(row=0, column=0)
-# app1 = GroupButtonWithText(root, '吴瀚之帅不帅', '1', '0', 'title')
-# app1.set_position(row=1, column=0)
+# app1 = GroupButton(root, '吴瀚之帅不帅', "yes", "no")
+# app1.set_position(row=2, column=0)
+# app2 = GroupButtonWithText(root, '吴瀚之帅不帅', "yes", "no", "zenmeshuai")
+# app2.set_position(row=4, column=0)
 # root.mainloop()
