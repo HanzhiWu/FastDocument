@@ -18,7 +18,7 @@ def InfoWindow_1(info_dic):
     window.config(background='Lavender')
     widget_list = []
     # 设定窗口的大小(长 * 宽)
-    window.geometry('800x450')  # 这里的乘是小x
+    window.geometry('850x450')  # 这里的乘是小x
     window.resizable(0, 0)
 
     name = EditText(window, '企业名称')
@@ -220,9 +220,9 @@ def InfoWindow_1(info_dic):
     shangchanliuchng1.set_position(row=16, column=0, columnspan=4)
     shangchanliuchng2.set_position(row=17, column=0, columnspan=4)
     shangchanliuchng3.set_position(row=18, column=0, columnspan=4)
-    btn_gen.grid(row=20, column=0, columnspan=2, pady=(30, 0))
-    btn_save.grid(row=20, column=2, columnspan=1, pady=(30, 0))
-    btn_gen_docx.grid(row=20, column=3, columnspan=1, pady=(30, 0))
+    btn_gen.grid(row=19, column=0, columnspan=2, pady=(30, 0))
+    btn_save.grid(row=19, column=2, columnspan=1, pady=(30, 0))
+    btn_gen_docx.grid(row=19, column=3, columnspan=1, pady=(30, 0))
 
     window.mainloop()
 
@@ -237,7 +237,7 @@ def InfoWindow_2(info_dic):
     window.config(background='Lavender')
     widget_list = []
     # 设定窗口的大小(长 * 宽)
-    window.geometry('800x580')  # 这里的乘是小x
+    window.geometry('850x580')  # 这里的乘是小x
     window.resizable(0, 0)
 
     name = EditText(window, '企业名称')
@@ -468,7 +468,7 @@ def InfoWindow_3(info_dic):
     window.config(background='Lavender')
     widget_list = []
     # 设定窗口的大小(长 * 宽)
-    window.geometry('800x580')  # 这里的乘是小x
+    window.geometry('850x580')  # 这里的乘是小x
     window.resizable(0, 0)
 
     name = EditText(window, '企业名称')
@@ -687,8 +687,8 @@ def InfoWindow_3(info_dic):
     shangchanliuchng1.set_position(row=18, column=0, columnspan=4)
     shangchanliuchng2.set_position(row=19, column=0, columnspan=4)
     shangchanliuchng3.set_position(row=20, column=0, columnspan=4)
-    btn_gen.grid(row=20, column=0, columnspan=2, pady=(30, 0))
-    btn_save.grid(row=20, column=2, columnspan=1, pady=(30, 0))
-    btn_gen_docx.grid(row=20, column=3, columnspan=1, pady=(30, 0))
+    btn_gen.grid(row=21, column=0, columnspan=2, pady=(30, 0))
+    btn_save.grid(row=21, column=2, columnspan=1, pady=(30, 0))
+    btn_gen_docx.grid(row=21, column=3, columnspan=1, pady=(30, 0))
 
     window.mainloop()

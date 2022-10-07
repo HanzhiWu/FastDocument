@@ -1,10 +1,10 @@
-from doctest import DocFileCase
 import os
-from pydoc import doc
 import re
 import yaml
 from docx import Document
 import random
+
+from docx.opc.exceptions import PackageNotFoundError
 
 
 def del_rows(doc_path, kwd='__删除整行__'):
@@ -77,7 +77,7 @@ def ReplaceInRuns(paragraph, replaceDict: dict, paragraphType):
                     if "__是否有空压机__" in old and new == '否':
                         return 1
                     if ("产品批号__" in old or "产品订货时间__" in old):
-                        matchObj = re.search( r'__[\u4e00-\u9fa5|0-9]*__', old, re.M|re.I)
+                        matchObj = re.search(r'__[\u4e00-\u9fa5|0-9]*__', old, re.M | re.I)
                         key1 = matchObj.group()[:12] + "批号__"
                         key2 = matchObj.group()[:12] + "订货时间__"
                         if replaceDict[key1] == '否' and replaceDict[key2] == '否':
@@ -96,7 +96,7 @@ def ReplaceInRuns(paragraph, replaceDict: dict, paragraphType):
                     if "__是否有空压机__" in old and new == '否':
                         return 1
                     if ("产品批号__" in old or "产品订货时间__" in old):
-                        matchObj = re.search( r'__[\u4e00-\u9fa5|0-9]*__', old, re.M|re.I)
+                        matchObj = re.search(r'__[\u4e00-\u9fa5|0-9]*__', old, re.M | re.I)
                         key1 = matchObj.group()[:12] + "批号__"
                         key2 = matchObj.group()[:12] + "订货时间__"
                         if replaceDict[key1] == '否' and replaceDict[key2] == '否':
@@ -118,8 +118,7 @@ def ReplaceIn(docxFile, workdir, replaceDict: dict):
         return
     else:
         print('正在处理：', docxFile)
-
-    document = Document(docxFile)
+        document = Document(docxFile)
 
     res_home = replaceDict['__企业名称__'] + replaceDict['template_id'].split('-')[2] + '上报信息'
     res_path = os.path.join(workdir, res_home,
@@ -166,8 +165,13 @@ def ReplaceAll(path: str, workdir: str, replaceDict: dict, delLineDict: dict, de
     files = [os.path.join(path, i) for i in directories if
              os.path.isfile(os.path.join(path, i)) and os.path.splitext(i)[-1] in ['.doc', '.docx']]  # 所有word文件
     for file in files:
-        respath = ReplaceIn(file, workdir, replaceDict)
-        if respath == None:
+        respath = None
+        try:
+            respath = ReplaceIn(file, workdir, replaceDict)
+        except PackageNotFoundError:
+            print('该文件处理失败，请检查')
+
+        if respath is None:
             os.remove(file)
         del_rows(respath)
         del_text(respath)
