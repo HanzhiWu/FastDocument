@@ -18,7 +18,7 @@ def InfoWindow_1(info_dic):
     window.config(background='Lavender')
     widget_list = []
     # 设定窗口的大小(长 * 宽)
-    window.geometry('850x450')  # 这里的乘是小x
+    window.geometry('850x550')  # 这里的乘是小x
     window.resizable(0, 0)
 
     name = EditText(window, '企业名称')
@@ -29,11 +29,11 @@ def InfoWindow_1(info_dic):
     code.text_setting(height=1, width=25)
     widget_list.append(code)
 
-    ver = EditText(window, '版本', default='A')
+    ver = EditText(window, '版本', default='A', replaceable=False)
     ver.text_setting(height=1, width=12)
     widget_list.append(ver)
 
-    times = EditText(window, '版次', default='0')
+    times = EditText(window, '版次', default='0', replaceable=False)
     times.text_setting(height=1, width=12)
     widget_list.append(times)
 
@@ -181,12 +181,13 @@ def InfoWindow_1(info_dic):
             widget.save_value_into_info_dic(info_dict)
         df.ReplaceProcess(info_dict, True)
         showinfo(title="提示",
-                    message="文档输出完成!")
+                 message="文档输出完成!")
         window.destroy()
 
     btn_gen = tk.Button(window, text='确认信息无误，进入下一采集阶段。', command=lambda: [text_gen()])
     btn_save = tk.Button(window, text='缓存信息。', command=lambda: [temp_save_to_local()])
-    btn_gen_docx = tk.Button(window, text='输出上报材料', command=lambda: threading.Thread(target=lambda: gen_docx(info_dic)).start())
+    btn_gen_docx = tk.Button(window, text='输出上报材料',
+                             command=lambda: threading.Thread(target=lambda: gen_docx(info_dic)).start())
 
     name.set_position(row=0, column=0)
     code.set_position(row=0, column=1)
@@ -208,21 +209,24 @@ def InfoWindow_1(info_dic):
     shengchan.set_position(row=12, column=0, columnspan=1)
     scfuze.set_position(row=12, column=1, columnspan=1)
     scbmcode.set_position(row=12, column=2, columnspan=2)
-    caigou.set_position(row=13, column=0, columnspan=1)
-    cgfuze.set_position(row=13, column=1, columnspan=1)
-    cgbmcode.set_position(row=13, column=2, columnspan=2)
-    xscaigou.set_position(row=14, column=0, columnspan=1)
-    xscgfuze.set_position(row=14, column=1, columnspan=1)
-    xscgbmcode.set_position(row=14, column=2, columnspan=2)
-    xzcaigou.set_position(row=15, column=0, columnspan=1)
-    xzcgfuze.set_position(row=15, column=1, columnspan=1)
-    xzcgbmcode.set_position(row=15, column=2, columnspan=2)
-    shangchanliuchng1.set_position(row=16, column=0, columnspan=4)
-    shangchanliuchng2.set_position(row=17, column=0, columnspan=4)
-    shangchanliuchng3.set_position(row=18, column=0, columnspan=4)
-    btn_gen.grid(row=19, column=0, columnspan=2, pady=(30, 0))
-    btn_save.grid(row=19, column=2, columnspan=1, pady=(30, 0))
-    btn_gen_docx.grid(row=19, column=3, columnspan=1, pady=(30, 0))
+    xingzheng.set_position(row=13, column=0, columnspan=1)
+    xzfuze.set_position(row=13, column=1, columnspan=1)
+    xzbmcode.set_position(row=13, column=2, columnspan=2)
+    caigou.set_position(row=14, column=0, columnspan=1)
+    cgfuze.set_position(row=14, column=1, columnspan=1)
+    cgbmcode.set_position(row=14, column=2, columnspan=2)
+    xscaigou.set_position(row=15, column=0, columnspan=1)
+    xscgfuze.set_position(row=15, column=1, columnspan=1)
+    xscgbmcode.set_position(row=15, column=2, columnspan=2)
+    xzcaigou.set_position(row=16, column=0, columnspan=1)
+    xzcgfuze.set_position(row=16, column=1, columnspan=1)
+    xzcgbmcode.set_position(row=16, column=2, columnspan=2)
+    shangchanliuchng1.set_position(row=17, column=0, columnspan=4)
+    shangchanliuchng2.set_position(row=18, column=0, columnspan=4)
+    shangchanliuchng3.set_position(row=19, column=0, columnspan=4)
+    btn_gen.grid(row=20, column=0, columnspan=2, pady=(30, 0))
+    btn_save.grid(row=20, column=2, columnspan=1, pady=(30, 0))
+    btn_gen_docx.grid(row=20, column=3, columnspan=1, pady=(30, 0))
 
     window.mainloop()
 
@@ -248,11 +252,11 @@ def InfoWindow_2(info_dic):
     code.text_setting(height=1, width=25)
     widget_list.append(code)
 
-    ver = EditText(window, '版本', default='A')
+    ver = EditText(window, '版本', default='A', replaceable=False)
     ver.text_setting(height=1, width=12)
     widget_list.append(ver)
 
-    times = EditText(window, '版次', default='0')
+    times = EditText(window, '版次', default='0', replaceable=False)
     times.text_setting(height=1, width=12)
     widget_list.append(times)
 
@@ -403,18 +407,19 @@ def InfoWindow_2(info_dic):
             widget.temp_save()
         gen_temp_storage()
         tkinter.messagebox.showinfo("success", "生成缓存文件成功")
-    
+
     def gen_docx(info_dict):
         for widget in widget_list:
             widget.save_value_into_info_dic(info_dict)
         df.ReplaceProcess(info_dict, True)
         showinfo(title="提示",
-                    message="文档输出完成!")
+                 message="文档输出完成!")
         window.destroy()
 
     btn_gen = tk.Button(window, text='确认信息无误，进入下一采集阶段。', command=lambda: [text_gen()])
     btn_save = tk.Button(window, text='缓存信息。', command=lambda: [temp_save_to_local()])
-    btn_gen_docx = tk.Button(window, text='输出上报材料', command=lambda: threading.Thread(target=lambda: gen_docx(info_dic)).start())
+    btn_gen_docx = tk.Button(window, text='输出上报材料',
+                             command=lambda: threading.Thread(target=lambda: gen_docx(info_dic)).start())
 
     name.set_position(row=0, column=0)
     code.set_position(row=0, column=1)
@@ -479,11 +484,11 @@ def InfoWindow_3(info_dic):
     code.text_setting(height=1, width=25)
     widget_list.append(code)
 
-    ver = EditText(window, '版本', default='A')
+    ver = EditText(window, '版本', default='A', replaceable=False)
     ver.text_setting(height=1, width=12)
     widget_list.append(ver)
 
-    times = EditText(window, '版次', default='0')
+    times = EditText(window, '版次', default='0', replaceable=False)
     times.text_setting(height=1, width=12)
     widget_list.append(times)
 
@@ -644,12 +649,13 @@ def InfoWindow_3(info_dic):
             widget.save_value_into_info_dic(info_dict)
         df.ReplaceProcess(info_dict, True)
         showinfo(title="提示",
-                    message="文档输出完成!")
+                 message="文档输出完成!")
         window.destroy()
 
     btn_gen = tk.Button(window, text='确认信息无误，进入下一采集阶段。', command=lambda: [text_gen()])
     btn_save = tk.Button(window, text='缓存信息。', command=lambda: [temp_save_to_local()])
-    btn_gen_docx = tk.Button(window, text='输出上报材料', command=lambda: threading.Thread(target=lambda: gen_docx(info_dic)).start())
+    btn_gen_docx = tk.Button(window, text='输出上报材料',
+                             command=lambda: threading.Thread(target=lambda: gen_docx(info_dic)).start())
 
     name.set_position(row=0, column=0)
     code.set_position(row=0, column=1)

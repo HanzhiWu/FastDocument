@@ -1,43 +1,64 @@
+from doctest import DocFileCase
 import os
+from pydoc import doc
 import re
 import yaml
 from docx import Document
 import random
 
-from docx.opc.exceptions import PackageNotFoundError
+
+def delInTable(tables, kwd='__删除整行__'):
+    if tables == []:
+        return
+    for t, table in enumerate(tables):
+        for r, row in enumerate(table.rows):  # 遍历表格的行
+            for c, cell in enumerate(row.cells):  # 遍历每一行的列
+                text = cell.text
+                if kwd in text:
+                    row._element.getparent().remove(row._element)
+                    break
 
 
 def del_rows(doc_path, kwd='__删除整行__'):
     if doc_path is None:
         return
     document = Document(doc_path)
-    for t, table in enumerate(document.tables):  # 遍历所有表格，这个模板里有3个表格
+    delInTable(document.tables, kwd)
+    for t, table in enumerate(document.tables):
+        for r, row in enumerate(table.rows):  # 遍历表格的行
+            for c, cell in enumerate(row.cells):  # 遍历每一行的列
+                delInTable(cell.tables, kwd)
+    document.save(doc_path)
+
+
+def delTextInTable(tables, kwd='__删除文本__'):
+    if tables == []:
+        return
+    del_list = []
+    for t, table in enumerate(tables):  # 遍历所有表格，这个模板里有3个表格
         for r, row in enumerate(table.rows):  # 遍历表格的行
             for c, cell in enumerate(row.cells):  # 遍历每一行的列
                 text = cell.text
-                if text == kwd:
-                    row._element.getparent().remove(row._element)
+                if kwd in text:
+                    del_list.append((t, r))
                     break
-    document.save(doc_path)
+
+    for t, r in set(del_list):
+        row = tables[t].rows[r]
+        for cell in row.cells:
+            cell.text = ""
 
 
 def del_text(doc_path, kwd='__删除文本__'):
     if doc_path is None:
         return
     document = Document(doc_path)
-    del_list = []
+    delTextInTable(document.tables, kwd)
     for t, table in enumerate(document.tables):  # 遍历所有表格，这个模板里有3个表格
         for r, row in enumerate(table.rows):  # 遍历表格的行
             for c, cell in enumerate(row.cells):  # 遍历每一行的列
-                text = cell.text
-                if text == kwd:
-                    del_list.append((t, r))
-                    break
+                delTextInTable(cell.tables, kwd)
 
-    for t, r in set(del_list):
-        row = document.tables[t].rows[r]
-        for cell in row.cells:
-            cell.text = ""
     document.save(doc_path)
 
 
@@ -109,6 +130,18 @@ def ReplaceInRuns(paragraph, replaceDict: dict, paragraphType):
     return 0
 
 
+def ReplaceInTable(tables, replaceDict):
+    if tables == []:
+        return 0
+    for table in tables:
+        for row in table.rows:
+            for cell in row.cells:
+                for paragraph in cell.paragraphs:
+                    flag1 = ReplaceInRuns(paragraph, replaceDict, "table")
+                flag2 = ReplaceInTable(cell.tables, replaceDict)
+    return flag1 + flag2
+
+
 def ReplaceIn(docxFile, workdir, replaceDict: dict):
     """
     将docxFile按replaceDict进行全局替换
@@ -118,7 +151,11 @@ def ReplaceIn(docxFile, workdir, replaceDict: dict):
         return
     else:
         print('正在处理：', docxFile)
-        document = Document(docxFile)
+
+    if docxFile.split('/')[-1][:2] == '.~':
+        return
+
+    document = Document(docxFile)
 
     res_home = replaceDict['__企业名称__'] + replaceDict['template_id'].split('-')[2] + '上报信息'
     res_path = os.path.join(workdir, res_home,
@@ -141,13 +178,9 @@ def ReplaceIn(docxFile, workdir, replaceDict: dict):
             return None
 
     # 表格
-    for table in document.tables:
-        for row in table.rows:
-            for cell in row.cells:
-                for paragraph in cell.paragraphs:
-                    flag = ReplaceInRuns(paragraph, replaceDict, "table")
-                    if flag:
-                        return None
+    flag = ReplaceInTable(document.tables, replaceDict)
+    if flag > 0:
+        return None
 
     document.save(res_path)
     return res_path
@@ -165,13 +198,8 @@ def ReplaceAll(path: str, workdir: str, replaceDict: dict, delLineDict: dict, de
     files = [os.path.join(path, i) for i in directories if
              os.path.isfile(os.path.join(path, i)) and os.path.splitext(i)[-1] in ['.doc', '.docx']]  # 所有word文件
     for file in files:
-        respath = None
-        try:
-            respath = ReplaceIn(file, workdir, replaceDict)
-        except PackageNotFoundError:
-            print('该文件处理失败，请检查')
-
-        if respath is None:
+        respath = ReplaceIn(file, workdir, replaceDict)
+        if respath == None:
             os.remove(file)
         del_rows(respath)
         del_text(respath)
@@ -259,15 +287,6 @@ def ReplaceProcess(info_dict, page2=False):
     dictionary['template_id'] = info_dict['template_id']
     work_dir = os.path.abspath('.')  # 工作路径
 
-    # 检测收集信息是否覆盖
-    # for key in dictionary.keys():
-    #     if key in deltext or key in delline:
-    #         continue
-    #     if key not in info_dict:
-    #         print('wrong!!!!!!!!!!', key)
-    # print('ookkkkkkk!!!!!')
-    # return
-
     # 用收集信息更新替换字典
     for key in dictionary.keys():
         if key in info_dict and info_dict[key] != '无' and info_dict[key] != '否':
@@ -281,6 +300,11 @@ def ReplaceProcess(info_dict, page2=False):
             dictionary[key] = '__删除整行__'
         if key in deltext and dictionary[key] == deltext[key]:
             dictionary[key] = '__删除文本__'
+    if dictionary['__有无外包过程__'] == '否':
+        del dictionary['__外包过程表述__']
+        dictionary['__有无外包过程__'] = '无'
+
+    print(dictionary)
     if page2:
         ReplaceAll(os.path.join('templates', dictionary['template_id'], '01管理手册'), work_dir, dictionary, delline,
                    deltext)
@@ -288,6 +312,6 @@ def ReplaceProcess(info_dict, page2=False):
                    deltext)
     else:
         ReplaceAll(os.path.join('templates', dictionary['template_id']), work_dir, dictionary, delline, deltext)
-    res_home = info_dict['__企业名称__'] + info_dict['template_id'].split('-')[2] + '上报信息'
+    res_home = dictionary['__企业名称__'] + dictionary['template_id'].split('-')[2] + '上报信息'
     ExamAll(res_home, 0)
     print('process done!')
