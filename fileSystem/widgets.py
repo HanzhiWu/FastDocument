@@ -6,7 +6,7 @@ import deal_with_file as df
 
 
 class EditText:
-    def __init__(self, root, title, default=''):
+    def __init__(self, root, title, default='', replaceable=True):
         super().__init__()
         self.frame = Frame(root, padx=2)  # container
         self.frame = Frame(root, bg='Lavender', pady=2)
@@ -17,6 +17,7 @@ class EditText:
                          highlightthickness=1)
         self.default = default
         self.text.insert('0.0', self.default)
+        self.replaceable = replaceable
         insert_val_into_input(self.title, self.text)
         self.text.grid(row=0, column=1)
 
@@ -36,7 +37,7 @@ class EditText:
         if key == '':
             key = self.title
         content = self.get_text()
-        if content == self.default:
+        if content == self.default and self.replaceable:
             content = '无'
         info_dic['__{}__'.format(key)] = content
 
@@ -140,7 +141,7 @@ class AddText:
 
         self.frame = Frame(root, bg='Lavender', pady=2)  # container
         self.label = Label(self.frame, text='{}：'.format(title), bg='Lavender')
-        self.button = tk.Button(self.frame, text=btn_title, bg='Lavender', command=lambda: self.btn_window())
+        self.button = tk.Button(self.frame, text=btn_title, bg='White', command=lambda: self.btn_window())
         self.element_list = []  # 控件中对应的控件，本质上是一个二维数组，与content一一对应
         self.text = Text(self.frame, width=120, heigh=4)
         insert_val_into_input(self.title, self.text)

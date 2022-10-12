@@ -5,8 +5,9 @@ from tkinter import ttk
 from unicodedata import decimal
 
 from second_window import InfoWindow_1, InfoWindow_2, InfoWindow_3
-from tkinter.filedialog import askopenfilename        
-from temp_storage import read_file_to_temp_list, clear_temp_storage, add_item_temp_storage            
+from tkinter.filedialog import askopenfilename
+from temp_storage import read_file_to_temp_list, clear_temp_storage, add_item_temp_storage
+
 
 # 第一层界面
 def mainWindow():
@@ -72,7 +73,6 @@ def mainWindow():
     departV7 = tk.IntVar(master=window)
     departV8 = tk.IntVar(master=window)
     departV9 = tk.IntVar(master=window)
-    departVlist = [departV1, departV2, departV3, departV4, departV5, departV6, departV7, departV8, departV9]
 
     def depart_select():
         global departselected
@@ -114,11 +114,6 @@ def mainWindow():
     projectV1 = tk.IntVar(master=window)
     projectV2 = tk.IntVar(master=window)
     projectV3 = tk.IntVar(master=window)
-    projVdict = {
-        'Q': projectV1,
-        'E': projectV2,
-        'S': projectV3
-    }
 
     def project_select():
         global projectselected
@@ -187,34 +182,40 @@ def mainWindow():
                 or 'Q' not in projectselected and len(projectselected) == 2 or len(projectselected) == 3:
             InfoWindow_3(info_dic)
             return
-    
+
+    def all_unset():
+        for d in departlist:
+            d.deselect()
+            depart_select()
+        for d in projdict.values():
+            d.deselect()
+            project_select()
+
     def load_file():
-        file = askopenfilename(title='Please choose a file', 
-                  initialdir='save/', filetypes=[('纯文本','*.txt')])
+        file = askopenfilename(title='Please choose a file',
+                               initialdir='save/', filetypes=[('纯文本', '*.txt')])
         temp = read_file_to_temp_list(file)
         template_id = temp['template_id']
         s1, s2, s3, s4 = template_id.split('-')
+        all_unset()
         for key, val in range2code.items():
             if val == s1:
                 domain.current(domain['value'].index(key))
         for i in s2:
-            departVlist[int(i) - 1].set(1)
             departlist[int(i) - 1].select()
         depart_select()
         for i in s3:
-            projVdict[i].set(1)
             projdict[i].select()
         project_select()
         if s4 == 'Y':
             designC1.select()
         else:
-            departC2.select()
-        
-        
+            designC2.select()
+
     '''跳转按钮'''
     btn_login = tk.Button(window, text='确认信息无误，进入信息采集阶段。', command=lambda: [pageJump()])
     btn_load = tk.Button(window, text='加载历史数据。', command=load_file)
-    btn_clear = tk.Button(window, text='清除历史数据。', command=clear_temp_storage)
+    btn_clear = tk.Button(window, text='清除历史数据。', command=lambda: [clear_temp_storage(), all_unset()])
 
     '''place布局'''
     domain_L.place(relx=0.22, rely=0.05)
