@@ -58,13 +58,12 @@ def InfoWindow_1(info_dic):
     widget_list.append(fanwei)
 
     waibao = GroupButtonWithText(window, title='公司有无外包过程', pos_opt='公司有外包过程', neg_opt='公司无外包过程',
-                                 text_title='外包过程表述', text_default='本公司外包过程为XX')
-    waibao.text.text.insert('0.0', '本公司外包过程为XX')
+                                 text_title='外包过程表述', text_default='本公司无外包过程')
+    waibao.text.replaceable = False
     widget_list.append(waibao)
 
-    tsguocheng = EditText(window, '特殊过程')
+    tsguocheng = EditText(window, '特殊过程', default='无特殊过程', replaceable=False)
     tsguocheng.text_setting(height=2, width=97)
-    tsguocheng.text.insert('0.0', '无特殊过程/特殊过程为XX')
     widget_list.append(tsguocheng)
 
     zhijian = EditText(window, '质检部门')
@@ -536,7 +535,7 @@ def InfoWindow_3(info_dic):
     xiaoshou.text_setting(height=1, width=22)
     widget_list.append(xiaoshou)
 
-    xsfuze = EditText(window, '销售负责人')
+    xsfuze = EditText(window, '销售部门负责人')
     xsfuze.text_setting(height=1, width=22)
     widget_list.append(xsfuze)
 
@@ -548,7 +547,7 @@ def InfoWindow_3(info_dic):
     shengchan.text_setting(height=1, width=22)
     widget_list.append(shengchan)
 
-    scfuze = EditText(window, '生产负责人')
+    scfuze = EditText(window, '生产部门负责人')
     scfuze.text_setting(height=1, width=22)
     widget_list.append(scfuze)
 

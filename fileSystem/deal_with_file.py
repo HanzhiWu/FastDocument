@@ -301,7 +301,7 @@ def ReplaceProcess(info_dict, page2=False):
         if key in deltext and dictionary[key] == deltext[key]:
             dictionary[key] = '__删除文本__'
     if dictionary['__有无外包过程__'] == '否':
-        del dictionary['__外包过程表述__']
+        dictionary['__外包过程表述__'] = ''
         dictionary['__有无外包过程__'] = '无'
 
     print(dictionary)

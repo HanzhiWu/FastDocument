@@ -21,11 +21,11 @@ def informCollectWindow(info_dic):
 
     window.geometry('1280x700')  # 这里的乘是小x
 
-    jlnf = EditText(window, '记录年份', '2022')
+    jlnf = EditText(window, '记录年份', '2022', replaceable=False)
     jlnf.text_setting(height=1, width=22)
     widget_list.append(jlnf)
 
-    ybjlrq = EditText(window, '一般记录日期', '2022.1.4')
+    ybjlrq = EditText(window, '一般记录日期', '2022.1.4', replaceable=False)
     ybjlrq.text_setting(width=22, height=1)
     widget_list.append(ybjlrq)
 
