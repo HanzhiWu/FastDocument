@@ -6,6 +6,8 @@ LastEditTime: 2022-10-01 17:18:11
 FilePath: /FastDocument/fileSystem/temp_storage.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
+import datetime
+
 temp_dic = {}
 is_auto_restore = False
 save_dic = {}
@@ -40,9 +42,9 @@ def gen_temp_storage():
     将已有的temp_dic生成yml存到对应的文件夹下
     """
     global temp_dic
-    year = temp_dic['记录年份'] if '记录年份' in temp_dic else '*'
-    name = temp_dic['企业名称'] if '企业名称' in temp_dic else '*'
-    proj = temp_dic['template_id'].split('-')[1] if 'template_id' in temp_dic else '*'
+    year = temp_dic['记录年份'] if '记录年份' in temp_dic else datetime.datetime.now().strftime("%Y")
+    name = temp_dic['企业名称'] if '企业名称' in temp_dic else '未命名企业'
+    proj = temp_dic['template_id'].split('-')[1] if 'template_id' in temp_dic else 'unknown'
     li = [year, name, proj, '信息存档.txt']
     filename = '-'.join(li)
     with open('save/' + filename, 'w', encoding='utf-8') as f:
@@ -82,9 +84,11 @@ def insert_radio_res_to_button(label_text, value, btns):
             value.set(0)
             btns[1].select()
 
+
 def clear_temp_storage():
     global temp_dic
     temp_dic = {}
+
 
 def add_item_temp_storage(key, val):
     global temp_dic
