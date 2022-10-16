@@ -1,4 +1,5 @@
 from doctest import DocFileCase
+from operator import ne
 import os
 from pydoc import doc
 import re
@@ -293,9 +294,14 @@ def ReplaceProcess(info_dict, page2=False):
             dictionary[key] = info_dict[key]
         elif key[2:-2] in info_dict and info_dict[key[2:-2]] != '无' and info_dict[key[2:-2]] != '否':
             dictionary[key] = info_dict[key[2:-2]]
+        elif '随机日期' in key:
+            continue
         else:
             dictionary[key] = '否'
-
+        if key in ['__特殊过程焊接__', '__特殊过程搅拌__', '__特殊过程薄膜金属化__', '__特殊过程混合__', '__特殊过程挤出__']:
+            if info_dict[key] == '是':
+                dictionary[key] = ''
+        
         if key in delline and dictionary[key] == delline[key]:
             dictionary[key] = '__删除整行__'
         if key in deltext and dictionary[key] == deltext[key]:
@@ -304,7 +310,6 @@ def ReplaceProcess(info_dict, page2=False):
         dictionary['__外包过程表述__'] = ''
         dictionary['__有无外包过程__'] = '无'
 
-    print(dictionary)
     if page2:
         ReplaceAll(os.path.join('templates', dictionary['template_id'], '01管理手册'), work_dir, dictionary, delline,
                    deltext)
@@ -314,4 +319,5 @@ def ReplaceProcess(info_dict, page2=False):
         ReplaceAll(os.path.join('templates', dictionary['template_id']), work_dir, dictionary, delline, deltext)
     res_home = dictionary['__企业名称__'] + dictionary['template_id'].split('-')[2] + '上报信息'
     ExamAll(res_home, 0)
-    print('process done!')
+    print('no check !!!!! process done!')
+

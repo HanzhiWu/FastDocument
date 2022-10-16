@@ -126,7 +126,7 @@ def informCollectWindow(info_dic):
     syndjqzp = GroupButton(window, '上一年度是否为加强招聘改进项', "是", "否")
     widget_list.append(syndjqzp)
 
-    xxht = AddText(window, '销售合同信息', '合同', '修改合同信息', [18, 15, 10, 8, 10], ['产品', '客户', '签订日期', '编号', '评审时间'])
+    xxht = AddText(window, '销售合同信息', '销售合同', '修改合同信息', [18, 15, 10, 8, 10], ['产品', '客户', '签订日期', '编号', '评审时间'])
     widget_list.append(xxht)
 
     myddcrq = EditText(window, '满意度调查日期')
@@ -176,7 +176,7 @@ def informCollectWindow(info_dic):
     gf = AddText(window, '已有供方信息', '供方', '修改供方信息', [18, 30, 60], ['名称', '地址', '所有产品'])
     widget_list.append(gf)
 
-    cgcp = AddText(window, '采购产品信息', '采购', '修改采购信息', [15, 8, 15, 8, 10, 10], ['产品', '产品规格型号', '产品供方', '产品数量', '时间', '到货时间'])
+    cgcp = AddText(window, '采购产品信息', '采购', '修改采购信息', [15, 8, 15, 8, 10, 10], ['产品', '产品规格型号', '产品供方', '产品数量', '时间', '产品到货时间'])
     widget_list.append(cgcp)
 
     def next_stage(info_dict):

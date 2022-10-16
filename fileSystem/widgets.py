@@ -229,6 +229,11 @@ class AddText:
         item_list = [row.split(',') for row in row_list]
         for row in range(len(row_list)):
             for item in range(len(item_list[0])):
+                key_str = '__{}{}{}__'.format(self.key_word, self.item_key_list[item], row + 1)
+                if item_list[row][item] == '':
+                    info_dic[key_str] = '无'
+                else:
+                    info_dic[key_str] = item_list[row][item]
                 key_str = '__{}{}{}__'.format(self.key_word, row + 1, self.item_key_list[item])
                 if item_list[row][item] == '':
                     info_dic[key_str] = '无'

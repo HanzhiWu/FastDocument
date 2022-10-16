@@ -130,7 +130,7 @@ def InfoWindow_1(info_dic):
     xscaigou.text_setting(height=1, width=22)
     widget_list.append(xscaigou)
 
-    xscgfuze = EditText(window, '销售采购负责人')
+    xscgfuze = EditText(window, '销售采购部门负责人')
     xscgfuze.text_setting(height=1, width=22)
     widget_list.append(xscgfuze)
 
@@ -535,7 +535,7 @@ def InfoWindow_3(info_dic):
     xiaoshou.text_setting(height=1, width=22)
     widget_list.append(xiaoshou)
 
-    xsfuze = EditText(window, '销售部门负责人')
+    xsfuze = EditText(window, '销售负责人')
     xsfuze.text_setting(height=1, width=22)
     widget_list.append(xsfuze)
 
@@ -547,7 +547,7 @@ def InfoWindow_3(info_dic):
     shengchan.text_setting(height=1, width=22)
     widget_list.append(shengchan)
 
-    scfuze = EditText(window, '生产部门负责人')
+    scfuze = EditText(window, '生产负责人')
     scfuze.text_setting(height=1, width=22)
     widget_list.append(scfuze)
 
