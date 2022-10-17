@@ -1,4 +1,5 @@
 from doctest import DocFileCase
+from operator import ne
 import os
 from pydoc import doc
 import re
@@ -93,8 +94,10 @@ def ReplaceInRuns(paragraph, replaceDict: dict, paragraphType):
                 # 进行替换
                 if old in run.text:
                     if "随机日期" in old:
-                        start, end = new.split('-')
-                        new = str(random.randint(int(start), int(end)))
+                        if '-' in new:
+                            start, end = new.split('-')
+                            new = str(random.randint(int(start), int(end)))
+                            replaceDict[old] = new
                     if "__是否有空压机__" in old and new == '否':
                         return 1
                     if ("产品批号__" in old or "产品订货时间__" in old):
@@ -112,8 +115,10 @@ def ReplaceInRuns(paragraph, replaceDict: dict, paragraphType):
                 # 进行替换
                 if old in text:
                     if "随机日期" in old:
-                        start, end = new.split('-')
-                        new = str(random.randint(int(start), int(end)))
+                        if '-' in new:
+                            start, end = new.split('-')
+                            new = str(random.randint(int(start), int(end)))
+                            replaceDict[old] = new
                     if "__是否有空压机__" in old and new == '否':
                         return 1
                     if ("产品批号__" in old or "产品订货时间__" in old):
@@ -185,8 +190,13 @@ def ReplaceIn(docxFile, workdir, replaceDict: dict):
     document.save(res_path)
     return res_path
 
+def reset_date(dic, inf):
+    for key in ['__1月随机日期__', '__2月随机日期__', '__3月随机日期__', '__4月随机日期__', '__5月随机日期__', '__6月随机日期__',
+                '__7月随机日期__', '__8月随机日期__', '__9月随机日期__', '__10月随机日期__', '__11月随机日期__', '__12月随机日期__']:
+        if key in dic:
+            dic[key] = inf[key]
 
-def ReplaceAll(path: str, workdir: str, replaceDict: dict, delLineDict: dict, delTextDict: dict):
+def ReplaceAll(path: str, workdir: str, replaceDict: dict, delLineDict: dict, delTextDict: dict, infoDict: dict):
     """
     将path路径下所有word文件按replaceDict进行全局替换
     """
@@ -194,7 +204,7 @@ def ReplaceAll(path: str, workdir: str, replaceDict: dict, delLineDict: dict, de
     folders = [os.path.join(path, i) for i in directories if
                os.path.isdir(os.path.join(path, i)) and not i.startswith('.')]  # 所有非隐藏文件夹
     for folder in folders:
-        ReplaceAll(folder, workdir, replaceDict, delLineDict, delTextDict)
+        ReplaceAll(folder, workdir, replaceDict, delLineDict, delTextDict, infoDict)
     files = [os.path.join(path, i) for i in directories if
              os.path.isfile(os.path.join(path, i)) and os.path.splitext(i)[-1] in ['.doc', '.docx']]  # 所有word文件
     for file in files:
@@ -203,6 +213,7 @@ def ReplaceAll(path: str, workdir: str, replaceDict: dict, delLineDict: dict, de
             os.remove(file)
         del_rows(respath)
         del_text(respath)
+        reset_date(replaceDict, infoDict)
 
 
 def ExamInRuns(paragraph, paragraphType):
@@ -293,9 +304,14 @@ def ReplaceProcess(info_dict, page2=False):
             dictionary[key] = info_dict[key]
         elif key[2:-2] in info_dict and info_dict[key[2:-2]] != '无' and info_dict[key[2:-2]] != '否':
             dictionary[key] = info_dict[key[2:-2]]
+        elif '随机日期' in key:
+            continue
         else:
             dictionary[key] = '否'
-
+        if key in ['__特殊过程焊接__', '__特殊过程搅拌__', '__特殊过程薄膜金属化__', '__特殊过程混合__', '__特殊过程挤出__']:
+            if info_dict[key] == '是':
+                dictionary[key] = ''
+        
         if key in delline and dictionary[key] == delline[key]:
             dictionary[key] = '__删除整行__'
         if key in deltext and dictionary[key] == deltext[key]:
@@ -304,14 +320,18 @@ def ReplaceProcess(info_dict, page2=False):
         dictionary['__外包过程表述__'] = ''
         dictionary['__有无外包过程__'] = '无'
 
-    print(dictionary)
+    for key in ['__1月随机日期__', '__2月随机日期__', '__3月随机日期__', '__4月随机日期__', '__5月随机日期__', '__6月随机日期__',
+                '__7月随机日期__', '__8月随机日期__', '__9月随机日期__', '__10月随机日期__', '__11月随机日期__', '__12月随机日期__']:
+        info_dict[key] = dictionary[key]
+        
     if page2:
         ReplaceAll(os.path.join('templates', dictionary['template_id'], '01管理手册'), work_dir, dictionary, delline,
-                   deltext)
+                   deltext, info_dict)
         ReplaceAll(os.path.join('templates', dictionary['template_id'], '02程序文件'), work_dir, dictionary, delline,
-                   deltext)
+                   deltext, info_dict)
     else:
-        ReplaceAll(os.path.join('templates', dictionary['template_id']), work_dir, dictionary, delline, deltext)
+        ReplaceAll(os.path.join('templates', dictionary['template_id']), work_dir, dictionary, delline, deltext, info_dict)
     res_home = dictionary['__企业名称__'] + dictionary['template_id'].split('-')[2] + '上报信息'
     ExamAll(res_home, 0)
-    print('process done!')
+    print('no check !!!!! process done!')
+

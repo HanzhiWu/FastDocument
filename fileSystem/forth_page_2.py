@@ -71,11 +71,11 @@ class cpgxPage(tk.Frame):
         btngen = tk.Button(self, text='信息无误开始生成文档！',
                            command=lambda: threading.Thread(target=root.get_info).start())
 
-        self.cpgx1 = AddText(self, "产品1工序", "工序", "修改产品1工序", [120])
-        self.cpgx2 = AddText(self, "产品2工序", "工序", "修改产品2工序", [120])
-        self.cpgx3 = AddText(self, "产品3工序", "工序", "修改产品3工序", [120])
-        self.cpgx4 = AddText(self, "产品4工序", "工序", "修改产品4工序", [120])
-        self.cpgx5 = AddText(self, "产品5工序", "工序", "修改产品5工序", [120])
+        self.cpgx1 = AddText(self, "产品1工序", "产品1", "修改产品1工序", [120], ["工序"])
+        self.cpgx2 = AddText(self, "产品2工序", "产品2", "修改产品2工序", [120], ["工序"])
+        self.cpgx3 = AddText(self, "产品3工序", "产品3", "修改产品3工序", [120], ["工序"])
+        self.cpgx4 = AddText(self, "产品4工序", "产品4", "修改产品4工序", [120], ["工序"])
+        self.cpgx5 = AddText(self, "产品5工序", "产品5", "修改产品5工序", [120], ["工序"])
         self.widget_list = [self.cpgx1, self.cpgx2, self.cpgx3, self.cpgx4, self.cpgx5]
         btn_save = tk.Button(self, text='缓存信息。', command=lambda: root.temp_save_to_local())
 
@@ -145,11 +145,11 @@ class cpczPage(tk.Frame):
         btngen = tk.Button(self, text='信息无误开始生成文档！',
                            command=lambda: threading.Thread(target=root.get_info).start())
 
-        self.cpcz1 = AddText(self, "产品1操作工", "操作工", "修改产品1操作工", [120])
-        self.cpcz2 = AddText(self, "产品2操作工", "操作工", "修改产品2操作工", [120])
-        self.cpcz3 = AddText(self, "产品3操作工", "操作工", "修改产品3操作工", [120])
-        self.cpcz4 = AddText(self, "产品4操作工", "操作工", "修改产品4操作工", [120])
-        self.cpcz5 = AddText(self, "产品5操作工", "操作工", "修改产品5操作工", [120])
+        self.cpcz1 = AddText(self, "产品1操作工", "产品1", "修改产品1操作工", [120], ["操作工"])
+        self.cpcz2 = AddText(self, "产品2操作工", "产品2", "修改产品2操作工", [120], ["操作工"])
+        self.cpcz3 = AddText(self, "产品3操作工", "产品3", "修改产品3操作工", [120], ["操作工"])
+        self.cpcz4 = AddText(self, "产品4操作工", "产品4", "修改产品4操作工", [120], ["操作工"])
+        self.cpcz5 = AddText(self, "产品5操作工", "产品5", "修改产品5操作工", [120], ["操作工"])
         self.widget_list = [self.cpcz1, self.cpcz2, self.cpcz3, self.cpcz4, self.cpcz5]
 
         btn_save = tk.Button(self, text='缓存信息。', command=lambda: root.temp_save_to_local())
@@ -196,16 +196,16 @@ class qtxxPage(tk.Frame):
         self.scbry3.text_setting(height=1, width=25)
         self.widget_list.append(self.scbry3)
 
-        self.tsgcjb = GroupButtonWithText(self, "有无搅拌过程", "有搅拌过程", "无搅拌过程", "特殊过程搅拌搅拌工")
+        self.tsgcjb = GroupButtonWithText(self, "特殊过程搅拌", "有搅拌过程", "无搅拌过程", "特殊过程搅拌搅拌工")
         self.widget_list.append(self.tsgcjb)
-        self.tsgcbmjsh = GroupButtonWithText(self, "有无薄膜金属化过程", "有薄膜金属化过程", "无薄膜金属化过程",
+        self.tsgcbmjsh = GroupButtonWithText(self, "特殊过程薄膜金属化", "有薄膜金属化过程", "无薄膜金属化过程",
                                              "特殊过程薄膜金属化操作工")
         self.widget_list.append(self.tsgcbmjsh)
-        self.tsgchj = GroupButtonWithText(self, "有无焊接过程", "有焊接过程", "无焊接过程", "特殊过程焊接操作工")
+        self.tsgchj = GroupButtonWithText(self, "特殊过程焊接", "有焊接过程", "无焊接过程", "特殊过程焊接操作工")
         self.widget_list.append(self.tsgchj)
-        self.tsgchh = GroupButtonWithText(self, "有无混合过程", "有混合过程", "无混合过程", "特殊过程混合操作工")
+        self.tsgchh = GroupButtonWithText(self, "特殊过程混合", "有混合过程", "无混合过程", "特殊过程混合操作工")
         self.widget_list.append(self.tsgchh)
-        self.tsgcjc = GroupButtonWithText(self, "有无挤出过程", "有挤出过程", "无挤出过程", "特殊过程挤出操作工")
+        self.tsgcjc = GroupButtonWithText(self, "特殊过程挤出", "有挤出过程", "无挤出过程", "特殊过程挤出操作工")
         self.widget_list.append(self.tsgcjc)
 
         self.kyj = GroupButton(self, "有无空压机", "有空压机", "无空压机")

@@ -62,7 +62,7 @@ def InfoWindow_1(info_dic):
     waibao.text.replaceable = False
     widget_list.append(waibao)
 
-    tsguocheng = EditText(window, '特殊过程', default='无特殊过程', replaceable=False)
+    tsguocheng = EditText(window, '特殊过程', default='特殊过程为XX', replaceable=False)
     tsguocheng.text_setting(height=2, width=97)
     widget_list.append(tsguocheng)
 
@@ -130,7 +130,7 @@ def InfoWindow_1(info_dic):
     xscaigou.text_setting(height=1, width=22)
     widget_list.append(xscaigou)
 
-    xscgfuze = EditText(window, '销售采购负责人')
+    xscgfuze = EditText(window, '销售采购部门负责人')
     xscgfuze.text_setting(height=1, width=22)
     widget_list.append(xscgfuze)
 
@@ -283,7 +283,7 @@ def InfoWindow_2(info_dic):
                                  text_title='外包过程表述', text_default='本公司外包过程为XX')
     widget_list.append(waibao)
 
-    tsguocheng = EditText(window, '特殊过程', default='无特殊过程/特殊过程为XX')
+    tsguocheng = EditText(window, '特殊过程', default='特殊过程为XX', replaceable=False)
     tsguocheng.text_setting(height=2, width=97)
     widget_list.append(tsguocheng)
 
@@ -515,7 +515,7 @@ def InfoWindow_3(info_dic):
                                  text_title='外包过程表述', text_default='本公司外包过程为XX')
     widget_list.append(waibao)
 
-    tsguocheng = EditText(window, '特殊过程', default='无特殊过程/特殊过程为XX')
+    tsguocheng = EditText(window, '特殊过程', default='特殊过程为XX', replaceable=False)
     tsguocheng.text_setting(height=2, width=97)
     widget_list.append(tsguocheng)
 
@@ -535,7 +535,7 @@ def InfoWindow_3(info_dic):
     xiaoshou.text_setting(height=1, width=22)
     widget_list.append(xiaoshou)
 
-    xsfuze = EditText(window, '销售部门负责人')
+    xsfuze = EditText(window, '销售负责人')
     xsfuze.text_setting(height=1, width=22)
     widget_list.append(xsfuze)
 
@@ -547,7 +547,7 @@ def InfoWindow_3(info_dic):
     shengchan.text_setting(height=1, width=22)
     widget_list.append(shengchan)
 
-    scfuze = EditText(window, '生产部门负责人')
+    scfuze = EditText(window, '生产负责人')
     scfuze.text_setting(height=1, width=22)
     widget_list.append(scfuze)
 
