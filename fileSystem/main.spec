@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['main.py'，'second_window.py','third_window.py','forth_page_1.py','forth_page_2.py','forth_page_4.py','temp_storage.py','widgets.py','deal_with_file.py'],
+    ['main.py', 'second_window.py','third_window.py','forth_page_1.py','forth_page_2.py','forth_page_4.py','temp_storage.py','widgets.py','deal_with_file.py'],
     pathex=[], # 此处填写项目的绝对路径 ……/FileManageSystem/fileSystem
     binaries=[],
     datas=[],

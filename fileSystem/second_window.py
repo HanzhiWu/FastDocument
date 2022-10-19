@@ -62,7 +62,7 @@ def InfoWindow_1(info_dic):
     waibao.text.replaceable = False
     widget_list.append(waibao)
 
-    tsguocheng = EditText(window, '特殊过程', default='无特殊过程', replaceable=False)
+    tsguocheng = EditText(window, '特殊过程', default='特殊过程为XX', replaceable=False)
     tsguocheng.text_setting(height=2, width=97)
     widget_list.append(tsguocheng)
 
@@ -283,7 +283,7 @@ def InfoWindow_2(info_dic):
                                  text_title='外包过程表述', text_default='本公司外包过程为XX')
     widget_list.append(waibao)
 
-    tsguocheng = EditText(window, '特殊过程', default='无特殊过程/特殊过程为XX')
+    tsguocheng = EditText(window, '特殊过程', default='特殊过程为XX', replaceable=False)
     tsguocheng.text_setting(height=2, width=97)
     widget_list.append(tsguocheng)
 
@@ -515,7 +515,7 @@ def InfoWindow_3(info_dic):
                                  text_title='外包过程表述', text_default='本公司外包过程为XX')
     widget_list.append(waibao)
 
-    tsguocheng = EditText(window, '特殊过程', default='无特殊过程/特殊过程为XX')
+    tsguocheng = EditText(window, '特殊过程', default='特殊过程为XX', replaceable=False)
     tsguocheng.text_setting(height=2, width=97)
     widget_list.append(tsguocheng)
 
