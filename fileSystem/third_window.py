@@ -137,9 +137,9 @@ def informCollectWindow(info_dic):
     myddcsl.text_setting(width=22, height=1)
     widget_list.append(myddcsl)
 
-    myddcpj = EditText(window, '平均满意度')
+    myddcpj = EditText(window, '平均满意度', False)
     myddcpj.text_setting(width=22, height=1)
-    widget_list.append(myddcsl)
+    widget_list.append(myddcpj)
 
     myddc1 = EditText(window, '销售合同1满意度', '95')
     myddc1.text_setting(width=22, height=1)
