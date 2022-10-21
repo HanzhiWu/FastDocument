@@ -130,7 +130,7 @@ def InfoWindow_1(info_dic):
     xscaigou.text_setting(height=1, width=22)
     widget_list.append(xscaigou)
 
-    xscgfuze = EditText(window, '销售采购部门负责人')
+    xscgfuze = EditText(window, '销售采购负责人')
     xscgfuze.text_setting(height=1, width=22)
     widget_list.append(xscgfuze)
 
@@ -697,3 +697,4 @@ def InfoWindow_3(info_dic):
     btn_gen_docx.grid(row=21, column=3, columnspan=1, pady=(30, 0))
 
     window.mainloop()
+
