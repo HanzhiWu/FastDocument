@@ -6,6 +6,7 @@ import re
 import yaml
 from docx import Document
 import random
+from tkinter.filedialog import askdirectory
 
 
 def delInTable(tables, kwd='__删除整行__'):
@@ -98,13 +99,13 @@ def ReplaceInRuns(paragraph, replaceDict: dict, paragraphType):
                             start, end = new.split('-')
                             new = str(random.randint(int(start), int(end)))
                             replaceDict[old] = new
-                    if "__是否有空压机__" in old and new == '否':
+                    if "__是否有空压机__" in old and new == '':
                         return 1
                     if ("产品批号__" in old or "产品订货时间__" in old):
                         matchObj = re.search(r'__[\u4e00-\u9fa5|0-9]*__', old, re.M | re.I)
                         key1 = matchObj.group()[:12] + "批号__"
                         key2 = matchObj.group()[:12] + "订货时间__"
-                        if replaceDict[key1] == '否' and replaceDict[key2] == '否':
+                        if replaceDict[key1] == '' and replaceDict[key2] == '':
                             return 1
                     run.text = run.text.replace(old, new)
     else:
@@ -119,13 +120,13 @@ def ReplaceInRuns(paragraph, replaceDict: dict, paragraphType):
                             start, end = new.split('-')
                             new = str(random.randint(int(start), int(end)))
                             replaceDict[old] = new
-                    if "__是否有空压机__" in old and new == '否':
+                    if "__是否有空压机__" in old and new == '':
                         return 1
                     if ("产品批号__" in old or "产品订货时间__" in old):
                         matchObj = re.search(r'__[\u4e00-\u9fa5|0-9]*__', old, re.M | re.I)
                         key1 = matchObj.group()[:12] + "批号__"
                         key2 = matchObj.group()[:12] + "订货时间__"
-                        if replaceDict[key1] == '否' and replaceDict[key2] == '否':
+                        if replaceDict[key1] == '' and replaceDict[key2] == '':
                             return 1
                     text = text.replace(old, new)
             if text != "":
@@ -162,9 +163,10 @@ def ReplaceIn(docxFile, workdir, replaceDict: dict):
 
     document = Document(docxFile)
 
-    res_home = replaceDict['__企业名称__'] + replaceDict['template_id'].split('-')[2] + '上报信息'
+    year = replaceDict['__记录年份__'] if '__记录年份__' in replaceDict else '未知年份'
+    res_home = year + replaceDict['__企业名称__'] + replaceDict['template_id'].split('-')[2]
     res_path = os.path.join(workdir, res_home,
-                            os.path.relpath(docxFile, os.path.join(workdir, 'templates', replaceDict['template_id'])))
+                            os.path.relpath(docxFile, os.path.join('templates', replaceDict['template_id'])))
     res_dir = os.path.dirname(res_path)
     if not os.path.exists(res_dir):
         os.makedirs(res_dir)
@@ -187,6 +189,7 @@ def ReplaceIn(docxFile, workdir, replaceDict: dict):
     if flag > 0:
         return None
 
+    print(res_path)
     document.save(res_path)
     return res_path
 
@@ -211,8 +214,8 @@ def ReplaceAll(path: str, workdir: str, replaceDict: dict, delLineDict: dict, de
         respath = ReplaceIn(file, workdir, replaceDict)
         if respath == None:
             os.remove(file)
-        del_rows(respath)
-        del_text(respath)
+        # del_rows(respath)
+        # del_text(respath)
         reset_date(replaceDict, infoDict)
 
 
@@ -296,7 +299,8 @@ def ReplaceProcess(info_dict, page2=False):
     deltext = GetDictionary("delText.yml")
     delline = GetDictionary('delLine.yml')
     dictionary['template_id'] = info_dict['template_id']
-    work_dir = os.path.abspath('.')  # 工作路径
+    # work_dir = os.path.abspath('.')  # 工作路径
+    store_dir = askdirectory()
 
     # 用收集信息更新替换字典
     for key in dictionary.keys():
@@ -309,7 +313,7 @@ def ReplaceProcess(info_dict, page2=False):
         else:
             dictionary[key] = '否'
         if key in ['__特殊过程焊接__', '__特殊过程搅拌__', '__特殊过程薄膜金属化__', '__特殊过程混合__', '__特殊过程挤出__']:
-            if info_dict[key] == '是':
+            if key in info_dict and info_dict[key] == '是':
                 dictionary[key] = ''
         
         if key in delline and dictionary[key] == delline[key]:
@@ -319,19 +323,22 @@ def ReplaceProcess(info_dict, page2=False):
     if dictionary['__有无外包过程__'] == '否':
         dictionary['__外包过程表述__'] = ''
         dictionary['__有无外包过程__'] = '无'
-
+    for key in dictionary.keys():
+        if dictionary[key] == '否':
+            dictionary[key] = ''
     for key in ['__1月随机日期__', '__2月随机日期__', '__3月随机日期__', '__4月随机日期__', '__5月随机日期__', '__6月随机日期__',
                 '__7月随机日期__', '__8月随机日期__', '__9月随机日期__', '__10月随机日期__', '__11月随机日期__', '__12月随机日期__']:
         info_dict[key] = dictionary[key]
-        
     if page2:
-        ReplaceAll(os.path.join('templates', dictionary['template_id'], '01管理手册'), work_dir, dictionary, delline,
+        ReplaceAll(os.path.join('templates', dictionary['template_id'], '01管理手册'), store_dir, dictionary, delline,
                    deltext, info_dict)
-        ReplaceAll(os.path.join('templates', dictionary['template_id'], '02程序文件'), work_dir, dictionary, delline,
+        ReplaceAll(os.path.join('templates', dictionary['template_id'], '02程序文件'), store_dir, dictionary, delline,
                    deltext, info_dict)
     else:
-        ReplaceAll(os.path.join('templates', dictionary['template_id']), work_dir, dictionary, delline, deltext, info_dict)
-    res_home = dictionary['__企业名称__'] + dictionary['template_id'].split('-')[2] + '上报信息'
-    ExamAll(res_home, 0)
-    print('no check !!!!! process done!')
+        ReplaceAll(os.path.join('templates', dictionary['template_id']), store_dir, dictionary, delline, deltext, info_dict)
+    # res_home = dictionary['__企业名称__'] + dictionary['template_id'].split('-')[2] + '上报信息'
+    year = dictionary['__记录年份__'] if '__记录年份__' in dictionary else '未知年份'
+    res_home = year + dictionary['__企业名称__'] + dictionary['template_id'].split('-')[2]
+    ExamAll(os.path.join(store_dir, res_home), 0)
+    print('process done!')
 
