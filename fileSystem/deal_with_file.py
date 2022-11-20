@@ -189,6 +189,7 @@ def ReplaceIn(docxFile, workdir, replaceDict: dict):
     if flag > 0:
         return None
 
+    print(res_path)
     document.save(res_path)
     return res_path
 
@@ -213,8 +214,8 @@ def ReplaceAll(path: str, workdir: str, replaceDict: dict, delLineDict: dict, de
         respath = ReplaceIn(file, workdir, replaceDict)
         if respath == None:
             os.remove(file)
-        del_rows(respath)
-        del_text(respath)
+        # del_rows(respath)
+        # del_text(respath)
         reset_date(replaceDict, infoDict)
 
 
