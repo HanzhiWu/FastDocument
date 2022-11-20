@@ -86,6 +86,18 @@ class qtxxPage(tk.Frame):
         self.sjaqjyrq3.text_setting(height=1, width=12)
         self.widget_list.append(self.sjaqjyrq3)
 
+        self.scbry1 = EditText(self, '生产部人员1')
+        self.scbry1.text_setting(height=1, width=25)
+        self.widget_list.append(self.scbry1)
+
+        self.scbry2 = EditText(self, '生产部人员2')
+        self.scbry2.text_setting(height=1, width=25)
+        self.widget_list.append(self.scbry2)
+
+        self.scbry3 = EditText(self, '生产部人员3')
+        self.scbry3.text_setting(height=1, width=25)
+        self.widget_list.append(self.scbry3)
+
         self.sjaqjybzpxr = EditText(self, '三级安全教育班组培训人')
         self.sjaqjybzpxr.text_setting(height=1, width=12)
         self.widget_list.append(self.sjaqjybzpxr)
@@ -99,8 +111,11 @@ class qtxxPage(tk.Frame):
         self.sjaqjyrq1.set_position(row=2, column=0, rowspan=1, columnspan=2)
         self.sjaqjyrq2.set_position(row=2, column=2, rowspan=1, columnspan=2)
         self.sjaqjyrq3.set_position(row=2, column=4, rowspan=1, columnspan=2)
-        self.sjaqjybzpxr.set_position(row=3, column=0, rowspan=1, columnspan=2)
-        self.kyj.set_position(row=3, column=2, rowspan=1, columnspan=2)
-        btn_save.grid(row=4, column=5, pady=20)
-
+        self.scbry1.set_position(row=3, column=0, rowspan=1, columnspan=2)
+        self.scbry2.set_position(row=3, column=2, rowspan=1, columnspan=2)
+        self.scbry3.set_position(row=3, column=4, rowspan=1, columnspan=2)
+        self.sjaqjybzpxr.set_position(row=4, column=0, rowspan=1, columnspan=2)
+        self.kyj.set_position(row=4, column=2, rowspan=1, columnspan=2)
+        btn_save.grid(row=5, column=5, pady=20)
+#
 # window4_4({})

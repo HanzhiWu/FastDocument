@@ -18,7 +18,7 @@ def InfoWindow_1(info_dic):
     window.config(background='Lavender')
     widget_list = []
     # 设定窗口的大小(长 * 宽)
-    window.geometry('850x550')  # 这里的乘是小x
+    window.geometry('850x650')  # 这里的乘是小x
     window.resizable(0, 0)
 
     name = EditText(window, '企业名称')
@@ -240,7 +240,7 @@ def InfoWindow_2(info_dic):
     window.config(background='Lavender')
     widget_list = []
     # 设定窗口的大小(长 * 宽)
-    window.geometry('850x580')  # 这里的乘是小x
+    window.geometry('850x650')  # 这里的乘是小x
     window.resizable(0, 0)
 
     name = EditText(window, '企业名称')
@@ -475,7 +475,7 @@ def InfoWindow_3(info_dic):
     window.config(background='Lavender')
     widget_list = []
     # 设定窗口的大小(长 * 宽)
-    window.geometry('850x580')  # 这里的乘是小x
+    window.geometry('850x650')  # 这里的乘是小x
     window.resizable(0, 0)
 
     name = EditText(window, '企业名称')
