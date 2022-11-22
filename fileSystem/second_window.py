@@ -29,13 +29,9 @@ def InfoWindow_1(info_dic):
     code.text_setting(height=1, width=25)
     widget_list.append(code)
 
-    ver = EditText(window, '版本', default='A', replaceable=False)
-    ver.text_setting(height=1, width=12)
-    widget_list.append(ver)
-
-    times = EditText(window, '版次', default='0', replaceable=False)
-    times.text_setting(height=1, width=12)
-    widget_list.append(times)
+    version_code = EditText(window, '版本号', default='A/0', replaceable=False)
+    version_code.text_setting(height=1, width=12)
+    widget_list.append(version_code)
 
     m = EditText(window, '管理者代表')
     m.text_setting(height=1, width=22)
@@ -162,6 +158,14 @@ def InfoWindow_1(info_dic):
     shangchanliuchng3.text_setting(height=1, width=91)
     widget_list.append(shangchanliuchng3)
 
+    jlnf = EditText(window, '记录年份', '2022', replaceable=False)
+    jlnf.text_setting(height=1, width=22)
+    widget_list.append(jlnf)
+
+    ybjlrq = EditText(window, '一般记录日期', '2022.1.4', replaceable=False)
+    ybjlrq.text_setting(width=22, height=1)
+    widget_list.append(ybjlrq)
+
     def text_gen():
         for widget in widget_list:
             widget.save_value_into_info_dic(info_dic)
@@ -190,8 +194,7 @@ def InfoWindow_1(info_dic):
 
     name.set_position(row=0, column=0)
     code.set_position(row=0, column=1)
-    ver.set_position(row=0, column=2)
-    times.set_position(row=0, column=3)
+    version_code.set_position(row=0, column=2, columnspan=2)
     m.set_position(row=1, column=0)
     mx.set_position(row=1, column=1)
     t.set_position(row=1, column=2, columnspan=2)
@@ -223,9 +226,11 @@ def InfoWindow_1(info_dic):
     shangchanliuchng1.set_position(row=17, column=0, columnspan=4)
     shangchanliuchng2.set_position(row=18, column=0, columnspan=4)
     shangchanliuchng3.set_position(row=19, column=0, columnspan=4)
-    btn_gen.grid(row=20, column=0, columnspan=2, pady=(30, 0))
-    btn_save.grid(row=20, column=2, columnspan=1, pady=(30, 0))
-    btn_gen_docx.grid(row=20, column=3, columnspan=1, pady=(30, 0))
+    jlnf.set_position(row=20, column=0, columnspan=2)
+    ybjlrq.set_position(row=20, column=2, columnspan=2)
+    btn_gen.grid(row=21, column=0, columnspan=2, pady=(30, 0))
+    btn_save.grid(row=21, column=2, columnspan=1, pady=(30, 0))
+    btn_gen_docx.grid(row=21, column=3, columnspan=1, pady=(30, 0))
 
     window.mainloop()
 
@@ -251,13 +256,9 @@ def InfoWindow_2(info_dic):
     code.text_setting(height=1, width=25)
     widget_list.append(code)
 
-    ver = EditText(window, '版本', default='A', replaceable=False)
-    ver.text_setting(height=1, width=12)
-    widget_list.append(ver)
-
-    times = EditText(window, '版次', default='0', replaceable=False)
-    times.text_setting(height=1, width=12)
-    widget_list.append(times)
+    version_code = EditText(window, '版本号', default='A/0', replaceable=False)
+    version_code.text_setting(height=1, width=12)
+    widget_list.append(version_code)
 
     m = EditText(window, '管理者代表')
     m.text_setting(height=1, width=22)
@@ -395,6 +396,14 @@ def InfoWindow_2(info_dic):
     shangchanliuchng3.text_setting(height=1, width=91)
     widget_list.append(shangchanliuchng3)
 
+    jlnf = EditText(window, '记录年份', '2022', replaceable=False)
+    jlnf.text_setting(height=1, width=22)
+    widget_list.append(jlnf)
+
+    ybjlrq = EditText(window, '一般记录日期', '2022.1.4', replaceable=False)
+    ybjlrq.text_setting(width=22, height=1)
+    widget_list.append(ybjlrq)
+
     def text_gen():
         for widget in widget_list:
             widget.save_value_into_info_dic(info_dic)
@@ -422,8 +431,7 @@ def InfoWindow_2(info_dic):
 
     name.set_position(row=0, column=0)
     code.set_position(row=0, column=1)
-    ver.set_position(row=0, column=2)
-    times.set_position(row=0, column=3)
+    version_code.set_position(row=0, column=2, columnspan=2)
     m.set_position(row=1, column=0)
     mx.set_position(row=1, column=1)
     t.set_position(row=1, column=2, columnspan=2)
@@ -458,9 +466,11 @@ def InfoWindow_2(info_dic):
     shangchanliuchng1.set_position(row=18, column=0, columnspan=4)
     shangchanliuchng2.set_position(row=19, column=0, columnspan=4)
     shangchanliuchng3.set_position(row=20, column=0, columnspan=4)
-    btn_gen.grid(row=21, column=0, columnspan=2, pady=(30, 0))
-    btn_save.grid(row=21, column=2, columnspan=1, pady=(30, 0))
-    btn_gen_docx.grid(row=21, column=3, columnspan=1, pady=(30, 0))
+    jlnf.set_position(row=21, column=0, columnspan=2)
+    ybjlrq.set_position(row=21, column=2, columnspan=2)
+    btn_gen.grid(row=22, column=0, columnspan=2, pady=(30, 0))
+    btn_save.grid(row=22, column=2, columnspan=1, pady=(30, 0))
+    btn_gen_docx.grid(row=22, column=3, columnspan=1, pady=(30, 0))
 
     window.mainloop()
 
@@ -486,13 +496,9 @@ def InfoWindow_3(info_dic):
     code.text_setting(height=1, width=25)
     widget_list.append(code)
 
-    ver = EditText(window, '版本', default='A', replaceable=False)
-    ver.text_setting(height=1, width=12)
-    widget_list.append(ver)
-
-    times = EditText(window, '版次', default='0', replaceable=False)
-    times.text_setting(height=1, width=12)
-    widget_list.append(times)
+    version_code = EditText(window, '版本号', default='A/0', replaceable=False)
+    version_code.text_setting(height=1, width=12)
+    widget_list.append(version_code)
 
     m = EditText(window, '管理者代表')
     m.text_setting(height=1, width=22)
@@ -634,6 +640,14 @@ def InfoWindow_3(info_dic):
     shangchanliuchng3.text_setting(height=1, width=91)
     widget_list.append(shangchanliuchng3)
 
+    jlnf = EditText(window, '记录年份', '2022', replaceable=False)
+    jlnf.text_setting(height=1, width=22)
+    widget_list.append(jlnf)
+
+    ybjlrq = EditText(window, '一般记录日期', '2022.1.4', replaceable=False)
+    ybjlrq.text_setting(width=22, height=1)
+    widget_list.append(ybjlrq)
+
     def text_gen():
         for widget in widget_list:
             widget.save_value_into_info_dic(info_dic)
@@ -661,8 +675,7 @@ def InfoWindow_3(info_dic):
 
     name.set_position(row=0, column=0)
     code.set_position(row=0, column=1)
-    ver.set_position(row=0, column=2)
-    times.set_position(row=0, column=3)
+    version_code.set_position(row=0, column=2, columnspan=2)
     m.set_position(row=1, column=0)
     mx.set_position(row=1, column=1)
     t.set_position(row=1, column=2, columnspan=2)
@@ -698,9 +711,11 @@ def InfoWindow_3(info_dic):
     shangchanliuchng1.set_position(row=19, column=0, columnspan=4)
     shangchanliuchng2.set_position(row=20, column=0, columnspan=4)
     shangchanliuchng3.set_position(row=21, column=0, columnspan=4)
-    btn_gen.grid(row=22, column=0, columnspan=2, pady=(30, 0))
-    btn_save.grid(row=22, column=2, columnspan=1, pady=(30, 0))
-    btn_gen_docx.grid(row=22, column=3, columnspan=1, pady=(30, 0))
+    jlnf.set_position(row=22, column=0, columnspan=2)
+    ybjlrq.set_position(row=22, column=2, columnspan=2)
+    btn_gen.grid(row=23, column=0, columnspan=2, pady=(30, 0))
+    btn_save.grid(row=23, column=2, columnspan=1, pady=(30, 0))
+    btn_gen_docx.grid(row=23, column=3, columnspan=1, pady=(30, 0))
 
     window.mainloop()
 
