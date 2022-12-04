@@ -147,7 +147,30 @@ def mainWindow():
     designC1 = tk.Radiobutton(window, text="有", variable=designV, value=1, command=design_select)
     designC2 = tk.Radiobutton(window, text="无", variable=designV, value=0, command=design_select)
 
-    def pageJump():
+    def pageJump(re=False):
+        info_dic = {}
+        if re:
+            file = askopenfilename(title='Please choose a file',
+                               initialdir='save/', filetypes=[('纯文本', '*.txt')])
+            temp = read_file_to_temp_list(file)
+            info_dic['tmp'] = file
+            template_id = temp['template_id']
+            s1, s2, s3, s4 = template_id.split('-')
+            all_unset()
+            for key, val in range2code.items():
+                if val == s1:
+                    domain.current(domain['value'].index(key))
+            for i in s2:
+                departlist[int(i) - 1].select()
+            depart_select()
+            for i in s3:
+                projdict[i].select()
+            project_select()
+            if s4 == 'Y':
+                designC1.select()
+            else:
+                designC2.select()
+
         global projectselected, departselected
         template_id = ''  # 模板代码
         template_id += range2code[domain.get()]
@@ -164,23 +187,22 @@ def mainWindow():
         template_id += '-'
         template_id += 'Y' if designV.get() == 1 else 'N'
         print(template_id)
-        info_dic = {}
         info_dic['template_id'] = template_id  # yml中原本没有，用来选择模板，且用于生成输出路径名，所以后续会写入替换字典中
         add_item_temp_storage('template_id', template_id)
         # Q界面
         if 'Q' in projectselected and len(projectselected) == 1:
-            InfoWindow_1(info_dic)
+            InfoWindow_1(info_dic, re=re)
             return
             # E/QE 界面
         if 'E' in projectselected and len(projectselected) == 1 or 'S' not in projectselected and len(
                 projectselected) == 2:
-            InfoWindow_2(info_dic)
+            InfoWindow_2(info_dic, re=re)
             return
         # S/QS/ES/QES界面
         if 'S' in projectselected and len(projectselected) == 1 or 'E' not in projectselected and len(
                 projectselected) == 2 \
                 or 'Q' not in projectselected and len(projectselected) == 2 or len(projectselected) == 3:
-            InfoWindow_3(info_dic)
+            InfoWindow_3(info_dic, re=re)
             return
 
     def all_unset():
@@ -213,7 +235,8 @@ def mainWindow():
             designC2.select()
 
     '''跳转按钮'''
-    btn_login = tk.Button(window, text='确认信息无误，进入信息采集阶段。', command=lambda: [pageJump()])
+    btn_login = tk.Button(window, text='初审模式。', command=lambda: [pageJump()])
+    btn_re = tk.Button(window, text='监督复评模式。', command=lambda: [pageJump(True)])
     btn_load = tk.Button(window, text='加载历史数据。', command=load_file)
     btn_clear = tk.Button(window, text='清除历史数据。', command=lambda: [clear_temp_storage(), all_unset()])
 
@@ -245,6 +268,7 @@ def mainWindow():
     designC2.place(relx=0.5, rely=0.82)
 
     btn_login.place(relx=0.05, rely=0.9)
+    btn_re.place(relx=0.25, rely=0.9)
     btn_load.place(relx=0.5, rely=0.9)
     btn_clear.place(relx=0.75, rely=0.9)
 

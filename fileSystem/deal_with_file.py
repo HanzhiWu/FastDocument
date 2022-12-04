@@ -7,7 +7,7 @@ import yaml
 from docx import Document
 import random
 from tkinter.filedialog import askdirectory
-
+from temp_storage import read_file_to_temp_list
 
 def delInTable(tables, kwd='__删除整行__'):
     if tables == []:
@@ -214,8 +214,8 @@ def ReplaceAll(path: str, workdir: str, replaceDict: dict, delLineDict: dict, de
         respath = ReplaceIn(file, workdir, replaceDict)
         if respath == None:
             os.remove(file)
-        # del_rows(respath)
-        # del_text(respath)
+        del_rows(respath)
+        del_text(respath)
         reset_date(replaceDict, infoDict)
 
 
@@ -294,7 +294,7 @@ def ExamAll(path: str, depth: int):
     return undeal_files
 
 
-def ReplaceProcess(info_dict, page2=False):
+def ReplaceProcess(info_dict, re=False, page2=False):
     dictionary = GetDictionary("tagList.yml")
     deltext = GetDictionary("delText.yml")
     delline = GetDictionary('delLine.yml')
@@ -329,6 +329,7 @@ def ReplaceProcess(info_dict, page2=False):
     for key in ['__1月随机日期__', '__2月随机日期__', '__3月随机日期__', '__4月随机日期__', '__5月随机日期__', '__6月随机日期__',
                 '__7月随机日期__', '__8月随机日期__', '__9月随机日期__', '__10月随机日期__', '__11月随机日期__', '__12月随机日期__']:
         info_dict[key] = dictionary[key]
+
     if page2:
         ReplaceAll(os.path.join('templates', dictionary['template_id'], '01管理手册'), store_dir, dictionary, delline,
                    deltext, info_dict)
@@ -336,9 +337,30 @@ def ReplaceProcess(info_dict, page2=False):
                    deltext, info_dict)
     else:
         ReplaceAll(os.path.join('templates', dictionary['template_id']), store_dir, dictionary, delline, deltext, info_dict)
+
+    if re:
+        tmppath = os.path.dirname(info_dict['tmp'])
+        olddict = read_file_to_temp_list(info_dict['tmp'])
+        old2new = {}
+        for k, v in olddict.items():
+            if k in dictionary and v != dictionary[k]:
+                old2new[v] = dictionary[k]
+                if k in deltext:
+                    deltext[v] = deltext[k]
+                if k in delline:
+                    delline[v] = delline[k]
+        if page2:
+            ReplaceAll(os.path.join(tmppath, '01管理手册'), store_dir, old2new, delline,
+                    deltext, info_dict)
+            ReplaceAll(os.path.join(tmppath, '02程序文件'), store_dir, old2new, delline,
+                    deltext, info_dict)
+        else:
+            ReplaceAll(tmppath, store_dir, dictionary, delline, deltext, info_dict)
+
     # res_home = dictionary['__企业名称__'] + dictionary['template_id'].split('-')[2] + '上报信息'
     year = dictionary['__记录年份__'] if '__记录年份__' in dictionary else '未知年份'
     res_home = year + dictionary['__企业名称__'] + dictionary['template_id'].split('-')[2]
     ExamAll(os.path.join(store_dir, res_home), 0)
+
     print('process done!')
 

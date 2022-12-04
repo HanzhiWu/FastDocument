@@ -9,12 +9,15 @@ from tkinter.messagebox import showinfo
 import deal_with_file as df
 
 
-def InfoWindow_1(info_dic):
+def InfoWindow_1(info_dic, re=False):
     """Q界面"""
     window = tk.Tk()
 
     # 给窗口的可视化起名字
-    window.title('认证文件管理系统')
+    if re:
+        window.title('监督复评模式')
+    else:
+        window.title('初审模式')
     window.config(background='Lavender')
     widget_list = []
     # 设定窗口的大小(长 * 宽)
@@ -170,7 +173,7 @@ def InfoWindow_1(info_dic):
         for widget in widget_list:
             widget.save_value_into_info_dic(info_dic)
             widget.temp_save()
-        informCollectWindow(info_dic)
+        informCollectWindow(info_dic, re=re)
 
     def temp_save_to_local():
         for widget in widget_list:
@@ -182,7 +185,7 @@ def InfoWindow_1(info_dic):
     def gen_docx(info_dict):
         for widget in widget_list:
             widget.save_value_into_info_dic(info_dict)
-        df.ReplaceProcess(info_dict, True)
+        df.ReplaceProcess(info_dict, re=re, page2=True)
         showinfo(title="提示",
                  message="文档输出完成!")
         window.destroy()
@@ -235,13 +238,16 @@ def InfoWindow_1(info_dic):
     window.mainloop()
 
 
-def InfoWindow_2(info_dic):
+def InfoWindow_2(info_dic, re=False):
     """E/QE界面"""
 
     window = tk.Tk()
 
     # 给窗口的可视化起名字
-    window.title('认证文件管理系统')
+    if re:
+        window.title('监督复评模式')
+    else:
+        window.title('初审模式')
     window.config(background='Lavender')
     widget_list = []
     # 设定窗口的大小(长 * 宽)
@@ -408,7 +414,7 @@ def InfoWindow_2(info_dic):
         for widget in widget_list:
             widget.save_value_into_info_dic(info_dic)
             widget.temp_save()
-        informCollectWindow(info_dic)
+        informCollectWindow(info_dic, re=re)
 
     def temp_save_to_local():
         for widget in widget_list:
@@ -419,7 +425,7 @@ def InfoWindow_2(info_dic):
     def gen_docx(info_dict):
         for widget in widget_list:
             widget.save_value_into_info_dic(info_dict)
-        df.ReplaceProcess(info_dict, True)
+        df.ReplaceProcess(info_dict, re=re, page2=True)
         showinfo(title="提示",
                  message="文档输出完成!")
         window.destroy()
@@ -475,13 +481,16 @@ def InfoWindow_2(info_dic):
     window.mainloop()
 
 
-def InfoWindow_3(info_dic):
+def InfoWindow_3(info_dic, re=False):
     """S/QS/ES/QES界面"""
 
     window = tk.Tk()
 
     # 给窗口的可视化起名字
-    window.title('认证文件管理系统')
+    if re:
+        window.title('监督复评模式')
+    else:
+        window.title('初审模式')
     window.config(background='Lavender')
     widget_list = []
     # 设定窗口的大小(长 * 宽)
@@ -652,7 +661,7 @@ def InfoWindow_3(info_dic):
         for widget in widget_list:
             widget.save_value_into_info_dic(info_dic)
             widget.temp_save()
-        informCollectWindow(info_dic)
+        informCollectWindow(info_dic, re=re)
 
     def temp_save_to_local():
         for widget in widget_list:
@@ -663,7 +672,7 @@ def InfoWindow_3(info_dic):
     def gen_docx(info_dict):
         for widget in widget_list:
             widget.save_value_into_info_dic(info_dict)
-        df.ReplaceProcess(info_dict, True)
+        df.ReplaceProcess(info_dict, re=re, page2=True)
         showinfo(title="提示",
                  message="文档输出完成!")
         window.destroy()

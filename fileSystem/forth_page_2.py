@@ -10,12 +10,16 @@ from widgets import *
 
 
 class window4_2():
-    def __init__(self, info_dic):
+    def __init__(self, info_dic, re=False):
         super().__init__()
         window = tk.Tk()
+        self.re = re
 
         # 给窗口的可视化起名字
-        window.title('认证文件管理系统')
+        if re:
+            window.title('监督复评模式')
+        else:
+            window.title('初审模式')
         window.config(background='Lavender')
 
         window.geometry('1280x650')  # 这里的乘是小x
@@ -46,7 +50,7 @@ class window4_2():
                 widget.save_value_into_info_dic(self.info_dic)
                 widget.temp_save()
         print(self.info_dic)
-        df.ReplaceProcess(self.info_dic)
+        df.ReplaceProcess(self.info_dic, re=self.re)
         showinfo(title="提示",
                  message="文档输出完成!")
 

@@ -11,11 +11,14 @@ from widgets import EditText, AddText, GroupButton
 
 
 # 第三层界面
-def informCollectWindow(info_dic):
+def informCollectWindow(info_dic, re=False):
     window = tk.Tk()
 
     # 给窗口的可视化起名字
-    window.title('认证文件管理系统')
+    if re:
+        window.title('监督复评模式')
+    else:
+        window.title('初审模式')
     window.config(background='Lavender')
     widget_list = []
 
@@ -177,14 +180,14 @@ def informCollectWindow(info_dic):
         template_id = info_dic['template_id']
         rzfw, _, rzxm, _ = template_id.split('-')
         if (rzfw == 'SC' or rzfw == 'ZZ' or rzfw == 'JJSC') and (rzxm == 'QS' or rzxm == 'QES'):
-            window4_1(info_dic)
+            window4_1(info_dic, re=re)
         elif (rzfw == 'SC' or rzfw == 'ZZ' or rzfw == 'JJSC') and (rzxm == 'Q' or rzxm == 'QE'):
-            window4_2(info_dic)
+            window4_2(info_dic, re=re)
         elif (rzfw == 'SC' or rzfw == 'ZZ' or rzfw == 'JJSC') and (rzxm == 'S' or rzxm == 'ES'):
-            window4_4(info_dic)
+            window4_4(info_dic, re=re)
         else:
             #
-            df.ReplaceProcess(info_dict)
+            df.ReplaceProcess(info_dict, re=re)
             showinfo(title="提示",
                      message="文档输出完成!")
             window.destroy()
