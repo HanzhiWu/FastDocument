@@ -44,7 +44,7 @@ def gen_temp_storage():
     global temp_dic
     year = temp_dic['记录年份'] if '记录年份' in temp_dic else datetime.datetime.now().strftime("%Y")
     name = temp_dic['企业名称'] if '企业名称' in temp_dic else '未命名企业'
-    proj = temp_dic['template_id'].split('-')[1] if 'template_id' in temp_dic else 'unknown'
+    proj = temp_dic['template_id'].split('-')[2] if 'template_id' in temp_dic else 'unknown'
     li = [year, name, proj, '信息存档.txt']
     filename = '-'.join(li)
     with open('save/' + filename, 'w', encoding='utf-8') as f:

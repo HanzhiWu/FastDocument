@@ -21,26 +21,18 @@ def informCollectWindow(info_dic):
 
     window.geometry('1280x700')  # 这里的乘是小x
 
-    jlnf = EditText(window, '记录年份', '2022', replaceable=False)
-    jlnf.text_setting(height=1, width=22)
-    widget_list.append(jlnf)
-
-    ybjlrq = EditText(window, '一般记录日期', '2022.1.4', replaceable=False)
-    ybjlrq.text_setting(width=22, height=1)
-    widget_list.append(ybjlrq)
-
-    peixun1 = GroupButton(window, '是否有1月培训', '是', '否')
-    peixun2 = GroupButton(window, '是否有2月培训', '是', '否')
-    peixun3 = GroupButton(window, '是否有3月培训', '是', '否')
-    peixun4 = GroupButton(window, '是否有4月培训', '是', '否')
-    peixun5 = GroupButton(window, '是否有5月培训', '是', '否')
-    peixun6 = GroupButton(window, '是否有6月培训', '是', '否')
-    peixun7 = GroupButton(window, '是否有7月培训', '是', '否')
-    peixun8 = GroupButton(window, '是否有8月培训', '是', '否')
-    peixun9 = GroupButton(window, '是否有9月培训', '是', '否')
-    peixun10 = GroupButton(window, '是否有10月培训', '是', '否')
-    peixun11 = GroupButton(window, '是否有11月培训', '是', '否')
-    peixun12 = GroupButton(window, '是否有12月培训', '是', '否')
+    peixun1 = GroupButton(window, '是否有1月培训', '是', '否', defalutl_pos='')
+    peixun2 = GroupButton(window, '是否有2月培训', '是', '否', defalutl_pos='')
+    peixun3 = GroupButton(window, '是否有3月培训', '是', '否', defalutl_pos='')
+    peixun4 = GroupButton(window, '是否有4月培训', '是', '否', defalutl_pos='')
+    peixun5 = GroupButton(window, '是否有5月培训', '是', '否', defalutl_pos='')
+    peixun6 = GroupButton(window, '是否有6月培训', '是', '否', defalutl_pos='')
+    peixun7 = GroupButton(window, '是否有7月培训', '是', '否', defalutl_pos='')
+    peixun8 = GroupButton(window, '是否有8月培训', '是', '否', defalutl_pos='')
+    peixun9 = GroupButton(window, '是否有9月培训', '是', '否', defalutl_pos='')
+    peixun10 = GroupButton(window, '是否有10月培训', '是', '否', defalutl_pos='')
+    peixun11 = GroupButton(window, '是否有11月培训', '是', '否', defalutl_pos='')
+    peixun12 = GroupButton(window, '是否有12月培训', '是', '否', defalutl_pos='')
 
     widget_list.append(peixun1)
     widget_list.append(peixun2)
@@ -119,14 +111,15 @@ def informCollectWindow(info_dic):
 
     syndjqscjc = GroupButton(window, '上一年度是否为加强生产检查改进项', "是", "否")
     widget_list.append(syndjqscjc)
-    
+
     syndjqysjs = GroupButton(window, '上一年度是否为提高意识技术改进项', "是", "否")
     widget_list.append(syndjqysjs)
 
     syndjqzp = GroupButton(window, '上一年度是否为加强招聘改进项', "是", "否")
     widget_list.append(syndjqzp)
 
-    xxht = AddText(window, '销售合同信息', '销售合同', '修改合同信息', [18, 15, 10, 8, 10], ['产品', '客户', '签订日期', '编号', '评审时间'])
+    xxht = AddText(window, '销售合同信息', '销售合同', '修改合同信息', [18, 15, 10, 8, 10],
+                   ['产品', '客户', '签订日期', '编号', '评审时间'])
     widget_list.append(xxht)
 
     myddcrq = EditText(window, '满意度调查日期')
@@ -156,7 +149,7 @@ def informCollectWindow(info_dic):
     myddc4 = EditText(window, '销售合同4满意度')
     myddc4.text_setting(width=22, height=1)
     widget_list.append(myddc4)
-    
+
     myddc5 = EditText(window, '销售合同5满意度')
     myddc5.text_setting(width=22, height=1)
     widget_list.append(myddc5)
@@ -172,11 +165,12 @@ def informCollectWindow(info_dic):
     myddc8 = EditText(window, '销售合同8满意度')
     myddc8.text_setting(width=22, height=1)
     widget_list.append(myddc8)
-    
+
     gf = AddText(window, '已有供方信息', '供方', '修改供方信息', [18, 30, 60], ['名称', '地址', '所有产品'])
     widget_list.append(gf)
 
-    cgcp = AddText(window, '采购产品信息', '采购', '修改采购信息', [15, 8, 15, 8, 10, 10], ['产品', '产品规格型号', '产品供方', '产品数量', '时间', '产品到货时间'])
+    cgcp = AddText(window, '采购产品信息', '采购', '修改采购信息', [15, 8, 15, 8, 10, 10],
+                   ['产品', '产品规格型号', '产品供方', '产品数量', '时间', '产品到货时间'])
     widget_list.append(cgcp)
 
     def next_stage(info_dict):
@@ -211,8 +205,6 @@ def informCollectWindow(info_dic):
     btn_gen = tk.Button(window, text='信息确认完成，进入下一阶段。', command=textGen)
     btn_save = tk.Button(window, text='缓存信息。', command=lambda: [temp_save_to_local()])
 
-    jlnf.set_position(row=0, column=1, columnspan=3)
-    ybjlrq.set_position(row=0, column=4, columnspan=3)
     peixun1.set_position(row=1, column=0, columnspan=3)
     peixun2.set_position(row=1, column=3, columnspan=3)
     peixun3.set_position(row=1, column=6, columnspan=3)

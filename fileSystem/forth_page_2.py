@@ -28,7 +28,7 @@ class window4_2():
         self.frames = {}
         self.info_dic = info_dic
 
-        for F in (cpgxPage, cpczPage, cpxxPage, qtxxPage):
+        for F in (cpgxPage,  cpxxPage, qtxxPage):
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")  # 四个页面的位置都是 grid(row=0, column=0), 位置重叠，只有最上面的可见！！
@@ -66,24 +66,27 @@ class cpgxPage(tk.Frame):
         self.config(bg='Lavender')
         btncpgx = tk.Button(self, text='修改产品工序', command=lambda: [root.show_frame(cpgxPage)])
         btncpxx = tk.Button(self, text='修改产品信息', command=lambda: root.show_frame(cpxxPage))
-        btncpcz = tk.Button(self, text='修改产品操作工', command=lambda: root.show_frame(cpczPage))
         btnqtxx = tk.Button(self, text='修改其他信息', command=lambda: root.show_frame(qtxxPage))
         btngen = tk.Button(self, text='信息无误开始生成文档！',
                            command=lambda: threading.Thread(target=root.get_info).start())
 
-        self.cpgx1 = AddText(self, "产品1工序", "产品1", "修改产品1工序", [120], ["工序"])
-        self.cpgx2 = AddText(self, "产品2工序", "产品2", "修改产品2工序", [120], ["工序"])
-        self.cpgx3 = AddText(self, "产品3工序", "产品3", "修改产品3工序", [120], ["工序"])
-        self.cpgx4 = AddText(self, "产品4工序", "产品4", "修改产品4工序", [120], ["工序"])
-        self.cpgx5 = AddText(self, "产品5工序", "产品5", "修改产品5工序", [120], ["工序"])
+        self.cpgx1 = AddText(self, "产品1工序信息", "产品1", "修改产品1工序信息", [60, 60], ["工序", "操作工"],
+                             position=AddText.PositionEnum.END)
+        self.cpgx2 = AddText(self, "产品2工序信息", "产品2", "修改产品2工序信息", [60, 60], ["工序", "操作工"],
+                             position=AddText.PositionEnum.END)
+        self.cpgx3 = AddText(self, "产品3工序信息", "产品3", "修改产品3工序信息", [60, 60], ["工序", "操作工"],
+                             position=AddText.PositionEnum.END)
+        self.cpgx4 = AddText(self, "产品4工序信息", "产品4", "修改产品4工序信息", [60, 60], ["工序", "操作工"],
+                             position=AddText.PositionEnum.END)
+        self.cpgx5 = AddText(self, "产品5工序信息", "产品5", "修改产品5工序信息", [60, 60], ["工序", "操作工"],
+                             position=AddText.PositionEnum.END)
         self.widget_list = [self.cpgx1, self.cpgx2, self.cpgx3, self.cpgx4, self.cpgx5]
         btn_save = tk.Button(self, text='缓存信息。', command=lambda: root.temp_save_to_local())
 
         btncpgx.grid(row=0, column=0)
         btncpxx.grid(row=0, column=1)
-        btncpcz.grid(row=0, column=2)
-        btnqtxx.grid(row=0, column=3)
-        btngen.grid(row=0, column=4)
+        btnqtxx.grid(row=0, column=2)
+        btngen.grid(row=0, column=3, columnspan=2)
         self.cpgx1.set_position(row=1, column=0, rowspan=4, columnspan=4)
         self.cpgx2.set_position(row=5, column=0, rowspan=4, columnspan=4)
         self.cpgx3.set_position(row=9, column=0, rowspan=4, columnspan=4)
@@ -100,70 +103,38 @@ class cpxxPage(tk.Frame):
         self.config(bg='Lavender')
         btncpgx = tk.Button(self, text='修改产品工序', command=lambda: [root.show_frame(cpgxPage)])
         btncpxx = tk.Button(self, text='修改产品信息', command=lambda: root.show_frame(cpxxPage))
-        btncpcz = tk.Button(self, text='修改产品操作工', command=lambda: root.show_frame(cpczPage))
         btnqtxx = tk.Button(self, text='修改其他信息', command=lambda: root.show_frame(qtxxPage))
         btngen = tk.Button(self, text='信息无误开始生成文档！',
                            command=lambda: threading.Thread(target=root.get_info).start())
 
         self.cpxx1 = AddText(self, "产品1信息", "生产产品1的", "修改产品1信息", [10, 10, 8, 10, 10, 8, 10],
-                             ['号产品', '号产品型号', '号产品数量', '号产品日期', '号产品客户', '号产品批号', '号产品订货时间'])
+                             ['号产品', '号产品型号', '号产品数量', '号产品日期', '号产品客户', '号产品批号',
+                              '号产品订货时间'])
         self.cpxx2 = AddText(self, "产品2信息", "生产产品2的", "修改产品2信息", [10, 10, 8, 10, 10, 8, 10],
-                             ['号产品', '号产品型号', '号产品数量', '号产品日期', '号产品客户', '号产品批号', '号产品订货时间'])
+                             ['号产品', '号产品型号', '号产品数量', '号产品日期', '号产品客户', '号产品批号',
+                              '号产品订货时间'])
         self.cpxx3 = AddText(self, "产品3信息", "生产产品3的", "修改产品3信息", [10, 10, 8, 10, 10, 8, 10],
-                             ['号产品', '号产品型号', '号产品数量', '号产品日期', '号产品客户', '号产品批号', '号产品订货时间'])
+                             ['号产品', '号产品型号', '号产品数量', '号产品日期', '号产品客户', '号产品批号',
+                              '号产品订货时间'])
         self.cpxx4 = AddText(self, "产品4信息", "生产产品4的", "修改产品4信息", [10, 10, 8, 10, 10, 8, 10],
-                             ['号产品', '号产品型号', '号产品数量', '号产品日期', '号产品客户', '号产品批号', '号产品订货时间'])
+                             ['号产品', '号产品型号', '号产品数量', '号产品日期', '号产品客户', '号产品批号',
+                              '号产品订货时间'])
         self.cpxx5 = AddText(self, "产品5信息", "生产产品5的", "修改产品5信息", [10, 10, 8, 10, 10, 8, 10],
-                             ['号产品', '号产品型号', '号产品数量', '号产品日期', '号产品客户', '号产品批号', '号产品订货时间'])
+                             ['号产品', '号产品型号', '号产品数量', '号产品日期', '号产品客户', '号产品批号',
+                              '号产品订货时间'])
         self.widget_list = [self.cpxx1, self.cpxx2, self.cpxx3, self.cpxx4, self.cpxx5]
 
         btn_save = tk.Button(self, text='缓存信息。', command=lambda: root.temp_save_to_local())
 
         btncpgx.grid(row=0, column=0)
         btncpxx.grid(row=0, column=1)
-        btncpcz.grid(row=0, column=2)
-        btnqtxx.grid(row=0, column=3)
-        btngen.grid(row=0, column=4)
+        btnqtxx.grid(row=0, column=2)
+        btngen.grid(row=0, column=3, columnspan=2)
         self.cpxx1.set_position(row=1, column=0, rowspan=4, columnspan=4)
         self.cpxx2.set_position(row=5, column=0, rowspan=4, columnspan=4)
         self.cpxx3.set_position(row=9, column=0, rowspan=4, columnspan=4)
         self.cpxx4.set_position(row=13, column=0, rowspan=4, columnspan=4)
         self.cpxx5.set_position(row=17, column=0, rowspan=4, columnspan=4)
-        btn_save.grid(row=21, column=4, pady=20)
-
-
-class cpczPage(tk.Frame):
-    """主页"""
-
-    def __init__(self, parent, root):
-        super().__init__(parent)
-        self.config(bg='Lavender')
-        btncpgx = tk.Button(self, text='修改产品工序', command=lambda: [root.show_frame(cpgxPage)])
-        btncpxx = tk.Button(self, text='修改产品信息', command=lambda: root.show_frame(cpxxPage))
-        btncpcz = tk.Button(self, text='修改产品操作工', command=lambda: root.show_frame(cpczPage))
-        btnqtxx = tk.Button(self, text='修改其他信息', command=lambda: root.show_frame(qtxxPage))
-        btngen = tk.Button(self, text='信息无误开始生成文档！',
-                           command=lambda: threading.Thread(target=root.get_info).start())
-
-        self.cpcz1 = AddText(self, "产品1操作工", "产品1", "修改产品1操作工", [120], ["操作工"])
-        self.cpcz2 = AddText(self, "产品2操作工", "产品2", "修改产品2操作工", [120], ["操作工"])
-        self.cpcz3 = AddText(self, "产品3操作工", "产品3", "修改产品3操作工", [120], ["操作工"])
-        self.cpcz4 = AddText(self, "产品4操作工", "产品4", "修改产品4操作工", [120], ["操作工"])
-        self.cpcz5 = AddText(self, "产品5操作工", "产品5", "修改产品5操作工", [120], ["操作工"])
-        self.widget_list = [self.cpcz1, self.cpcz2, self.cpcz3, self.cpcz4, self.cpcz5]
-
-        btn_save = tk.Button(self, text='缓存信息。', command=lambda: root.temp_save_to_local())
-
-        btncpgx.grid(row=0, column=0)
-        btncpxx.grid(row=0, column=1)
-        btncpcz.grid(row=0, column=2)
-        btnqtxx.grid(row=0, column=3)
-        btngen.grid(row=0, column=4)
-        self.cpcz1.set_position(row=1, column=0, rowspan=4, columnspan=4)
-        self.cpcz2.set_position(row=5, column=0, rowspan=4, columnspan=4)
-        self.cpcz3.set_position(row=9, column=0, rowspan=4, columnspan=4)
-        self.cpcz4.set_position(row=13, column=0, rowspan=4, columnspan=4)
-        self.cpcz5.set_position(row=17, column=0, rowspan=4, columnspan=4)
         btn_save.grid(row=21, column=4, pady=20)
 
 
@@ -174,7 +145,6 @@ class qtxxPage(tk.Frame):
         self.config(bg='Lavender')
         btncpgx = tk.Button(self, text='修改产品工序', command=lambda: root.show_frame(cpgxPage))
         btncpxx = tk.Button(self, text='修改产品信息', command=lambda: root.show_frame(cpxxPage))
-        btncpcz = tk.Button(self, text='修改产品操作工', command=lambda: root.show_frame(cpczPage))
         btnqtxx = tk.Button(self, text='修改其他信息', command=lambda: root.show_frame(qtxxPage))
         btngen = tk.Button(self, text='信息无误开始生成文档！',
                            command=lambda: threading.Thread(target=root.get_info).start())
@@ -215,9 +185,8 @@ class qtxxPage(tk.Frame):
 
         btncpgx.grid(row=0, column=0)
         btncpxx.grid(row=0, column=1)
-        btncpcz.grid(row=0, column=2)
-        btnqtxx.grid(row=0, column=3)
-        btngen.grid(row=0, column=4, columnspan=2)
+        btnqtxx.grid(row=0, column=2)
+        btngen.grid(row=0, column=3, columnspan=3)
         self.jyy1.set_position(row=1, column=0, columnspan=2)
         self.scbry1.set_position(row=2, column=0, columnspan=2)
         self.scbry2.set_position(row=2, column=2, columnspan=2)
@@ -229,5 +198,6 @@ class qtxxPage(tk.Frame):
         self.tsgcjc.set_position(row=11, column=0, rowspan=2, columnspan=6)
         self.kyj.set_position(row=13, column=2, rowspan=1, columnspan=2)
         btn_save.grid(row=14, column=4, pady=20)
+
 
 # window4_2({})

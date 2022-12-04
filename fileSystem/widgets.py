@@ -1,3 +1,5 @@
+from enum import Enum
+
 from temp_storage import *
 import tkinter as tk
 from tkinter import *
@@ -90,7 +92,7 @@ class GroupButtonWithText:
 
 
 class GroupButton:
-    def __init__(self, root, title, pos_opt, neg_opt):
+    def __init__(self, root, title, pos_opt, neg_opt, defalutl_pos='是', default_neg='否'):
         super().__init__()
         self.frame = Frame(root)  # container
         self.frame = Frame(root, bg='Lavender', pady=2)
@@ -101,6 +103,8 @@ class GroupButton:
                                       bg='Lavender')
         self.neg_btn = tk.Radiobutton(self.frame, text=neg_opt, variable=self.titleV, value=0,
                                       bg='Lavender')
+        self.defalt_pos = defalutl_pos
+        self.default_neg = default_neg
         insert_radio_res_to_button(self.title, self.titleV, [self.pos_btn, self.neg_btn])
         self.label.grid(row=0, column=0, padx=2)
         self.pos_btn.grid(row=0, column=1, padx=2)
@@ -108,9 +112,9 @@ class GroupButton:
 
     def save_value_into_info_dic(self, info_dic):
         if self.titleV.get() == 1:
-            info_dic["__{}__".format(self.title)] = '是'
+            info_dic["__{}__".format(self.title)] = self.defalt_pos
         else:
-            info_dic["__{}__".format(self.title)] = '否'
+            info_dic["__{}__".format(self.title)] = self.default_neg
 
     def temp_save(self):
         save_radio_res_to_dic(self.title, self.titleV.get())
@@ -120,7 +124,11 @@ class GroupButton:
 
 
 class AddText:
-    def __init__(self, root, title, key_word, btn_title, width_list, item_key_list=None):
+    class PositionEnum(Enum):
+        MIDDLE = 0
+        END = 1
+
+    def __init__(self, root, title, key_word, btn_title, width_list, item_key_list=None, position=PositionEnum.MIDDLE):
         super().__init__()
         """
         parameter:
@@ -130,6 +138,7 @@ class AddText:
         btn_title 按钮标题
         width_list 新开的窗口中对应的每个文本框宽度
         item_key_list 对应新开每个文本框中的关键字 要和上面的宽度列表一一对应
+        position: 决定关键词出现的位置，默认为0出现在中间，1出现在末尾
         """
         if item_key_list is None:
             item_key_list = ['']
@@ -138,6 +147,7 @@ class AddText:
         self.item_key_list = item_key_list
         self.width_list = width_list  # 子页面中每个item条目宽度
         self.content = []  # 内容的二维数组
+        self.position = position
 
         self.frame = Frame(root, bg='Lavender', pady=2)  # container
         self.label = Label(self.frame, text='{}：'.format(title), bg='Lavender')
@@ -229,12 +239,10 @@ class AddText:
         item_list = [row.split(',') for row in row_list]
         for row in range(len(row_list)):
             for item in range(len(item_list[0])):
-                key_str = '__{}{}{}__'.format(self.key_word, self.item_key_list[item], row + 1)
-                if item_list[row][item] == '':
-                    info_dic[key_str] = '无'
+                if self.position == self.PositionEnum.END:
+                    key_str = '__{}{}{}__'.format(self.key_word, self.item_key_list[item], row + 1)
                 else:
-                    info_dic[key_str] = item_list[row][item]
-                key_str = '__{}{}{}__'.format(self.key_word, row + 1, self.item_key_list[item])
+                    key_str = '__{}{}{}__'.format(self.key_word, row + 1, self.item_key_list[item])
                 if item_list[row][item] == '':
                     info_dic[key_str] = '无'
                 else:
@@ -276,7 +284,7 @@ class AddText:
 
         def change_index(self, index):
             for i in range(len(self.element_list)):
-                self.element_list[i].label.config(text="{}{}: ".format(self.key_word, index, self.item_key_list[i]))
+                self.element_list[i].label.config(text="{}{}: ".format(index, self.item_key_list[i]))
 
         def destroy_all(self):
             for element in self.element_list:
