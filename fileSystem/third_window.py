@@ -1,3 +1,4 @@
+import threading
 import tkinter
 import tkinter as tk
 from tkinter import *
@@ -187,10 +188,11 @@ def informCollectWindow(info_dic, re=False):
             window4_4(info_dic, re=re)
         else:
             #
-            df.ReplaceProcess(info_dict, re=re)
+            print(info_dict)
+            df.replace_process(info_dict, re=re)
             showinfo(title="提示",
                      message="文档输出完成!")
-            window.destroy()
+            # window.destroy()
 
     # 第三层界面处理结果生成字典
     def textGen():
