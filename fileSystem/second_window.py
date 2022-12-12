@@ -56,7 +56,7 @@ def InfoWindow_1(info_dic, re=False):
     fanwei.text_setting(height=1, width=97)
     widget_list.append(fanwei)
 
-    waibao = GroupButtonWithText(window, title='公司有无外包过程', pos_opt='公司有外包过程', neg_opt='公司无外包过程',
+    waibao = GroupButtonWithText(window, title='有无外包过程', pos_opt='有外包过程', neg_opt='无外包过程',
                                  text_title='外包过程表述', text_default='本公司无外包过程')
     waibao.text.replaceable = False
     widget_list.append(waibao)
@@ -185,7 +185,7 @@ def InfoWindow_1(info_dic, re=False):
     def gen_docx(info_dict):
         for widget in widget_list:
             widget.save_value_into_info_dic(info_dict)
-        df.ReplaceProcess(info_dict, re=re, page2=True)
+        df.replace_process(info_dict, re=re, page2=True)
         showinfo(title="提示",
                  message="文档输出完成!")
         window.destroy()
@@ -286,7 +286,7 @@ def InfoWindow_2(info_dic, re=False):
     fanwei.text_setting(height=1, width=97)
     widget_list.append(fanwei)
 
-    waibao = GroupButtonWithText(window, title='公司有无外包过程', pos_opt='公司有外包过程', neg_opt='公司无外包过程',
+    waibao = GroupButtonWithText(window, title='有无外包过程', pos_opt='有外包过程', neg_opt='无外包过程',
                                  text_title='外包过程表述', text_default='本公司外包过程为XX')
     widget_list.append(waibao)
 
@@ -414,6 +414,7 @@ def InfoWindow_2(info_dic, re=False):
         for widget in widget_list:
             widget.save_value_into_info_dic(info_dic)
             widget.temp_save()
+
         informCollectWindow(info_dic, re=re)
 
     def temp_save_to_local():
@@ -425,7 +426,7 @@ def InfoWindow_2(info_dic, re=False):
     def gen_docx(info_dict):
         for widget in widget_list:
             widget.save_value_into_info_dic(info_dict)
-        df.ReplaceProcess(info_dict, re=re, page2=True)
+        df.replace_process(info_dict, re=re, page2=True)
         showinfo(title="提示",
                  message="文档输出完成!")
         window.destroy()
@@ -529,7 +530,7 @@ def InfoWindow_3(info_dic, re=False):
     fanwei.text_setting(height=1, width=97)
     widget_list.append(fanwei)
 
-    waibao = GroupButtonWithText(window, title='公司有无外包过程', pos_opt='公司有外包过程', neg_opt='公司无外包过程',
+    waibao = GroupButtonWithText(window, title='有无外包过程', pos_opt='有外包过程', neg_opt='无外包过程',
                                  text_title='外包过程表述', text_default='本公司外包过程为XX')
     widget_list.append(waibao)
 
@@ -672,7 +673,7 @@ def InfoWindow_3(info_dic, re=False):
     def gen_docx(info_dict):
         for widget in widget_list:
             widget.save_value_into_info_dic(info_dict)
-        df.ReplaceProcess(info_dict, re=re, page2=True)
+        df.replace_process(info_dict, re=re, page2=True)
         showinfo(title="提示",
                  message="文档输出完成!")
         window.destroy()
@@ -727,4 +728,3 @@ def InfoWindow_3(info_dic, re=False):
     btn_gen_docx.grid(row=23, column=3, columnspan=1, pady=(30, 0))
 
     window.mainloop()
-

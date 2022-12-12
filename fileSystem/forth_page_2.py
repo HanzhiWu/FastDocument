@@ -50,7 +50,7 @@ class window4_2():
                 widget.save_value_into_info_dic(self.info_dic)
                 widget.temp_save()
         print(self.info_dic)
-        df.ReplaceProcess(self.info_dic, re=self.re)
+        df.replace_process(self.info_dic, re=self.re)
         showinfo(title="提示",
                  message="文档输出完成!")
 
