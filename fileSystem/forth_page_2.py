@@ -10,10 +10,11 @@ from widgets import *
 
 
 class window4_2():
-    def __init__(self, info_dic, re=False):
+    def __init__(self, info_dic, re=False, old2new=None):
         super().__init__()
         window = tk.Tk()
         self.re = re
+        self.old2new = old2new
 
         # 给窗口的可视化起名字
         if re:
@@ -50,7 +51,7 @@ class window4_2():
                 widget.save_value_into_info_dic(self.info_dic)
                 widget.temp_save()
         print(self.info_dic)
-        df.replace_process(self.info_dic, re=self.re)
+        df.replace_process(self.info_dic, re=self.re, old2new=self.old2new)
         showinfo(title="提示",
                  message="文档输出完成!")
 

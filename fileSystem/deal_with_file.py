@@ -356,7 +356,7 @@ def exam_all(path: str, depth: int):
     return undeal_files
 
 
-def replace_process(info_dict, re=False, page2=False):
+def replace_process(info_dict, re=False, page2=False, old2new=None):
     deltext = GetDictionary("delText.yml")
     delline = GetDictionary('delLine.yml')
     dictionary = generate_dictionary(info_dict, deltext, delline)
@@ -388,20 +388,8 @@ def replace_process(info_dict, re=False, page2=False):
         '''复审模式中生成新字典'''
         tmppath = os.path.dirname(info_dict['tmp'])
         root_dir = tmppath
-        olddict = read_file_to_temp_list(info_dict['tmp'])
-        old2new = {}
-        for k, v in olddict.items():
-            if k in dictionary and v != dictionary[k]:
-                old2new[v] = dictionary[k]
-                if k in deltext:
-                    deltext[v] = deltext[k]
-                if k in delline:
-                    delline[v] = delline[k]
-        if page2:
-            check_file_list.extend(get_all_files(os.path.join(tmppath, '01管理手册')))
-            check_file_list.extend(get_all_files(os.path.join(tmppath, '02程序文件')))
-        else:
-            check_file_list.extend(get_all_files(tmppath))
+        
+        check_file_list.extend(get_all_files(tmppath))
         for file in check_file_list:
             args_list_check.append(([file, store_dir, root_dir, res_home, old2new, info_dict], None))
         requests = tp.makeRequests(file_deal_process, args_list_check)

@@ -12,7 +12,7 @@ from widgets import EditText, AddText, GroupButton
 
 
 # 第三层界面
-def informCollectWindow(info_dic, re=False):
+def informCollectWindow(info_dic, re=False, old2new=None):
     window = tk.Tk()
 
     # 给窗口的可视化起名字
@@ -181,15 +181,15 @@ def informCollectWindow(info_dic, re=False):
         template_id = info_dic['template_id']
         rzfw, _, rzxm, _ = template_id.split('-')
         if (rzfw == 'SC' or rzfw == 'ZZ' or rzfw == 'JJSC') and (rzxm == 'QS' or rzxm == 'QES'):
-            window4_1(info_dic, re=re)
+            window4_1(info_dic, re=re, old2new=old2new)
         elif (rzfw == 'SC' or rzfw == 'ZZ' or rzfw == 'JJSC') and (rzxm == 'Q' or rzxm == 'QE'):
-            window4_2(info_dic, re=re)
+            window4_2(info_dic, re=re, old2new=old2new)
         elif (rzfw == 'SC' or rzfw == 'ZZ' or rzfw == 'JJSC') and (rzxm == 'S' or rzxm == 'ES'):
-            window4_4(info_dic, re=re)
+            window4_4(info_dic, re=re, old2new=old2new)
         else:
             #
             print(info_dict)
-            df.replace_process(info_dict, re=re)
+            df.replace_process(info_dict, re=re, old2new=old2new)
             showinfo(title="提示",
                      message="文档输出完成!")
             # window.destroy()
