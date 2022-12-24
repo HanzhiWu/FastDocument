@@ -65,8 +65,12 @@ def del_text(doc_path, kwd='__删除文本__'):
     document.save(doc_path)
 
 
-def generate_dictionary(info_dict, deltext, delline):
-    dictionary = GetDictionary("tagList.yml")
+def generate_dictionary(info_dict):
+    deltext = get_dictionary("delText.yml")
+    delline = get_dictionary('delLine.yml')
+    white_list = get_dictionary('white_list.yml')
+    dictionary = get_dictionary("tagList.yml")
+    print(info_dict)
     dictionary['template_id'] = info_dict['template_id']
     for key in dictionary.keys():
         if key in info_dict and info_dict[key] != '无' and info_dict[key] != '否':
@@ -86,6 +90,9 @@ def generate_dictionary(info_dict, deltext, delline):
             dictionary[key] = '__删除整行__'
         if key in deltext and dictionary[key] == deltext[key]:
             dictionary[key] = '__删除文本__'
+        if key in white_list:
+            # 复评模式中的白名单词条，根据这种格式定位某些敏感词条的位置
+            dictionary[key] = ' {} '.format(dictionary[key])
     if dictionary['__有无外包过程__'] == '否':
         dictionary['__外包过程表述__'] = ''
         dictionary['__有无外包过程__'] = '无'
@@ -103,11 +110,33 @@ def generate_dictionary(info_dict, deltext, delline):
     return dictionary
 
 
-def GetDictionary(yamlFile):
+def generate_old2new_dic(old2new: dict, info_dic: dict):
+    olddict = read_file_to_temp_list(info_dic['tmp'])
+    deltext = get_dictionary("delText.yml")
+    delline = get_dictionary('delLine.yml')
+    white_list = get_dictionary('white_list.yml')
+    for k, v in info_dic.items():
+        tmpk = k.replace('__', '')
+        if tmpk in olddict and v != olddict[tmpk]:
+            if k in white_list:
+                old2new[' {} '.format(olddict[tmpk])] = v
+                continue
+            else:
+                old2new[olddict[tmpk]] = v
+
+            if k in deltext and v == '':
+                old2new[olddict[tmpk]] = '__删除文本__'
+                continue
+            if k in delline and v == '':
+                old2new[olddict[tmpk]] = '__删除整行__'
+                continue
+
+
+def get_dictionary(yaml_file):
     """
     从yamlFile中读取替换字典
     """
-    with open(yamlFile, 'r', encoding='utf8') as y:
+    with open(yaml_file, 'r', encoding='utf8') as y:
         return yaml.safe_load(y.read())
 
 
@@ -132,6 +161,11 @@ def replace_in_runs(paragraph, replace_dict: dict, paragraph_type):
             text = ""
             for old, new in replace_dict.items():
                 # 进行替换
+                if old == ' {} '.format(run.text):
+                    # 监督复评模式下对于白名单的替换策略，初审的时候关键字已经通过两个空格进行隔断，
+                    # 复评的时候先将键的格式设为" XXX "然后value保持原来的格式，由于空格已经将原有的关键词单独分成一个run所以可以对这个run进行直接替换
+                    run.text = new
+                    break
                 if old in run.text:
                     if "随机日期" in old:
                         if '-' in new:
@@ -357,9 +391,7 @@ def exam_all(path: str, depth: int):
 
 
 def replace_process(info_dict, re=False, page2=False, old2new=None):
-    deltext = GetDictionary("delText.yml")
-    delline = GetDictionary('delLine.yml')
-    dictionary = generate_dictionary(info_dict, deltext, delline)
+    dictionary = generate_dictionary(info_dict)
     store_dir = askdirectory()
     year = dictionary['__记录年份__'] if '__记录年份__' in dictionary else '未知年份'
     res_home = year + dictionary['__企业名称__'] + dictionary['template_id'].split('-')[2]
@@ -384,11 +416,11 @@ def replace_process(info_dict, re=False, page2=False, old2new=None):
     pool.wait()
     check_file_list = []
     args_list_check = []
+
+    # 复审模式相关逻辑的处理
     if re:
-        '''复审模式中生成新字典'''
         tmppath = os.path.dirname(info_dict['tmp'])
         root_dir = tmppath
-        
         check_file_list.extend(get_all_files(tmppath))
         for file in check_file_list:
             args_list_check.append(([file, store_dir, root_dir, res_home, old2new, info_dict], None))

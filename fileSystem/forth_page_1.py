@@ -50,6 +50,7 @@ class window4_1():
             for widget in self.frames[frame].widget_list:
                 widget.save_value_into_info_dic(self.info_dic)
                 widget.temp_save()
+        gen_temp_storage()
         print(self.info_dic)
         df.replace_process(self.info_dic, re=self.re, old2new=self.old2new)
         showinfo(title="提示",

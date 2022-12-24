@@ -9,6 +9,11 @@ import deal_with_file as df
 
 class EditText:
     def __init__(self, root, title, default='', replaceable=True):
+        """
+        文本框控件
+        default: 文本框中会出现的固定内容
+
+        """
         super().__init__()
         self.frame = Frame(root, padx=2)  # container
         self.frame = Frame(root, bg='Lavender', pady=2)
@@ -39,7 +44,7 @@ class EditText:
         if key == '':
             key = self.title
         content = self.get_text()
-        if content == self.default and self.replaceable:
+        if content == self.default and self.replaceable or content == '':
             content = '无'
         info_dic['__{}__'.format(key)] = content
 

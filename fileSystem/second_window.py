@@ -7,7 +7,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter.messagebox import showinfo
 import deal_with_file as df
-from deal_with_file import GetDictionary
+
 
 def InfoWindow_1(info_dic, re=False):
     """Q界面"""
@@ -172,22 +172,12 @@ def InfoWindow_1(info_dic, re=False):
     def text_gen():
         for widget in widget_list:
             widget.save_value_into_info_dic(info_dic)
-        
+
         old2new = {}
         if re:
             '''复审模式中生成新字典'''
-            olddict = read_file_to_temp_list(info_dic['tmp'])
-            deltext = GetDictionary("delText.yml")
-            delline = GetDictionary('delLine.yml')
-            for k, v in info_dic.items():
-                tmpk = k.replace('__', '')
-                if tmpk in olddict and v != olddict[tmpk]:
-                    old2new[olddict[tmpk]] = info_dic[k]
-                    if k in deltext:
-                        deltext[olddict[tmpk]] = deltext[k]
-                    if k in delline:
-                        delline[olddict[tmpk]] = delline[k]
-            print(old2new)
+            df.generate_old2new_dic(old2new, info_dic)
+            print("复评模式下值发生改变的项有： ", old2new)
 
         for widget in widget_list:
             widget.temp_save()
@@ -199,7 +189,6 @@ def InfoWindow_1(info_dic, re=False):
             widget.temp_save()
         gen_temp_storage()
         tkinter.messagebox.showinfo("success", "生成缓存文件成功")
-        print("成功")
 
     def gen_docx(info_dict):
         for widget in widget_list:
@@ -432,21 +421,12 @@ def InfoWindow_2(info_dic, re=False):
     def text_gen():
         for widget in widget_list:
             widget.save_value_into_info_dic(info_dic)
-        
+
         old2new = {}
         if re:
             '''复审模式中生成新字典'''
-            olddict = read_file_to_temp_list(info_dic['tmp'])
-            deltext = GetDictionary("delText.yml")
-            delline = GetDictionary('delLine.yml')
-            for k, v in info_dic.items():
-                tmpk = k.replace('__', '')
-                if tmpk in olddict and v != olddict[tmpk]:
-                    old2new[v] = info_dic[k]
-                    if k in deltext:
-                        deltext[olddict[tmpk]] = deltext[k]
-                    if k in delline:
-                        delline[olddict[tmpk]] = delline[k]
+            df.generate_old2new_dic(old2new, info_dic)
+            print("复评模式下值发生改变的项有： ", old2new)
 
         for widget in widget_list:
             widget.temp_save()
@@ -697,27 +677,17 @@ def InfoWindow_3(info_dic, re=False):
     def text_gen():
         for widget in widget_list:
             widget.save_value_into_info_dic(info_dic)
-        
+
         old2new = {}
         if re:
             '''复审模式中生成新字典'''
-            olddict = read_file_to_temp_list(info_dic['tmp'])
-            deltext = GetDictionary("delText.yml")
-            delline = GetDictionary('delLine.yml')
-            for k, v in info_dic.items():
-                tmpk = k.replace('__', '')
-                if tmpk in olddict and v != olddict[tmpk]:
-                    old2new[v] = info_dic[k]
-                    if k in deltext:
-                        deltext[olddict[tmpk]] = deltext[k]
-                    if k in delline:
-                        delline[olddict[tmpk]] = delline[k]
+            df.generate_old2new_dic(old2new, info_dic)
+            print("复评模式下值发生改变的项有： ", old2new)
 
         for widget in widget_list:
             widget.temp_save()
 
         informCollectWindow(info_dic, re=re, old2new=old2new)
-
 
     def temp_save_to_local():
         for widget in widget_list:

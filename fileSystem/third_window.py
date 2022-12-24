@@ -187,15 +187,19 @@ def informCollectWindow(info_dic, re=False, old2new=None):
         elif (rzfw == 'SC' or rzfw == 'ZZ' or rzfw == 'JJSC') and (rzxm == 'S' or rzxm == 'ES'):
             window4_4(info_dic, re=re, old2new=old2new)
         else:
-            #
-            print(info_dict)
-            df.replace_process(info_dict, re=re, old2new=old2new)
-            showinfo(title="提示",
-                     message="文档输出完成!")
-            # window.destroy()
+            threading.Thread(target=generate_storage_file(info_dict)).start()
+
+    def generate_storage_file(info_dict):
+        print(info_dict)
+        # 函数上层已对字典进行缓存直接存到本地即可
+        gen_temp_storage()
+        print('生成缓存文件完成')
+        df.replace_process(info_dict, re=re, old2new=old2new)
+        showinfo(title="提示",
+                 message="文档输出完成!")
 
     # 第三层界面处理结果生成字典
-    def textGen():
+    def text_gen():
         for widget in widget_list:
             widget.save_value_into_info_dic(info_dic)
             widget.temp_save()
@@ -207,7 +211,7 @@ def informCollectWindow(info_dic, re=False, old2new=None):
         gen_temp_storage()
         tkinter.messagebox.showinfo("success", "生成缓存文件成功")
 
-    btn_gen = tk.Button(window, text='信息确认完成，进入下一阶段。', command=textGen)
+    btn_gen = tk.Button(window, text='信息确认完成，进入下一阶段。', command=text_gen)
     btn_save = tk.Button(window, text='缓存信息。', command=lambda: [temp_save_to_local()])
 
     peixun1.set_position(row=1, column=0, columnspan=3)
