@@ -4,8 +4,8 @@ import tkinter as tk
 from tkinter import *
 from tkinter.messagebox import showinfo
 
-from fileSystem.forth_page_3 import window4_3
-from fileSystem.forth_page_5 import window4_5
+from forth_page_3 import window4_3
+from forth_page_5 import window4_5
 from forth_page_1 import window4_1
 from forth_page_2 import window4_2
 from forth_page_4 import window4_4
