@@ -115,7 +115,7 @@ class qtxxPage(tk.Frame):
         self.sjaqjybzpxr.text_setting(height=1, width=12)
         self.widget_list.append(self.sjaqjybzpxr)
 
-        self.tsgcxs = GroupButtonWithText(self, "特殊过程销售", "有销售过程", "无销售过程", "特殊过程销售操作工")
+        self.tsgcxs = GroupButtonWithText(self, "特殊过程销售", "有销售过程", "无销售过程", "特殊过程销售业务员")
         self.widget_list.append(self.tsgcxs)
 
         self.xsbry1 = EditText(self, '销售部人员1')

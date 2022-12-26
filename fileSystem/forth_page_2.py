@@ -184,7 +184,7 @@ class qtxxPage(tk.Frame):
         self.widget_list.append(self.tsgchh)
         self.tsgcjc = GroupButtonWithText(self, "特殊过程挤出", "有挤出过程", "无挤出过程", "特殊过程挤出操作工")
         self.widget_list.append(self.tsgcjc)
-        self.tsgcxs = GroupButtonWithText(self, "特殊过程销售", "有销售过程", "无销售过程", "特殊过程销售操作工")
+        self.tsgcxs = GroupButtonWithText(self, "特殊过程销售", "有销售过程", "无销售过程", "特殊过程销售业务员")
         self.widget_list.append(self.tsgcxs)
 
         self.kyj = GroupButton(self, "有无空压机", "有空压机", "无空压机")
