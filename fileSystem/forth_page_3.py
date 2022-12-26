@@ -3,14 +3,14 @@ import threading
 import tkinter
 import tkinter as tk
 from tkinter import *
-from tkinter.messagebox import showinfo,showwarning
+from tkinter.messagebox import showinfo, showwarning
 import deal_with_file as df
 from temp_storage import *
 from widgets import *
 
 
-class window4_4:
-    # 适用于认证范围为SC/ZZ/JJSC且认证项目为S/ES
+class window4_3:
+    # 适用于认证范围为所有且认证项目为E
     def __init__(self, info_dic, re=False, old2new=None):
         super().__init__()
         self.info_dic = info_dic
@@ -69,30 +69,11 @@ class qtxxPage(tk.Frame):
         super().__init__(parent)
         super().__init__(parent)
         self.config(bg='Lavender')
-        btngen = tk.Button(self, text='信息无误开始生成文档！', command=lambda: threading.Thread(target=root.get_info).start())
+        btngen = tk.Button(self, text='信息无误开始生成文档！',
+                           command=lambda: threading.Thread(target=root.get_info).start())
         btn_save = tk.Button(self, text='缓存信息。', command=lambda: root.temp_save_to_local())
 
         self.widget_list = []
-
-        self.sjaqjyspxr1 = EditText(self, '三级安全教育受培训人1')
-        self.sjaqjyspxr1.text_setting(height=1, width=25)
-        self.widget_list.append(self.sjaqjyspxr1)
-
-        self.sjaqjyspxr2 = EditText(self, '三级安全教育受培训人2')
-        self.sjaqjyspxr2.text_setting(height=1, width=25)
-        self.widget_list.append(self.sjaqjyspxr2)
-
-        self.sjaqjyrq1 = EditText(self, '三级安全教育第一天日期')
-        self.sjaqjyrq1.text_setting(height=1, width=12)
-        self.widget_list.append(self.sjaqjyrq1)
-
-        self.sjaqjyrq2 = EditText(self, '三级安全教育第二天日期')
-        self.sjaqjyrq2.text_setting(height=1, width=12)
-        self.widget_list.append(self.sjaqjyrq2)
-
-        self.sjaqjyrq3 = EditText(self, '三级安全教育第三天日期')
-        self.sjaqjyrq3.text_setting(height=1, width=12)
-        self.widget_list.append(self.sjaqjyrq3)
 
         self.scbry1 = EditText(self, '生产部人员1')
         self.scbry1.text_setting(height=1, width=25)
@@ -106,24 +87,16 @@ class qtxxPage(tk.Frame):
         self.scbry3.text_setting(height=1, width=25)
         self.widget_list.append(self.scbry3)
 
-        self.sjaqjybzpxr = EditText(self, '三级安全教育班组培训人')
-        self.sjaqjybzpxr.text_setting(height=1, width=12)
-        self.widget_list.append(self.sjaqjybzpxr)
-
-        self.kyj = GroupButton(self, "有无空压机", "有空压机", "无空压机")
-        self.widget_list.append(self.kyj)
+        self.jyy1 = EditText(self, '检验员1')
+        self.jyy1.text_setting(height=1, width=25)
+        self.widget_list.append(self.jyy1)
 
         btngen.grid(row=0, column=1, columnspan=2)
-        self.sjaqjyspxr1.set_position(row=1, column=0, rowspan=1, columnspan=2)
-        self.sjaqjyspxr2.set_position(row=1, column=2, rowspan=1, columnspan=2)
-        self.sjaqjyrq1.set_position(row=2, column=0, rowspan=1, columnspan=2)
-        self.sjaqjyrq2.set_position(row=2, column=2, rowspan=1, columnspan=2)
-        self.sjaqjyrq3.set_position(row=2, column=4, rowspan=1, columnspan=2)
-        self.scbry1.set_position(row=3, column=0, rowspan=1, columnspan=2)
-        self.scbry2.set_position(row=3, column=2, rowspan=1, columnspan=2)
-        self.scbry3.set_position(row=3, column=4, rowspan=1, columnspan=2)
-        self.sjaqjybzpxr.set_position(row=4, column=0, rowspan=1, columnspan=2)
-        self.kyj.set_position(row=4, column=2, rowspan=1, columnspan=2)
+        self.scbry1.set_position(row=1, column=0, rowspan=1, columnspan=2)
+        self.scbry2.set_position(row=1, column=2, rowspan=1, columnspan=2)
+        self.scbry3.set_position(row=1, column=4, rowspan=1, columnspan=2)
+        self.jyy1.set_position(row=2, column=0, rowspan=1, columnspan=2)
         btn_save.grid(row=5, column=5, pady=20)
-#
-# window4_4({})
+
+
+# window4_3({})

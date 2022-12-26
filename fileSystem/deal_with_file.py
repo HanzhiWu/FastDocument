@@ -70,7 +70,6 @@ def generate_dictionary(info_dict):
     delline = get_dictionary('delLine.yml')
     white_list = get_dictionary('white_list.yml')
     dictionary = get_dictionary("tagList.yml")
-    print(info_dict)
     dictionary['template_id'] = info_dict['template_id']
     for key in dictionary.keys():
         if key in info_dict and info_dict[key] != '无' and info_dict[key] != '否':
@@ -167,6 +166,9 @@ def replace_in_runs(paragraph, replace_dict: dict, paragraph_type):
                     run.text = new
                     break
                 if old in run.text:
+                    if '版本号' in old:
+                        print('WHZ---------检测到版本号关键词')
+                        print(text)
                     if "随机日期" in old:
                         if '-' in new:
                             start, end = new.split('-')
@@ -188,6 +190,9 @@ def replace_in_runs(paragraph, replace_dict: dict, paragraph_type):
             for old, new in replace_dict.items():
                 # 进行替换
                 if old in text:
+                    if '版本号' in old:
+                        print('WHZ---------检测到版本号关键词')
+                        print(text)
                     if "随机日期" in old:
                         if '-' in new:
                             start, end = new.split('-')

@@ -25,7 +25,11 @@ def mainWindow():
         '施工': 'SG',
         '通用服务': 'FW',
         '物流服务': 'WL',
-        '检测服务': 'JC'
+        '检测服务': 'JC',
+        '家具生产和销售': 'JJSCXS',
+        '通用服务和销售': 'FWXS',
+        '物流服务和销售': 'WLXS',
+        '检测服务和销售': 'JCXS'
     }
     # 给窗口的可视化起名字
     window.title('认证文件管理系统')
@@ -41,7 +45,7 @@ def mainWindow():
     domain['value'] = (
         '通用生产', '通用生产和销售', '组装生产（无三废）', '组装生产（无三废）和销售', '家具生产', '通用销售', '软件',
         '施工',
-        '通用服务', '物流服务', '检测服务')
+        '通用服务', '物流服务', '检测服务', '家具生产和销售', '通用服务和销售', '物流服务和销售', '检测服务和销售')
     domain.current(0)
 
     # 下拉框颜色
@@ -103,8 +107,10 @@ def mainWindow():
     departC5 = tk.Checkbutton(window, text='销售部门', variable=departV5, onvalue=1, offvalue=0, command=depart_select)
     departC6 = tk.Checkbutton(window, text='财务部门', variable=departV6, onvalue=1, offvalue=0, command=depart_select)
     departC7 = tk.Checkbutton(window, text='技术部门', variable=departV7, onvalue=1, offvalue=0, command=depart_select)
-    departC8 = tk.Checkbutton(window, text='销售采购部门', variable=departV8, onvalue=1, offvalue=0, command=depart_select)
-    departC9 = tk.Checkbutton(window, text='行政采购部门', variable=departV9, onvalue=1, offvalue=0, command=depart_select)
+    departC8 = tk.Checkbutton(window, text='销售采购部门', variable=departV8, onvalue=1, offvalue=0,
+                              command=depart_select)
+    departC9 = tk.Checkbutton(window, text='行政采购部门', variable=departV9, onvalue=1, offvalue=0,
+                              command=depart_select)
     departlist = [departC1, departC2, departC3, departC4, departC5, departC6, departC7, departC8, departC9]
 
     '''认证项目选择'''
@@ -151,7 +157,7 @@ def mainWindow():
         info_dic = {}
         if re:
             file = askopenfilename(title='Please choose a file',
-                               initialdir='save/', filetypes=[('纯文本', '*.txt')])
+                                   initialdir='save/', filetypes=[('纯文本', '*.txt')])
             temp = read_file_to_temp_list(file)
             info_dic['tmp'] = file
             template_id = temp['template_id']

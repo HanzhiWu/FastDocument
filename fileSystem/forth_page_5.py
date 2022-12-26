@@ -3,14 +3,14 @@ import threading
 import tkinter
 import tkinter as tk
 from tkinter import *
-from tkinter.messagebox import showinfo,showwarning
+from tkinter.messagebox import showinfo, showwarning
 import deal_with_file as df
 from temp_storage import *
 from widgets import *
 
 
-class window4_4:
-    # 适用于认证范围为SC/ZZ/JJSC且认证项目为S/ES
+class window4_5():
+    # 适用于认证范围为JC/XS/FW/WL/JCXS/FWXS/WL且认证项目为QS/QES
     def __init__(self, info_dic, re=False, old2new=None):
         super().__init__()
         self.info_dic = info_dic
@@ -69,7 +69,8 @@ class qtxxPage(tk.Frame):
         super().__init__(parent)
         super().__init__(parent)
         self.config(bg='Lavender')
-        btngen = tk.Button(self, text='信息无误开始生成文档！', command=lambda: threading.Thread(target=root.get_info).start())
+        btngen = tk.Button(self, text='信息无误开始生成文档！',
+                           command=lambda: threading.Thread(target=root.get_info).start())
         btn_save = tk.Button(self, text='缓存信息。', command=lambda: root.temp_save_to_local())
 
         self.widget_list = []
@@ -106,13 +107,26 @@ class qtxxPage(tk.Frame):
         self.scbry3.text_setting(height=1, width=25)
         self.widget_list.append(self.scbry3)
 
+        self.jyy1 = EditText(self, '检验员1')
+        self.jyy1.text_setting(height=1, width=25)
+        self.widget_list.append(self.jyy1)
+
         self.sjaqjybzpxr = EditText(self, '三级安全教育班组培训人')
         self.sjaqjybzpxr.text_setting(height=1, width=12)
         self.widget_list.append(self.sjaqjybzpxr)
 
-        self.kyj = GroupButton(self, "有无空压机", "有空压机", "无空压机")
-        self.widget_list.append(self.kyj)
+        self.tsgcxs = GroupButtonWithText(self, "特殊过程销售", "有销售过程", "无销售过程", "特殊过程销售操作工")
+        self.widget_list.append(self.tsgcxs)
 
+        self.xsbry1 = EditText(self, '销售部人员1')
+        self.xsbry1.text_setting(height=1, width=25)
+        self.widget_list.append(self.xsbry1)
+
+        self.xsbry2 = EditText(self, '销售部人员2')
+        self.xsbry2.text_setting(height=1, width=25)
+        self.widget_list.append(self.xsbry2)
+
+        rzfw, _, _, _ = root.info_dic['template_id'].split('-')
         btngen.grid(row=0, column=1, columnspan=2)
         self.sjaqjyspxr1.set_position(row=1, column=0, rowspan=1, columnspan=2)
         self.sjaqjyspxr2.set_position(row=1, column=2, rowspan=1, columnspan=2)
@@ -122,8 +136,12 @@ class qtxxPage(tk.Frame):
         self.scbry1.set_position(row=3, column=0, rowspan=1, columnspan=2)
         self.scbry2.set_position(row=3, column=2, rowspan=1, columnspan=2)
         self.scbry3.set_position(row=3, column=4, rowspan=1, columnspan=2)
-        self.sjaqjybzpxr.set_position(row=4, column=0, rowspan=1, columnspan=2)
-        self.kyj.set_position(row=4, column=2, rowspan=1, columnspan=2)
-        btn_save.grid(row=5, column=5, pady=20)
-#
-# window4_4({})
+        self.jyy1.set_position(row=4, column=0, rowspan=1, columnspan=2)
+        self.sjaqjybzpxr.set_position(row=4, column=2, rowspan=1, columnspan=2)
+        self.tsgcxs.set_position(row=5, column=0, rowspan=1, columnspan=5)
+        if 'XS' in rzfw:
+            self.xsbry1.set_position(row=6, column=0, rowspan=1, columnspan=2)
+            self.xsbry2.set_position(row=6, column=2, rowspan=1, columnspan=2)
+        btn_save.grid(row=7, column=5, pady=20)
+
+# window4_5({})

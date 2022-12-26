@@ -9,7 +9,7 @@ import deal_with_file as df
 from widgets import *
 
 
-class window4_2():
+class window4_2:
     def __init__(self, info_dic, re=False, old2new=None):
         super().__init__()
         window = tk.Tk()
@@ -33,7 +33,7 @@ class window4_2():
         self.frames = {}
         self.info_dic = info_dic
 
-        for F in (cpgxPage,  cpxxPage, qtxxPage):
+        for F in (cpgxPage, cpxxPage, qtxxPage):
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")  # 四个页面的位置都是 grid(row=0, column=0), 位置重叠，只有最上面的可见！！
@@ -184,12 +184,23 @@ class qtxxPage(tk.Frame):
         self.widget_list.append(self.tsgchh)
         self.tsgcjc = GroupButtonWithText(self, "特殊过程挤出", "有挤出过程", "无挤出过程", "特殊过程挤出操作工")
         self.widget_list.append(self.tsgcjc)
+        self.tsgcxs = GroupButtonWithText(self, "特殊过程销售", "有销售过程", "无销售过程", "特殊过程销售操作工")
+        self.widget_list.append(self.tsgcxs)
 
         self.kyj = GroupButton(self, "有无空压机", "有空压机", "无空压机")
         self.widget_list.append(self.kyj)
 
+        self.xsbry1 = EditText(self, '销售部人员1')
+        self.xsbry1.text_setting(height=1, width=25)
+        self.widget_list.append(self.xsbry1)
+
+        self.xsbry2 = EditText(self, '销售部人员2')
+        self.xsbry2.text_setting(height=1, width=25)
+        self.widget_list.append(self.xsbry2)
+
         btn_save = tk.Button(self, text='缓存信息。', command=lambda: root.temp_save_to_local())
 
+        rzfw, _, _, _ = root.info_dic['template_id'].split('-')
         btncpgx.grid(row=0, column=0)
         btncpxx.grid(row=0, column=1)
         btnqtxx.grid(row=0, column=2)
@@ -203,8 +214,12 @@ class qtxxPage(tk.Frame):
         self.tsgchj.set_position(row=7, column=0, rowspan=2, columnspan=6)
         self.tsgchh.set_position(row=9, column=0, rowspan=2, columnspan=6)
         self.tsgcjc.set_position(row=11, column=0, rowspan=2, columnspan=6)
-        self.kyj.set_position(row=13, column=2, rowspan=1, columnspan=2)
-        btn_save.grid(row=14, column=4, pady=20)
+        self.tsgcxs.set_position(row=13, column=0, rowspan=2, columnspan=6)
+        self.kyj.set_position(row=15, column=0, rowspan=1, columnspan=2)
+        if 'XS' in rzfw:
+            self.xsbry1.set_position(row=16, column=0, rowspan=1, columnspan=2)
+            self.xsbry2.set_position(row=16, column=2, rowspan=1, columnspan=2)
+        btn_save.grid(row=17, column=4, pady=20)
 
 
 # window4_2({})

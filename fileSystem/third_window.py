@@ -3,6 +3,9 @@ import tkinter
 import tkinter as tk
 from tkinter import *
 from tkinter.messagebox import showinfo
+
+from fileSystem.forth_page_3 import window4_3
+from fileSystem.forth_page_5 import window4_5
 from forth_page_1 import window4_1
 from forth_page_2 import window4_2
 from forth_page_4 import window4_4
@@ -180,12 +183,16 @@ def informCollectWindow(info_dic, re=False, old2new=None):
     def next_stage(info_dict):
         template_id = info_dic['template_id']
         rzfw, _, rzxm, _ = template_id.split('-')
-        if (rzfw == 'SC' or rzfw == 'ZZ' or rzfw == 'JJSC') and (rzxm == 'QS' or rzxm == 'QES'):
+        if rzfw in ['SC', 'ZZ', 'JJSC'] and rzxm in ['QS', 'QES']:
             window4_1(info_dic, re=re, old2new=old2new)
-        elif (rzfw == 'SC' or rzfw == 'ZZ' or rzfw == 'JJSC') and (rzxm == 'Q' or rzxm == 'QE'):
+        elif rzfw in ['SC', 'ZZ', 'JJSC'] and rzxm in ['Q', 'QE']:
             window4_2(info_dic, re=re, old2new=old2new)
-        elif (rzfw == 'SC' or rzfw == 'ZZ' or rzfw == 'JJSC') and (rzxm == 'S' or rzxm == 'ES'):
+        elif rzxm == 'E':
+            window4_3(info_dic, re=re, old2new=old2new)
+        elif rzfw in ['SC', 'ZZ', 'JJSC'] and rzxm in ['S', 'ES']:
             window4_4(info_dic, re=re, old2new=old2new)
+        elif rzfw in ['JC', 'XS', 'FW', 'WL', 'JCXS', 'FWXS', 'WL'] and rzxm in ['QS', 'QES']:
+            window4_5(info_dic, re=re, old2new=old2new)
         else:
             threading.Thread(target=generate_storage_file(info_dict)).start()
 
