@@ -15,7 +15,7 @@ from widgets import EditText, AddText, GroupButton
 
 
 # 第三层界面
-def informCollectWindow(info_dic, re=False, old2new=None):
+def inform_collect_window(info_dic, re=False, old2new=None):
     window = tk.Tk()
 
     # 给窗口的可视化起名字
@@ -173,7 +173,8 @@ def informCollectWindow(info_dic, re=False, old2new=None):
     myddc8.text_setting(width=22, height=1)
     widget_list.append(myddc8)
 
-    gf = AddText(window, '已有供方信息', '供方', '修改供方信息', [18, 30, 60], ['名称', '地址', '所有产品'])
+    gf = AddText(window, '已有供方信息', '供方', '修改供方信息', [15, 25, 40, 15, 20],
+                 ['名称', '地址', '所有产品', '联系人', '电话'])
     widget_list.append(gf)
 
     cgcp = AddText(window, '采购产品信息', '采购', '修改采购信息', [15, 8, 15, 8, 10, 10],
@@ -272,3 +273,157 @@ def informCollectWindow(info_dic, re=False, old2new=None):
     btn_save.grid(row=29, column=7)
 
     window.mainloop()
+
+
+def inform_collect_window_lj(info_dic, re=False, old2new=None):
+    window = tk.Tk()
+
+    # 给窗口的可视化起名字
+    if re:
+        window.title('监督复评模式')
+    else:
+        window.title('初审模式')
+    window.config(background='Lavender')
+    widget_list = []
+
+    window.geometry('1280x700')  # 这里的乘是小x
+
+    peixun1 = GroupButton(window, '是否有1月培训', '是', '否', defalutl_pos='')
+    peixun2 = GroupButton(window, '是否有2月培训', '是', '否', defalutl_pos='')
+    peixun3 = GroupButton(window, '是否有3月培训', '是', '否', defalutl_pos='')
+    peixun4 = GroupButton(window, '是否有4月培训', '是', '否', defalutl_pos='')
+    peixun5 = GroupButton(window, '是否有5月培训', '是', '否', defalutl_pos='')
+    peixun6 = GroupButton(window, '是否有6月培训', '是', '否', defalutl_pos='')
+    peixun7 = GroupButton(window, '是否有7月培训', '是', '否', defalutl_pos='')
+    peixun8 = GroupButton(window, '是否有8月培训', '是', '否', defalutl_pos='')
+    peixun9 = GroupButton(window, '是否有9月培训', '是', '否', defalutl_pos='')
+    peixun10 = GroupButton(window, '是否有10月培训', '是', '否', defalutl_pos='')
+    peixun11 = GroupButton(window, '是否有11月培训', '是', '否', defalutl_pos='')
+    peixun12 = GroupButton(window, '是否有12月培训', '是', '否', defalutl_pos='')
+
+    widget_list.append(peixun1)
+    widget_list.append(peixun2)
+    widget_list.append(peixun3)
+    widget_list.append(peixun4)
+    widget_list.append(peixun5)
+    widget_list.append(peixun6)
+    widget_list.append(peixun7)
+    widget_list.append(peixun8)
+    widget_list.append(peixun9)
+    widget_list.append(peixun10)
+    widget_list.append(peixun11)
+    widget_list.append(peixun12)
+
+    nsypxrq = EditText(window, '内审员培训日期')
+    nsypxrq.text_setting(width=22, height=1)
+    widget_list.append(nsypxrq)
+
+    nsjhzdrq = EditText(window, '内审计划制定日期')
+    nsjhzdrq.text_setting(width=22, height=1)
+    widget_list.append(nsjhzdrq)
+
+    nsksrq = EditText(window, '内审开始日期')
+    nsksrq.text_setting(width=22, height=1)
+    widget_list.append(nsksrq)
+
+    nsjsrq = EditText(window, '内审结束日期')
+    nsjsrq.text_setting(width=22, height=1)
+    widget_list.append(nsjsrq)
+
+    nszgwcrq = EditText(window, '内审整改完成日期')
+    nszgwcrq.text_setting(width=22, height=1)
+    widget_list.append(nszgwcrq)
+
+    ns1hbhf = GroupButton(window, '是否为1号内审不符合', '是', '否')
+    widget_list.append(ns1hbhf)
+
+    ns2hbhf = GroupButton(window, '是否为2号内审不符合', "是", "否")
+    widget_list.append(ns2hbhf)
+
+    ns3hbhf = GroupButton(window, '是否为3号内审不符合', "是", "否")
+    widget_list.append(ns3hbhf)
+
+    gf = AddText(window, '已有供方信息', '供方', '修改供方信息', [15, 25, 40, 15, 20],
+                 ['名称', '地址', '所有产品', '联系人', '电话'])
+    widget_list.append(gf)
+
+    scbry1 = EditText(window, '生产部人员1')
+    scbry1.text_setting(height=1, width=25)
+    widget_list.append(scbry1)
+
+    scbry2 = EditText(window, '生产部人员2')
+    scbry2.text_setting(height=1, width=25)
+    widget_list.append(scbry2)
+
+    scbry3 = EditText(window, '生产部人员3')
+    scbry3.text_setting(height=1, width=25)
+    widget_list.append(scbry3)
+
+    zjbry1 = EditText(window, '质检部人员1')
+    zjbry1.text_setting(height=1, width=25)
+    widget_list.append(zjbry1)
+
+    zjbry2 = EditText(window, '质检部人员2')
+    zjbry2.text_setting(height=1, width=25)
+    widget_list.append(zjbry2)
+
+    def next_stage(info_dict):
+        threading.Thread(target=generate_storage_file(info_dict)).start()
+
+    def generate_storage_file(info_dict):
+        print(info_dict)
+        # 函数上层已对字典进行缓存直接存到本地即可
+        gen_temp_storage()
+        print('生成缓存文件完成')
+        df.replace_process(info_dict, re=re, old2new=old2new)
+        showinfo(title="提示",
+                 message="文档输出完成!")
+
+    # 第三层界面处理结果生成字典
+    def text_gen():
+        for widget in widget_list:
+            widget.save_value_into_info_dic(info_dic)
+            widget.temp_save()
+        next_stage(info_dic)
+
+    def temp_save_to_local():
+        for widget in widget_list:
+            widget.temp_save()
+        gen_temp_storage()
+        tkinter.messagebox.showinfo("success", "生成缓存文件成功")
+
+    btn_gen = tk.Button(window, text='信息确认完成，进入下一阶段。', command=text_gen)
+    btn_save = tk.Button(window, text='缓存信息。', command=lambda: [temp_save_to_local()])
+
+    peixun1.set_position(row=1, column=0, columnspan=3)
+    peixun2.set_position(row=1, column=3, columnspan=3)
+    peixun3.set_position(row=1, column=6, columnspan=3)
+    peixun4.set_position(row=2, column=0, columnspan=3)
+    peixun5.set_position(row=2, column=3, columnspan=3)
+    peixun6.set_position(row=2, column=6, columnspan=3)
+    peixun7.set_position(row=3, column=0, columnspan=3)
+    peixun8.set_position(row=3, column=3, columnspan=3)
+    peixun9.set_position(row=3, column=6, columnspan=3)
+    peixun10.set_position(row=4, column=0, columnspan=3)
+    peixun11.set_position(row=4, column=3, columnspan=3)
+    peixun12.set_position(row=4, column=6, columnspan=3)
+    nsypxrq.set_position(row=5, column=1, columnspan=3)
+    nsjhzdrq.set_position(row=5, column=4, columnspan=3)
+    nsksrq.set_position(row=6, column=1, columnspan=3)
+    nsjsrq.set_position(row=6, column=4, columnspan=3)
+    nszgwcrq.set_position(row=6, column=7, columnspan=3)
+    ns1hbhf.set_position(row=7, column=0, columnspan=3)
+    ns2hbhf.set_position(row=7, column=3, columnspan=3)
+    ns3hbhf.set_position(row=7, column=6, columnspan=3)
+    gf.set_position(row=8, column=0, rowspan=4, columnspan=9)
+    scbry1.set_position(row=12, column=0, columnspan=3)
+    scbry2.set_position(row=12, column=3, columnspan=3)
+    scbry3.set_position(row=12, column=6, columnspan=3)
+    zjbry1.set_position(row=13, column=0, columnspan=3)
+    zjbry2.set_position(row=13, column=3, columnspan=3)
+    btn_gen.grid(row=14, column=3)
+    btn_save.grid(row=14, column=7)
+
+    window.mainloop()
+
+

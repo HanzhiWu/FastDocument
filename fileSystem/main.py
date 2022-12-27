@@ -4,7 +4,7 @@ from tkinter import *
 from tkinter import ttk
 from unicodedata import decimal
 
-from second_window import InfoWindow_1, InfoWindow_2, InfoWindow_3
+from second_window import InfoWindow_1, InfoWindow_2, InfoWindow_3, InfoWindow_4
 from tkinter.filedialog import askopenfilename
 from temp_storage import read_file_to_temp_list, clear_temp_storage, add_item_temp_storage
 
@@ -40,7 +40,7 @@ def mainWindow():
     window.title('认证文件管理系统')
 
     # 设定窗口的大小(长 * 宽)
-    window.geometry('500x300')  # 这里的乘是小x
+    window.geometry('600x400')  # 这里的乘是小x
     window.resizable(0, 0)
 
     """第一个界面，模板选择"""
@@ -126,6 +126,7 @@ def mainWindow():
     projectV1 = tk.IntVar(master=window)
     projectV2 = tk.IntVar(master=window)
     projectV3 = tk.IntVar(master=window)
+    projectV4 = tk.IntVar(master=window)
 
     def project_select():
         global projectselected
@@ -136,6 +137,8 @@ def mainWindow():
             projectselected.append('E')
         if projectV3.get() == 1:
             projectselected.append('S')
+        if projectV4.get() == 1:
+            projectselected.append('L')
 
     projectC1 = tk.Checkbutton(window, text='质量管理体系', variable=projectV1, onvalue=1, offvalue=0,
                                command=project_select)
@@ -143,10 +146,13 @@ def mainWindow():
                                command=project_select)
     projectC3 = tk.Checkbutton(window, text='职业健康安全管理体系', variable=projectV3, onvalue=1, offvalue=0,
                                command=project_select)
+    projectC4 = tk.Checkbutton(window, text='绿色建材产品认证', variable=projectV4, onvalue=1, offvalue=0,
+                               command=project_select)
     projdict = {
         'Q': projectC1,
         'E': projectC2,
-        'S': projectC3
+        'S': projectC3,
+        'L': projectC4
     }
     '''设计开发选择'''
     design_L = Label(window, text='设计开发')
@@ -196,6 +202,8 @@ def mainWindow():
             template_id += 'E'
         if 'S' in projectselected:
             template_id += 'S'
+        if 'L' in projectselected:
+            template_id += 'L'
         template_id += '-'
         template_id += 'Y' if designV.get() == 1 else 'N'
         print(template_id)
@@ -215,6 +223,10 @@ def mainWindow():
                 projectselected) == 2 \
                 or 'Q' not in projectselected and len(projectselected) == 2 or len(projectselected) == 3:
             InfoWindow_3(info_dic, re=re)
+            return
+        # L界面
+        if 'L' in projectselected and len(projectselected) == 1:
+            InfoWindow_4(info_dic, re=re)
             return
 
     def all_unset():
@@ -266,14 +278,15 @@ def mainWindow():
     departC8.place(relx=0.4, rely=0.34)
     departC9.place(relx=0.65, rely=0.34)
 
-    Label(window, text=str('~-' * 30)).place(relx=0.05, rely=0.415)  # 分隔符
+    Label(window, text=str('~-' * 40)).place(relx=0.03, rely=0.395)  # 分隔符
 
-    project_L.place(relx=0.42, rely=0.49)
-    projectC1.place(relx=0.09, rely=0.58)
-    projectC2.place(relx=0.33, rely=0.58)
-    projectC3.place(relx=0.57, rely=0.58)
+    project_L.place(relx=0.42, rely=0.45)
+    projectC1.place(relx=0.09, rely=0.52)
+    projectC2.place(relx=0.33, rely=0.52)
+    projectC3.place(relx=0.57, rely=0.52)
+    projectC4.place(relx=0.33, rely=0.60)
 
-    Label(window, text=str('~-' * 30)).place(relx=0.05, rely=0.655)  # 分隔符
+    Label(window, text=str('~-' * 40)).place(relx=0.03, rely=0.655)  # 分隔符
 
     design_L.place(relx=0.42, rely=0.73)
     designC1.place(relx=0.35, rely=0.82)
