@@ -144,7 +144,7 @@ def replace_in_runs(paragraph, replace_dict: dict, paragraph_type):
     将paragraph中所有runs根据replaceDict进行替换
     """
     text = ""
-    if paragraph_type == "plain" or "header":
+    if paragraph_type == "plain" or paragraph_type == "header":
         for run in paragraph.runs:
             if text == "":
                 if run.text.count("__") % 2 != 0:  # 发生了截断
@@ -166,9 +166,6 @@ def replace_in_runs(paragraph, replace_dict: dict, paragraph_type):
                     run.text = new
                     break
                 if old in run.text:
-                    if '版本号' in old:
-                        print('WHZ---------检测到版本号关键词')
-                        print(text)
                     if "随机日期" in old:
                         if '-' in new:
                             start, end = new.split('-')
@@ -187,12 +184,11 @@ def replace_in_runs(paragraph, replace_dict: dict, paragraph_type):
         if paragraph_type == "table":
             for run in paragraph.runs:
                 text += run.text.strip()
+            if '__是否有' in text:
+                print("hanzhi")
             for old, new in replace_dict.items():
                 # 进行替换
                 if old in text:
-                    if '版本号' in old:
-                        print('WHZ---------检测到版本号关键词')
-                        print(text)
                     if "随机日期" in old:
                         if '-' in new:
                             start, end = new.split('-')
@@ -207,7 +203,7 @@ def replace_in_runs(paragraph, replace_dict: dict, paragraph_type):
                         if replace_dict[key1] == '' and replace_dict[key2] == '':
                             return 1
                     text = text.replace(old, new)
-            if text != "":
+            if len(paragraph.runs) > 0:
                 paragraph.runs[0].text = text
             for run in paragraph.runs[1:]:
                 run.text = ""

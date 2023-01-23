@@ -799,9 +799,6 @@ def InfoWindow_4(info_dic, re=False):
     jianjie.text_setting(height=2, width=97)
     widget_list.append(jianjie)
 
-    fanwei = EditText(window, '认证范围')
-    fanwei.text_setting(height=1, width=97)
-    widget_list.append(fanwei)
 
     zhijian = EditText(window, '质检部门')
     zhijian.text_setting(height=1, width=22)
@@ -948,7 +945,6 @@ def InfoWindow_4(info_dic, re=False):
     mx.set_position(row=1, column=1)
     t.set_position(row=1, column=2, columnspan=2)
     jianjie.set_position(row=2, column=0, rowspan=2, columnspan=4)
-    fanwei.set_position(row=4, column=0, rowspan=1, columnspan=4)
     zhijian.set_position(row=6, column=0, columnspan=1)
     zjfuze.set_position(row=6, column=1, columnspan=1)
     zjbmcode.set_position(row=6, column=2, columnspan=2)

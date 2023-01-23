@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter.messagebox import showinfo
 
+from fileSystem.forth_page_6 import window4_6
 from forth_page_3 import window4_3
 from forth_page_5 import window4_5
 from forth_page_1 import window4_1
@@ -368,7 +369,12 @@ def inform_collect_window_lj(info_dic, re=False, old2new=None):
     widget_list.append(zjbry2)
 
     def next_stage(info_dict):
-        threading.Thread(target=generate_storage_file(info_dict)).start()
+        template_id = info_dic['template_id']
+        rzfw, _, _, _ = template_id.split('-')
+        if rzfw == 'YBHNTLJ':
+            window4_6(info_dic, re=re, old2new=old2new)
+        else:
+            threading.Thread(target=generate_storage_file(info_dict)).start()
 
     def generate_storage_file(info_dict):
         print(info_dict)
@@ -425,5 +431,3 @@ def inform_collect_window_lj(info_dic, re=False, old2new=None):
     btn_save.grid(row=14, column=7)
 
     window.mainloop()
-
-

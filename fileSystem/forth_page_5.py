@@ -9,7 +9,7 @@ from temp_storage import *
 from widgets import *
 
 
-class window4_5():
+class window4_5:
     # 适用于认证范围为JC/XS/FW/WL/JCXS/FWXS/WL且认证项目为QS/QES
     def __init__(self, info_dic, re=False, old2new=None):
         super().__init__()

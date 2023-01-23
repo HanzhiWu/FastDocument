@@ -2,7 +2,6 @@ from re import template
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
-from unicodedata import decimal
 
 from second_window import InfoWindow_1, InfoWindow_2, InfoWindow_3, InfoWindow_4
 from tkinter.filedialog import askopenfilename
